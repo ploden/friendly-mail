@@ -1,0 +1,19 @@
+Return-Path: <ploden@gmail.com>
+Received: from smtpclient.apple ([94.31.97.54])
+        by smtp.gmail.com with ESMTPSA id g124sm14341468wme.28.2021.11.20.01.54.13
+        for <ploden@gmail.com>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 20 Nov 2021 01:54:13 -0800 (PST)
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+From: Phil Loden <ploden@gmail.com>
+Mime-Version: 1.0 (1.0)
+Date: Sat, 20 Nov 2021 10:54:12 +0100
+Subject: Fm
+Message-Id: <03481D7A-4DF6-4143-B041-51C0F9C227B4@gmail.com>
+To: Me Me <ploden@gmail.com>
+X-Mailer: iPhone Mail (19B74)
+
+Invite ploden.postcards@gmail.com
+
+Phil
