@@ -21,7 +21,7 @@ class MessageFactoryTests: XCTestCase {
         let theme = (UIApplication.shared.delegate as! AppDelegate).appConfig.defaultTheme
         let settings = TestSettings(user: me, password: "", selectedTheme: theme)
 
-        let message = MessageFactory.createMessage(settings: settings, uidWithMailbox: messageID, header: header, htmlBody: nil, plainTextBody: body) as? CreatePostingMessage ?? nil
+        let message = MessageFactory.createMessage(settings: settings, uidWithMailbox: messageID, header: header, htmlBody: nil, plainTextBody: body, attachments: nil) as? CreatePostingMessage ?? nil
         XCTAssertNotNil(message, "Message is not nil.")
         XCTAssertNotNil(message?.post)
         XCTAssert(message?.plainTextBody == body, "post body is not correct")
@@ -76,6 +76,60 @@ class MessageFactoryTests: XCTestCase {
         }
     }
     
+    func testSetProfilePicMessage() throws {
+        // Load email from file
+        let path = Bundle(for: type(of: self )).path(forResource: "set_profile_pic", ofType: "txt")!
+
+        let uid: UInt64 = 1
+        let user = Address(name: "Phil Loden", address: "ploden@gmail.com")!
+        let theme = (UIApplication.shared.delegate as! AppDelegate).appConfig.defaultTheme
+        let correctSettings = TestSettings(user: user, password: "", selectedTheme: theme)
+        let correctMessage = TestHelpers.loadEmail(withPath: path, uid: uid, settings: correctSettings)
+        
+        XCTAssert(correctMessage is CreateCommandsMessage)
+         let commandMessage = correctMessage as! CreateCommandsMessage
+        XCTAssert(commandMessage.commands.first!.commandType == .setProfilePic)
+        
+        /*
+        if let correctMessage = correctMessage as? CreateCommandMessage {
+            XCTAssert(correctMessage.commands.count == 1)
+            
+            let command = correctMessage.commands.first!
+            XCTAssert(command.commandType == .setProfilePic)
+            
+            let photoAttachmentOrNil = correctMessage.attachments!.first { $0.mimeType == "image/jpeg" }
+            XCTAssertNotNil(photoAttachmentOrNil)
+            
+            let photoAttachment = photoAttachmentOrNil!
+            let profilePicPath = Bundle(for: type(of: self )).path(forResource: "phil_profile_pic_attachment", ofType: "jpeg")!
+            let profilePicURL = URL(fileURLWithPath: profilePicPath)
+            let profilePicData = try! Data(contentsOf: profilePicURL)
+
+            let path = TestHelpers.writeToTmpDir(data: photoAttachment.data, filename: "profile_pic_attach.jpeg")
+            print(path!)
+            TestHelpers.writeToTmpDir(data: profilePicData, filename: "profile_pic_file.jpeg")
+
+            
+            XCTAssert(photoAttachment.data == profilePicData)
+        }
+         */
+    }
+    
+    func testCreateAccountMessage() throws {
+        // Load email from file
+        let path = Bundle(for: type(of: self )).path(forResource: "create_account", ofType: "txt")!
+
+        let uid: UInt64 = 1
+        let user = Address(name: "Phil Loden", address: "ploden@gmail.com")!
+        let theme = (UIApplication.shared.delegate as! AppDelegate).appConfig.defaultTheme
+        let correctSettings = TestSettings(user: user, password: "", selectedTheme: theme)
+        let correctMessage = TestHelpers.loadEmail(withPath: path, uid: uid, settings: correctSettings)
+        
+        XCTAssert(correctMessage is CreateCommandsMessage)
+        let commandMessage = correctMessage as! CreateCommandsMessage
+        XCTAssert(commandMessage.commands.first!.commandType == .createAccount)
+    }
+        
     func testExtractMessageID() throws {
         let mID = "4EC2D8F3-DD53-43CD-B38C-1AFDD5149C7C@gmail.com"
         let label = "Comment"
@@ -83,6 +137,12 @@ class MessageFactoryTests: XCTestCase {
         let extracted = MessageFactory.extractMessageID(withLabel: label, from: commentString)
         XCTAssert(extracted == mID)
         
+    }
+    
+    func testExtractCommands() throws {
+        let plainTextBody = "Fm set profile pic"
+        let extracted = MessageFactory.extractCommands(htmlBody: nil, plainTextBody: plainTextBody)
+        XCTAssert(extracted!.first!.commandType == .setProfilePic)
     }
     
 }

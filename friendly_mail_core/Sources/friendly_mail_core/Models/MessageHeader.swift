@@ -18,7 +18,7 @@ public struct MessageHeader {
     public let date: Date
     public let extraHeaders: [String : String]
     public let messageID: String
-
+    
     var friendlyMailHeader: [HeaderKeyValue]? {
         if let str = extraHeaders["X-friendly-mail"] {
             return MessageHeader.headerKeyValues(from: str)
@@ -26,7 +26,15 @@ public struct MessageHeader {
         return nil
     }
     
-    public init(sender: Address?, from: Address, to: [Address], replyTo: [Address], subject: String?, date: Date, extraHeaders: [String : String], messageID: String) {
+    public init(sender: Address?,
+                from: Address,
+                to: [Address],
+                replyTo: [Address],
+                subject: String?,
+                date: Date,
+                extraHeaders: [String : String],
+                messageID: String)
+    {
         self.sender = sender
         self.fromAddress = from
         self.toAddress = to

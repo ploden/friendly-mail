@@ -6,7 +6,7 @@
 
         <title>Alexander and Diogenes &middot; ploden.co</title>
 
-         
+        
         <style type="text/css">
             * {
                 -webkit-box-sizing: border-box;
@@ -660,94 +660,23 @@
         <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
         <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 
-         
+        
         <link href="" rel="alternate" type="application/rss+xml" title="ploden.co" />
     </head>
 
     <body>
-                <!--<nav class="nav">
-            <div class="nav-container">
-                <a href="/">
-                    <h2 class="nav-title">ploden.co</h2>
-                </a>
-                <ul>
-     
-     
-        <li>
-            <a href="/">
-                 
-                <span>Blog</span>
-                 
-            </a>
-        </li>
-     
-        <li>
-            <a href="/about">
-                 
-                <span>About</span>
-                 
-            </a>
-        </li>
-     
-        <li>
-            <a href="">
-                 
-                <span>/theme</span>
-                 
-            </a>
-        </li>
-     
-        <li>
-            <a href="/tags">
-                 
-                <span>Tags</span>
-                 
-            </a>
-        </li>
-     
-</ul>
-            </div>
-        </nav>-->
-
-         
-
+        
 <main>
     <div class="post">
-        
-        <table class="section-container" width="100%" border="0" cellspacing="0" cellpadding="0" style="background:white;">
-        <tbody>
-        <tr>
-        <td>
-        <table class="section-container-inner" width="100%" border="0" cellspacing="0">
-        <tbody>
-        <tr>
-        <td>
-        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="nick" style="height:32px;">
-        <tbody>
-        <tr>
-        <td class="spacer" width="8" style="font-size:1px;font-size:1px;">&nbsp;</td>
-        <td class="avatar-small" width="32"> <a href="https://friendly-mail.com/i/redirect?url=https%3A%2F%2Ffriendly-mail.com%2Fploden%2Fstatus%2F552573540910632960%3Fcn%3DcmVwbHk%253D&amp;t=1&amp;cn=cmVwbHk%3D&amp;sig=b448afaa11eb3b727dfd9f772a521e60d7f2932c&amp;iid=252c7ab891d64758b3c05d1aba646ecf&amp;uid=15176713&amp;nid=27+1282" style="border:none;color:#0084b4;text-decoration:none;"><img src="https://pbs.twimg.com/profile_images/683398434/IMG_1102_reasonably_small.jpg" alt="" width="32" height="32" border="0" align="left" style="border:0;background-color:#ffffff;border-radius:4px;border:none;margin-right:0px;display:inline-block;float:left;" /></a></td>
-        <td class="avatar-spacer" valign="top" style="padding-left:21px;"> <span class="real_name" style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;margin:0;padding:0;font-size:14px;line-height:14px;font-weight:bold;text-decoration:none;color:#333333;display:block;"><a href="https://friendly-mail.com/i/redirect?url=https%3A%2F%2Ffriendly-mail.com%2Fploden%2Fstatus%2F552573540910632960%3Fcn%3DcmVwbHk%253D&amp;t=1&amp;cn=cmVwbHk%3D&amp;sig=ff2d55377617b6aff5768b5dc2c70875912fe0c0&amp;iid=252c7ab891d64758b3c05d1aba646ecf&amp;uid=15176713&amp;nid=27+1284" class="leading-blurb-username" style="border:none;color:#0084b4;text-decoration:none;font-weight:bold;font-size:14px;color:#333333;">Phil Loden</a></span> <span class="nick_name" dir="ltr" style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;font-weight:normal;font-size:12px;line-height:14px;color:#999999;text-decoration:none;"><a href="https://friendly-mail.com/i/redirect?url=https%3A%2F%2Ffriendly-mail.com%2Fploden%2Fstatus%2F552573540910632960%3Fcn%3DcmVwbHk%253D&amp;t=1&amp;cn=cmVwbHk%3D&amp;sig=ff2d55377617b6aff5768b5dc2c70875912fe0c0&amp;iid=252c7ab891d64758b3c05d1aba646ecf&amp;uid=15176713&amp;nid=27+1284" class="screenName-link" style="border:none;color:#0084b4;text-decoration:none;color:#999999 !important;">@ploden</a></span> </td>
-        </tr>
-        </tbody>
-        </table>
-        
         <div class="post-info">
     <span>Written by</span>
-        Phil
+        ${authorDisplayName}
         <br>
         <span>on&nbsp;</span><time datetime="2020-12-05 00:00:00 &#43;0000 UTC">December 5, 2020</time>
 </div>
-        <h1 class="post-title">Alexander and Diogenes</h1>
+        <h1 class="post-title">Title</h1>
 <div class="post-line"></div>
-
-         
-
-        <p>Tony Hsieh passed away this week. He was the close colleague of a close colleague, and we worked out of his apartment for a few days in 2013. I felt close to the guy. I was both shocked and unsurprised. On the one hand, it&rsquo;s hard to die in a house fire these days; on the other, it&rsquo;s easy to die from anything if you&rsquo;re wasted. This <a href="https://www.forbes.com/sites/angelauyeung/2020/12/04/tony-hsiehs-american-tragedy-the-self-destructive-last-months-of-the-zappos-visionary/">Forbes piece</a> lays it out. Jewel sounds like a good friend, and quite a woman.</p>
-<p>Tony was one more guy trying to outrun his demons and fill the void in his soul. He was successful because he was broken, not because he was whole. We elevate and emulate the dysfunctional among us. Just look at the White House. An old question: who was greater, Alexander or Diogenes?</p>
-
-
-         
+        <p>${statusUpdate}</p>
     </div>
 </main>
 
@@ -760,4 +689,3 @@
 
     </body>
 </html>
-

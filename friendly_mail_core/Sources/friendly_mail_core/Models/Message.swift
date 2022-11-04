@@ -12,16 +12,18 @@ public struct Message: BaseMessage {
     public let header: MessageHeader
     public let htmlBody: String?
     public let plainTextBody: String?
+    public let attachments: [Attachment]?
     
     public static func headers() {
         
     }
     
-    public init(uidWithMailbox: UIDWithMailbox, header: MessageHeader, htmlBody: String?, plainTextBody: String?) {
+    public init(uidWithMailbox: UIDWithMailbox, header: MessageHeader, htmlBody: String?, plainTextBody: String?, attachments: [Attachment]?) {
         self.uidWithMailbox = uidWithMailbox
         self.header = header
         self.htmlBody = htmlBody
         self.plainTextBody = plainTextBody
+        self.attachments = attachments
     }
 }
 

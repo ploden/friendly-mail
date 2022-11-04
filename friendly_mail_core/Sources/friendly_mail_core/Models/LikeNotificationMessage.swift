@@ -13,6 +13,7 @@ struct LikeNotificationMessage: BaseMessage {
     let header: MessageHeader
     let htmlBody: String?
     let plainTextBody: String?
+    let attachments: [Attachment]?
     
     let originalContentID: MessageID
     let likeMessageID: MessageID

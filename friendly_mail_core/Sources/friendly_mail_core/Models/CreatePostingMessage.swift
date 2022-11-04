@@ -12,6 +12,7 @@ public struct CreatePostingMessage: BaseMessage {
     public let header: MessageHeader
     public let htmlBody: String?
     public let plainTextBody: String?
+    public let attachments: [Attachment]?
     
     var post: SocialMediaPosting {
         get {

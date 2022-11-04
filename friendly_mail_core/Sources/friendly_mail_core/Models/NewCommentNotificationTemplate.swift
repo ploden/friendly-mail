@@ -11,14 +11,14 @@ public class NewCommentNotificationTemplate: Template {
     
     func populatePlainText(with: NewCommentNotificationWithMessages) -> String? {
         if let url = plainTextTemplateURL() {
-            return populate(with: [with.notification, with.createCommentMessage, with.createPostMessage], withURL: url)
+            return populate(url: url, with: [with.notification, with.createCommentMessage, with.createPostMessage])
         }
         return nil
     }
     
     func populateSubject(with: NewCommentNotificationWithMessages) -> String? {
         if let url = subjectTemplateURL() {
-            return populate(with: [with.notification, with.createCommentMessage, with.createPostMessage], withURL: url)
+            return populate(url: url, with: [with.notification, with.createCommentMessage, with.createPostMessage])
         }
         return nil
     }

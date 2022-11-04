@@ -12,10 +12,11 @@ public class CreateLikeMessage: BaseMessage {
     public let header: MessageHeader
     public let htmlBody: String?
     public let plainTextBody: String?
+    public let attachments: [Attachment]?
     let post: SocialMediaPosting
     let like: Like
     
-    required init?(uidWithMailbox: UIDWithMailbox, header: MessageHeader, htmlBody: String?, plainTextBody: String?) {
+    required init?(uidWithMailbox: UIDWithMailbox, header: MessageHeader, htmlBody: String?, plainTextBody: String?, attachments: [Attachment]?) {
         if
             let subject = header.subject,
             let parentItemMessageID = MessageFactory.extractMessageID(withLabel: "Like", from: subject)
@@ -27,6 +28,7 @@ public class CreateLikeMessage: BaseMessage {
             let author = Person(email: header.fromAddress.address)
             self.post = SocialMediaPosting(author: author, dateCreated: header.date, articleBody: plainTextBody!, sharedContent: nil)
             self.like = Like(parentItemMessageID: parentItemMessageID, createLikeMessageID: header.messageID)
+            self.attachments = attachments
         } else {
             return nil
         }

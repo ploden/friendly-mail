@@ -186,19 +186,17 @@ public class MailController {
         let template = InviteMessageTemplate(theme: theme)
         
         unsentInvites.forEach {
-            if
-                let plainText = template.populatePlainText(with: $0),
-                let subject = template.populateSubject(with: $0),
-                let html = template.populateHTML(with: $0)
-            {
-                let friendlyMailHeaders = [
-                    HeaderKeyValue(key: HeaderKey.type.rawValue, value: FriendlyMailMessageType.invite.rawValue),
-                    HeaderKeyValue(key: HeaderKey.createInvitesMessageID.rawValue, $0.createInvitesMessageID)
-                ]
-                
-                let draft = MessageDraft(to: [$0.invitee], subject: subject, htmlBody: html, plainTextBody: plainText, friendlyMailHeaders: friendlyMailHeaders)
-                drafts.append(draft)
-            }
+            let plainText = template.populatePlainText(with: $0)!
+            let subject = template.populateSubject(with: $0)!
+            let html = template.populateHTML(with: $0)!
+            
+            let friendlyMailHeaders = [
+                HeaderKeyValue(key: HeaderKey.type.rawValue, value: FriendlyMailMessageType.invite.rawValue),
+                HeaderKeyValue(key: HeaderKey.createInvitesMessageID.rawValue, $0.createInvitesMessageID)
+            ]
+            
+            let draft = MessageDraft(to: [$0.invitee], subject: subject, htmlBody: html, plainTextBody: plainText, friendlyMailHeaders: friendlyMailHeaders)
+            drafts.append(draft)
         }
         
         // send notifications to followers
@@ -628,6 +626,46 @@ public class MailController {
         }
 
         return (followers, following)
+    }
+    
+    /*
+     Return all commands.
+     */
+    static func commands(user: Address, messages: MessageStore) -> [Command] {
+        let createCommandsMessages = messages.allMessages.compactMap {
+            return $0 as? CreateCommandsMessage
+        }
+        let commands = createCommandsMessages.compactMap { $0.commands }.reduce([], +)
+        return commands
+    }
+    
+    /*
+     Return all unhandled commands. An unhandled command will not have a corresponding CommandResultMessage.
+     */
+    static func unhandledCommands(user: Address, messages: MessageStore) -> [Command] {
+        let commands = Set<Command>(MailController.commands(user: user, messages: messages))
+        let handledCommands = MailController.handledCommands(user: user, messages: messages)
+        let unhandledCommands = commands.subtracting(handledCommands)
+        
+        return Array(unhandledCommands)
+    }
+    
+    /*
+     Return all handled commands. A handled command will have a corresponding CommandResultMessage.
+     */
+    static func handledCommands(user: Address, messages: MessageStore) -> [Command] {
+        let commandResultMessages = messages.allMessages.compactMap {
+            return $0 as? CommandResultMessage
+        }
+        let commandResultMessagesFromUser = commandResultMessages.filter { $0.header.sender == user }
+        let sentCommandResults = commandResultMessagesFromUser.compactMap { $0.commandResult }.reduce([], +)
+        
+        return sentCommandResults
+    }
+    
+    public static func unhandledCommands(messages: MessageStore) -> [Command] {
+        
+        return []
     }
     
 }

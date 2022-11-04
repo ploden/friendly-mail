@@ -23,18 +23,30 @@ public struct MessageFactory {
     }
      */
     
-    public static func createMessage(settings: Settings, uidWithMailbox: UIDWithMailbox, header: MessageHeader, htmlBody: String?, plainTextBody: String?) -> BaseMessage? {
+    public static func createMessage(settings: Settings,
+                                     uidWithMailbox: UIDWithMailbox,
+                                     header: MessageHeader,
+                                     htmlBody: String?,
+                                     plainTextBody: String?,
+                                     attachments: [Attachment]?) -> BaseMessage? {
         //let logger = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "misc")
 
         if MessageFactory.isFriendlyMailMessage(settings: settings, uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody) {
             if let plainTextBody = plainTextBody {
                 if
+                    MessageFactory.isCreateCommandMessage(settings: settings, uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody),
+                    let commands = MessageFactory.extractCommands(messageID: header.messageID, htmlBody: htmlBody, plainTextBody: plainTextBody),
+                    commands.count > 0
+                {
+                    return CreateCommandsMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody, attachments: attachments, commands: commands)
+                }
+                else if
                     MessageFactory.isCreateInviteMessage(settings: settings, uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody),
                     let invitees = MessageFactory.extractInvitees(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody),
                     invitees.count > 0
                 {
                     //MessageFactory.logMessage(logger: logger, typeName: "CreateInvitesMessage", from: header.from.address, to: header.to.first?.address ?? "", subject: header.subject ?? "", plainTextBody: plainTextBody)
-                    return CreateInvitesMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody, invitees: invitees, inviter: header.fromAddress)
+                    return CreateInvitesMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody, attachments: attachments, invitees: invitees, inviter: header.fromAddress)
                 }
                 else if
                     MessageFactory.isCreateAddFollowersMessage(settings: settings, uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody),
@@ -42,7 +54,7 @@ public struct MessageFactory {
                     let followee = header.toAddress.first
                 {
                     //MessageFactory.logMessage(logger: logger, typeName: "CreateAddFollowersMessage", from: header.from.address, to: header.to.first?.address ?? "", subject: header.subject ?? "", plainTextBody: plainTextBody)
-                    return CreateAddFollowersMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody, followers: followersToAdd, followee: followee, frequency: .realtime)
+                    return CreateAddFollowersMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody, attachments: attachments, followers: followersToAdd, followee: followee, frequency: .realtime)
                 }
                 else if
                     MessageFactory.isInviteMessage(settings: settings, uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody),
@@ -50,13 +62,13 @@ public struct MessageFactory {
                 {
                     //MessageFactory.logMessage(logger: logger, typeName: "InviteMessage", from: header.from.address, to: header.to.first?.address ?? "", subject: header.subject ?? "", plainTextBody: plainTextBody)
                     let invite = Invite(inviter: header.fromAddress, invitee: header.toAddress.first!, createInvitesMessageID: createInvitesMessageID)
-                    return InviteMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody, invite: invite)
+                    return InviteMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody, attachments: attachments, invite: invite)
                 }
                 else if
                     MessageFactory.isCreatePostMessage(settings: settings, uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody)
                 {
                     //MessageFactory.logMessage(logger: logger, typeName: "CreatePostMessage", from: header.from.address, to: header.to.first?.address ?? "", subject: header.subject ?? "", plainTextBody: plainTextBody)
-                    return CreatePostingMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody)
+                    return CreatePostingMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody, attachments: attachments)
                 }
                 else if
                     MessageFactory.isCreateSubscriptionMessage(settings: settings, uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody),
@@ -64,31 +76,31 @@ public struct MessageFactory {
                     let followee = header.toAddress.first
                 {
                     //MessageFactory.logMessage(logger: logger, typeName: "CreateSubscriptionMessage", from: header.from.address, to: header.to.first?.address ?? "", subject: header.subject ?? "", plainTextBody: plainTextBody)
-                    return CreateSubscriptionMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody, follower: header.fromAddress, followee: followee, frequency: frequency)
+                    return CreateSubscriptionMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody, attachments: attachments, follower: header.fromAddress, followee: followee, frequency: frequency)
                 }
                 else if
                     MessageFactory.isNotificationsMessage(settings: settings, uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody),
                     let notifications = MessageFactory.extractNotifications(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody)
                 {
                     //MessageFactory.logMessage(logger: logger, typeName: "NotificationsMessage", from: header.from.address, to: header.to.first?.address ?? "", subject: header.subject ?? "", plainTextBody: plainTextBody)
-                    return NotificationsMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody, notifications: notifications)
+                    return NotificationsMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody, attachments: attachments, notifications: notifications)
                 }
                 else if
                     MessageFactory.isCreateCommentMessage(settings: settings, uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody)
                 {
                     //MessageFactory.logMessage(logger: logger, typeName: "CreateCommentMessage", from: header.from.address, to: header.to.first?.address ?? "", subject: header.subject ?? "", plainTextBody: plainTextBody)
-                    return CreateCommentMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody)
+                    return CreateCommentMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody, attachments: attachments)
                 }
                 else if
                     MessageFactory.isCreateLikeMessage(settings: settings, uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody)
                 {
                     //MessageFactory.logMessage(logger: logger, typeName: "CreateLikeMessage", from: header.from.address, to: header.to.first?.address ?? "", subject: header.subject ?? "", plainTextBody: plainTextBody)
-                    return CreateLikeMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody)
+                    return CreateLikeMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody, attachments: attachments)
                 }
             }
         }
         //MessageFactory.logMessage(logger: logger, typeName: "Message", from: header.from.address, to: header.to.first?.address ?? "", subject: header.subject ?? "", plainTextBody: plainTextBody ?? "")
-        return Message(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody)
+        return Message(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody, attachments: attachments)
     }
 
     static func isInviteMessage(settings: Settings, uidWithMailbox: UIDWithMailbox, header: MessageHeader, htmlBody: String?, plainTextBody: String?) -> Bool {
@@ -206,6 +218,30 @@ public struct MessageFactory {
         
         return nil
     }
+
+    static func extractCommands(messageID: MessageID, htmlBody: String?, plainTextBody: String) -> [Command]? {
+        let splitted = plainTextBody.components(separatedBy: .newlines)
+        
+        if let first = splitted.first {
+            let splittedFirst = first.components(separatedBy: .whitespaces)
+            
+            if splittedFirst.first?.lowercased() == CreateCommandsMessage.commandPrefix.lowercased().trimmingCharacters(in: .whitespaces) {
+                var commands = [Command]()
+                
+                let remaining = splittedFirst[1...].joined(separator: " ")
+                
+                if let commandType = CommandTypes(rawValue: remaining) {
+                    let firstCommand = Command(commandType: commandType, createCommandsMessageID: messageID)
+                    
+                    commands.append(firstCommand)
+                    
+                    return commands
+                }
+            }
+        }
+        
+        return nil
+    }
     
     static func extractFollowersToAdd(uidWithMailbox: UIDWithMailbox, header: MessageHeader, htmlBody: String?, plainTextBody: String) -> [Address]? {
         let splitted = plainTextBody.components(separatedBy: .whitespaces)
@@ -235,6 +271,27 @@ public struct MessageFactory {
         return false
     }
 
+    static func isCreateCommandMessage(settings: Settings, uidWithMailbox: UIDWithMailbox, header: MessageHeader, htmlBody: String?, plainTextBody: String) -> Bool {
+        let len = CreateCommandsMessage.commandPrefix.count
+        
+        if
+            MessageFactory.isFriendlyMailMessage(settings: settings, uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody),
+            settings.user.address == header.fromAddress.address,
+            let firstLine = plainTextBody.split(whereSeparator: \.isNewline).first,
+            firstLine.count > len,
+            firstLine[..<firstLine.index(firstLine.startIndex, offsetBy: len)].lowercased() == "\(CreateCommandsMessage.commandPrefix)".lowercased()
+        {
+            let possibleCommand = firstLine[firstLine.index(firstLine.startIndex, offsetBy: len)..<firstLine.endIndex]
+            
+            if let _ = CommandTypes(rawValue: String(possibleCommand)) {
+                return true
+            } else {
+                return false
+            }
+        }
+        return false
+    }
+    
     static func isCreateCommentMessage(settings: Settings, uidWithMailbox: UIDWithMailbox, header: MessageHeader, htmlBody: String?, plainTextBody: String) -> Bool {
         if
             MessageFactory.isFriendlyMailMessage(settings: settings, uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody),

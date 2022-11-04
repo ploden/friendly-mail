@@ -40,6 +40,11 @@ class InviteMessageTemplateTests: XCTestCase {
         XCTAssertNotNil(match)
         XCTAssert(match.plainTextBody == expectedPlainTextBody)
         
+        let filename = "invite_message.html"
+        if let path = TestHelpers.writeToTmpDir(string: match.htmlBody!, filename: filename) {
+            print(path)
+        }
+        
         let htmlPath = Bundle(for: type(of: self )).path(forResource: "expected_html", ofType: "html", inDirectory: "InviteMessageTemplateTests")!
         let expectedHTML = try! String(contentsOf: URL(fileURLWithPath: htmlPath))
         print(match.htmlBody!)

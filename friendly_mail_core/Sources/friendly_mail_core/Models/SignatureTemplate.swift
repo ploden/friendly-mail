@@ -10,7 +10,7 @@ import Foundation
 class SignatureTemplate: Template {
     func populatePlainText() -> String? {
         if let url = plainTextTemplateURL() {
-            return populate(with: [], withURL: url)
+            return populate(url: url, with: [])
         }
         return nil
     }

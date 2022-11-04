@@ -49,11 +49,16 @@ extension MessageHeader {
                 extra[name] = val
             }
         }
-                      
-        if
-            let from = from
-        {
-            self.init(sender: sender, from: from, to: to, replyTo: replyTo, subject: header.subject, date: header.date, extraHeaders: extra, messageID: header.messageID)
+        
+        if let from = from {
+            self.init(sender: sender,
+                      from: from,
+                      to: to,
+                      replyTo: replyTo,
+                      subject: header.subject,
+                      date: header.date,
+                      extraHeaders: extra,
+                      messageID: header.messageID)
         } else {
             return nil
         }

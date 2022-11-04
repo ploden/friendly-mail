@@ -181,7 +181,8 @@ extension MailProvider: MessageReceiver {
                         let messages: [BaseMessage]? = fetchedMessages?.compactMap {
                             if let header = MessageHeader(header: $0.header, mailbox: mailbox) {
                                 let messageID = UIDWithMailbox(UID: UInt64($0.uid), mailbox: mailbox)
-                                return MessageFactory.createMessage(settings: self.settings, uidWithMailbox: messageID, header: header, htmlBody: nil, plainTextBody: nil)
+                                
+                                return MessageFactory.createMessage(settings: self.settings, uidWithMailbox: messageID, header: header, htmlBody: nil, plainTextBody: nil, attachments: MailProvider.attachments(forAny: $0))
                             }
                             return nil
                         }
@@ -248,7 +249,7 @@ extension MailProvider: MessageReceiver {
                                 let messages: [BaseMessage]? = fetchedMessages?.compactMap {
                                     if let header = MessageHeader(header: $0.header, mailbox: mailbox) {
                                         let messageID = UIDWithMailbox(UID: UInt64($0.uid), mailbox: mailbox)
-                                        return MessageFactory.createMessage(settings: self.settings, uidWithMailbox: messageID, header: header, htmlBody: nil, plainTextBody: nil)
+                                        return MessageFactory.createMessage(settings: self.settings, uidWithMailbox: messageID, header: header, htmlBody: nil, plainTextBody: nil, attachments: nil)
                                     }
                                     return nil
                                 }
@@ -319,13 +320,20 @@ extension MailProvider: MessageReceiver {
                 //DDLogDebug("MailController: fetchMessage: fetch succeeded")
                 
                 let message: BaseMessage = {
-                    if
-                        let fm = MessageFactory.createMessage(settings: self.settings, uidWithMailbox: uidWithMailbox, header: header, htmlBody: messageParser.htmlBodyRendering(), plainTextBody: messageParser.plainTextBodyRendering())
+                    if let fm = MessageFactory.createMessage(settings: self.settings,
+                                                             uidWithMailbox: uidWithMailbox,
+                                                             header: header,
+                                                             htmlBody: messageParser.htmlBodyRendering(),
+                                                             plainTextBody: messageParser.plainTextBodyRendering(),
+                                                             attachments: MailProvider.attachments(forAny: messageParser))
                     {
                         return fm
                     } else {
-                        return Message(uidWithMailbox: uidWithMailbox, header: header, htmlBody: messageParser.htmlBodyRendering(), plainTextBody: messageParser.plainTextBodyRendering())
-                    }
+                        return Message(uidWithMailbox: uidWithMailbox,
+                                       header: header,
+                                       htmlBody: messageParser.htmlBodyRendering(),
+                                       plainTextBody: messageParser.plainTextBodyRendering(),
+                                       attachments: MailProvider.attachments(forAny: messageParser))                    }
                 }()
                 completion(nil, message)
             } else {
@@ -333,6 +341,32 @@ extension MailProvider: MessageReceiver {
                 completion(error, nil)
             }
         })
+    }
+    
+    public static func attachments(forAny any: Any) -> [Attachment]? {
+        
+        func handleMultipart(multipart: MCOMultipart, attachments: inout [Attachment]) {
+            multipart.parts.forEach { part in
+                if let part = part as? MCOAttachment {
+                    let attachment = Attachment(mimeType: part.mimeType, data: part.data, filename: part.filename)
+                    attachments.append(attachment)
+                } else if let anotherMultipart = part as? MCOMultipart {
+                    handleMultipart(multipart: anotherMultipart, attachments: &attachments)
+                }
+            }
+        }
+        
+        if
+            let parser = any as? MCOMessageParser,
+            let multipart = parser.mainPart() as? MCOMultipart
+        {
+            var attachments = [Attachment]()
+            handleMultipart(multipart: multipart, attachments: &attachments)
+            return attachments
+        } else if let part = any as? MCOIMAPPart {
+            return nil
+        }
+        return nil
     }
     
 }

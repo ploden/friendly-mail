@@ -12,6 +12,7 @@ public protocol BaseMessage: Identifiable {
     var header: MessageHeader { get }
     var htmlBody: String? { get }
     var plainTextBody: String? { get }
+    var attachments: [Attachment]? { get }
     var shouldFetch: Bool { get }
     func merging(message: BaseMessage) -> BaseMessage
 }

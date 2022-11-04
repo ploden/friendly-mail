@@ -92,7 +92,7 @@ class TestSenderReceiver: MessageSender, MessageReceiver {
         let header = MessageHeader(sender: user, from: user!, to: to, replyTo: [user!], subject: subject, date: Date.now, extraHeaders: extraHeaders, messageID: NSUUID().uuidString.lowercased())
         
         let uidWithMailbox = UIDWithMailbox(UID: 1, mailbox: Mailbox(name: .friendlyMail, UIDValidity: 0))
-        let message = MessageFactory.createMessage(settings: settings, uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody)
+        let message = MessageFactory.createMessage(settings: settings, uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody, attachments: nil)
         sentMessages = sentMessages.addingMessage(message: message!, messageID: message!.header.messageID)
         
         completion(nil, message!.header.messageID)

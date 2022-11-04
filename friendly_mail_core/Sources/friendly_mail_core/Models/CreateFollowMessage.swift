@@ -17,6 +17,7 @@ struct CreateSubscriptionMessage: BaseMessage {
     let header: MessageHeader
     let htmlBody: String?
     let plainTextBody: String?
+    let attachments: [Attachment]?
     
     let follower: Address
     let followee: Address

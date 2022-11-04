@@ -1,0 +1,492 @@
+<!DOCTYPE html>=0D
+<html lang=3D"en" style=3D"width: 100% !important; min-width: 100%; -webk=
+it-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: =
+#313543; margin: 0; padding: 0;">=0D
+<head>=0D
+<meta content=3D"text/html; charset=3Dutf-8" http-equiv=3D"Content-Type">=
+=0D
+<meta content=3D"width=3Ddevice-width, initial-scale=3D1.0, shrink-to-fit=
+=3Dno" name=3D"viewport">=0D
+<title>=0D
+=0D
+</title>=0D
+<style>@font-face {=0D
+font-family: mastodon-font-sans-serif; src: local("Roboto Italic"),url(ht=
+tps://static-cdn.mastodon.social/packs/media/fonts/roboto/roboto-italic-w=
+ebfont-dcb8144b63145c7e349a27ebbe24f875.woff2) format("woff2"),url(https:=
+//static-cdn.mastodon.social/packs/media/fonts/roboto/roboto-italic-webfo=
+nt-5c39c5913ec17aaca7e59635381b9b62.woff) format("woff"),url(https://stat=
+ic-cdn.mastodon.social/packs/media/fonts/roboto/roboto-italic-webfont-73e=
+af3921695d82f2daba6bc02ffa602.ttf) format("truetype"),url(https://static-=
+cdn.mastodon.social/packs/media/fonts/roboto/roboto-italic-webfont-8f9064=
+9d463aec7793d71b786b5b3b06.svg#roboto-italic-webfont) format("svg"); font=
+-weight: 400; font-display: swap; font-style: italic;=0D
+}=0D
+@font-face {=0D
+font-family: mastodon-font-sans-serif; src: local("Roboto Bold"),url(http=
+s://static-cdn.mastodon.social/packs/media/fonts/roboto/roboto-bold-webfo=
+nt-2c18fe4b97519d62a0d6aad8ada1004f.woff2) format("woff2"),url(https://st=
+atic-cdn.mastodon.social/packs/media/fonts/roboto/roboto-bold-webfont-c8e=
+ca5c3d7f0e3203f2150ef668b11d7.woff) format("woff"),url(https://static-cdn=
+.mastodon.social/packs/media/fonts/roboto/roboto-bold-webfont-099d7f6e4b0=
+fd1955bf58d33f84cbddf.ttf) format("truetype"),url(https://static-cdn.mast=
+odon.social/packs/media/fonts/roboto/roboto-bold-webfont-5ea71553d6e57da5=
+b5cee78d8480db12.svg#roboto-bold-webfont) format("svg"); font-weight: 700=
+; font-display: swap; font-style: normal;=0D
+}=0D
+@font-face {=0D
+font-family: mastodon-font-sans-serif; src: local("Roboto Medium"),url(ht=
+tps://static-cdn.mastodon.social/packs/media/fonts/roboto/roboto-medium-w=
+ebfont-3ed000c35f7afb8bd4ad7f46da85abbf.woff2) format("woff2"),url(https:=
+//static-cdn.mastodon.social/packs/media/fonts/roboto/roboto-medium-webfo=
+nt-3a01847aadd53eb13f47e0227e8aca9b.woff) format("woff"),url(https://stat=
+ic-cdn.mastodon.social/packs/media/fonts/roboto/roboto-medium-webfont-131=
+f629d199b0a47d72d8489fda5823a.ttf) format("truetype"),url(https://static-=
+cdn.mastodon.social/packs/media/fonts/roboto/roboto-medium-webfont-c0d084=
+caf29abb0ed6cc87e92d886d61.svg#roboto-medium-webfont) format("svg"); font=
+-weight: 500; font-display: swap; font-style: normal;=0D
+}=0D
+@font-face {=0D
+font-family: mastodon-font-sans-serif; src: local("Roboto"),url(https://s=
+tatic-cdn.mastodon.social/packs/media/fonts/roboto/roboto-regular-webfont=
+-e6505d5d85943244ec91d5e3002791f2.woff2) format("woff2"),url(https://stat=
+ic-cdn.mastodon.social/packs/media/fonts/roboto/roboto-regular-webfont-8e=
+de4fa233d6c99fb3653a767922b22b.woff) format("woff"),url(https://static-cd=
+n.mastodon.social/packs/media/fonts/roboto/roboto-regular-webfont-0083194=
+9e731c8201e1966faf97da0d2.ttf) format("truetype"),url(https://static-cdn.=
+mastodon.social/packs/media/fonts/roboto/roboto-regular-webfont-a8da5f98f=
+aeafb21714583a6e373c397.svg#roboto-regular-webfont) format("svg"); font-w=
+eight: 400; font-display: swap; font-style: normal;=0D
+}=0D
+body {=0D
+width: 100% !important; min-width: 100%; margin: 0; padding: 0; -webkit-t=
+ext-size-adjust: 100%; -ms-text-size-adjust: 100%;=0D
+}=0D
+a:visited {=0D
+text-decoration: none; color: #6364ff;=0D
+}=0D
+img {=0D
+outline: none; border: 0; text-decoration: none; -ms-interpolation-mode: =
+bicubic; clear: both; line-height: 100%;=0D
+}=0D
+body {=0D
+background-color: #313543;=0D
+}=0D
+@media only screen and (min-device-width:768px)and (max-device-width:1024=
+px)and (orientation:landscape) {=0D
+  body {=0D
+    min-height: 1024px !important;=0D
+  }=0D
+}=0D
+</style>=0D
+</head>=0D
+<body dir=3D"ltr" style=3D"width: 100% !important; min-width: 100%; -webk=
+it-text-size-adjust: 100%; -ms-text-size-adjust: 100%; margin: 0; padding=
+: 0;" bgcolor=3D"#313543">=0D
+<table cellpadding=3D"0" cellspacing=3D"0" class=3D"email-table" style=3D=
+"box-sizing: border-box; border-spacing: 0; mso-table-lspace: 0; mso-tabl=
+e-rspace: 0; width: 100%; min-width: 100%;">=0D
+<tbody>=0D
+<tr>=0D
+<td class=3D"email-body email-start" style=3D"box-sizing: border-box; fon=
+t-size: 0 !important; line-height: 100%; padding-left: 16px; padding-righ=
+t: 16px; padding-top: 16px !important;" align=3D"center" bgcolor=3D"#3135=
+43" valign=3D"top">=0D
+<div class=3D"email-container" style=3D"box-sizing: border-box; line-heig=
+ht: inherit; font-size: 0; display: inline-block; width: 100% !important;=
+ min-width: 0 !important; vertical-align: top; max-width: none !important=
+; margin: 0 auto;" align=3D"center">=0D
+<table cellpadding=3D"0" cellspacing=3D"0" class=3D"content-section" styl=
+e=3D"box-sizing: border-box; border-spacing: 0; mso-table-lspace: 0; mso-=
+table-rspace: 0; width: 100%; min-width: 100%;">=0D
+<tbody>=0D
+<tr>=0D
+<td class=3D"content-cell header" style=3D"box-sizing: border-box; line-h=
+eight: inherit; width: 100%; min-width: 0 !important; font-size: 0; paddi=
+ng-left: 16px; padding-right: 16px; border-radius: 5px 5px 0 0;" align=3D=
+"center" bgcolor=3D"#17191f" valign=3D"top">=0D
+<div class=3D"email-row" style=3D"box-sizing: border-box; line-height: in=
+herit; font-size: 0; display: block; width: 100%; min-width: 0 !important=
+; vertical-align: top; max-width: 600px !important; clear: both; margin: =
+0 auto;" align=3D"center">=0D
+<div class=3D"col-6" style=3D"box-sizing: border-box; line-height: inheri=
+t; font-size: 0; display: inline-block; width: 100% !important; min-width=
+: 0 !important; vertical-align: top; max-width: none !important;">=0D
+<table cellpadding=3D"0" cellspacing=3D"0" class=3D"column" style=3D"box-=
+sizing: border-box; border-spacing: 0; mso-table-lspace: 0; mso-table-rsp=
+ace: 0; width: 100%; min-width: 100%;">=0D
+<tbody>=0D
+<tr>=0D
+<td class=3D"column-cell" style=3D'box-sizing: border-box; line-height: 2=
+3px; width: 100%; min-width: 100%; padding-top: 20px; padding-bottom: 8px=
+; font-family: "mastodon-font-sans-serif",sans-serif !important; font-siz=
+e: 15px; color: #9baec8; mso-line-height-rule: exactly; text-rendering: o=
+ptimizelegibility;' align=3D"center" valign=3D"top">=0D
+<a href=3D"https://mastodon.social/" style=3D"line-height: inherit; text-=
+decoration: none; color: #6364ff;"><img alt=3D"Mastodon" height=3D"34" cl=
+ass=3D"logo" src=3D"https://static-cdn.mastodon.social/packs/media/images=
+/mailer/wordmark-19943a5d85d7e3bef0ad1a9b18a5f98a.png" style=3D"outline: =
+none; text-decoration: none; -ms-interpolation-mode: bicubic; clear: both=
+; line-height: 100%; position: relative; left: -4px; border: 0;">=0D
+</a>=0D
+</td>=0D
+</tr>=0D
+</tbody>=0D
+</table>=0D
+</div>=0D
+</div>=0D
+</td>=0D
+</tr>=0D
+</tbody>=0D
+</table>=0D
+</div>=0D
+</td>=0D
+</tr>=0D
+</tbody>=0D
+</table>=0D
+<table cellpadding=3D"0" cellspacing=3D"0" class=3D"email-table" style=3D=
+"box-sizing: border-box; border-spacing: 0; mso-table-lspace: 0; mso-tabl=
+e-rspace: 0; width: 100%; min-width: 100%;">=0D
+<tbody>=0D
+<tr>=0D
+<td class=3D"email-body" style=3D"box-sizing: border-box; font-size: 0 !i=
+mportant; line-height: 100%; padding-left: 16px; padding-right: 16px;" al=
+ign=3D"center" bgcolor=3D"#313543" valign=3D"top">=0D
+<div class=3D"email-container" style=3D"box-sizing: border-box; line-heig=
+ht: inherit; font-size: 0; display: inline-block; width: 100% !important;=
+ min-width: 0 !important; vertical-align: top; max-width: none !important=
+; margin: 0 auto;" align=3D"center">=0D
+<table cellpadding=3D"0" cellspacing=3D"0" class=3D"content-section" styl=
+e=3D"box-sizing: border-box; border-spacing: 0; mso-table-lspace: 0; mso-=
+table-rspace: 0; width: 100%; min-width: 100%;">=0D
+<tbody>=0D
+<tr>=0D
+<td class=3D"content-cell hero" style=3D"box-sizing: border-box; line-hei=
+ght: inherit; width: 100%; min-width: 0 !important; font-size: 0; padding=
+-left: 16px; padding-right: 16px; padding-top: 20px;" align=3D"center" bg=
+color=3D"#282c37" valign=3D"top">=0D
+<div class=3D"email-row" style=3D"box-sizing: border-box; line-height: in=
+herit; font-size: 0; display: block; width: 100%; min-width: 0 !important=
+; vertical-align: top; max-width: 600px !important; clear: both; margin: =
+0 auto;" align=3D"center">=0D
+<div class=3D"col-6" style=3D"box-sizing: border-box; line-height: inheri=
+t; font-size: 0; display: inline-block; width: 100% !important; min-width=
+: 0 !important; vertical-align: top; max-width: none !important;">=0D
+<table cellpadding=3D"0" cellspacing=3D"0" class=3D"column" style=3D"box-=
+sizing: border-box; border-spacing: 0; mso-table-lspace: 0; mso-table-rsp=
+ace: 0; width: 100%; min-width: 100%;">=0D
+<tbody>=0D
+<tr>=0D
+<td class=3D"column-cell text-center padded" style=3D'box-sizing: border-=
+box; line-height: 23px; width: 100%; min-width: 100%; font-family: "masto=
+don-font-sans-serif",sans-serif !important; font-size: 15px; color: #9bae=
+c8; mso-line-height-rule: exactly; text-rendering: optimizelegibility; pa=
+dding: 16px 0;' align=3D"center" valign=3D"top">=0D
+<table align=3D"center" cellpadding=3D"0" cellspacing=3D"0" class=3D"hero=
+-icon" style=3D"box-sizing: border-box; border-spacing: 0; mso-table-lspa=
+ce: 0; mso-table-rspace: 0; width: 64px;">=0D
+<tbody>=0D
+<tr>=0D
+<td style=3D'box-sizing: border-box; line-height: 100%; font-family: "mas=
+todon-font-sans-serif",sans-serif !important; mso-line-height-rule: exact=
+ly; border-radius: 80px; padding: 16px;' align=3D"center" bgcolor=3D"#79b=
+d9a" valign=3D"middle">=0D
+<img alt=3D"" src=3D"https://static-cdn.mastodon.social/packs/media/image=
+s/mailer/icon_email-f2adf131a241347dd21b96ac1f3ebdd3.png" style=3D"outlin=
+e: none; text-decoration: none; -ms-interpolation-mode: bicubic; clear: b=
+oth; line-height: 100%; max-width: 32px; width: 32px; height: 32px; displ=
+ay: block; border: 0;">=0D
+</td>=0D
+</tr>=0D
+</tbody>=0D
+</table>=0D
+<h1 style=3D"color: #d9e1e8; font-weight: 500; font-size: 26px; line-heig=
+ht: 36px; margin: 20px 0 8px; padding: 0;">Verify email address</h1>=0D
+</td>=0D
+</tr>=0D
+</tbody>=0D
+</table>=0D
+</div>=0D
+</div>=0D
+</td>=0D
+</tr>=0D
+</tbody>=0D
+</table>=0D
+</div>=0D
+</td>=0D
+</tr>=0D
+</tbody>=0D
+</table>=0D
+<table cellpadding=3D"0" cellspacing=3D"0" class=3D"email-table" style=3D=
+"box-sizing: border-box; border-spacing: 0; mso-table-lspace: 0; mso-tabl=
+e-rspace: 0; width: 100%; min-width: 100%;">=0D
+<tbody>=0D
+<tr>=0D
+<td class=3D"email-body" style=3D"box-sizing: border-box; font-size: 0 !i=
+mportant; line-height: 100%; padding-left: 16px; padding-right: 16px;" al=
+ign=3D"center" bgcolor=3D"#313543" valign=3D"top">=0D
+<div class=3D"email-container" style=3D"box-sizing: border-box; line-heig=
+ht: inherit; font-size: 0; display: inline-block; width: 100% !important;=
+ min-width: 0 !important; vertical-align: top; max-width: none !important=
+; margin: 0 auto;" align=3D"center">=0D
+<table cellpadding=3D"0" cellspacing=3D"0" class=3D"content-section" styl=
+e=3D"box-sizing: border-box; border-spacing: 0; mso-table-lspace: 0; mso-=
+table-rspace: 0; width: 100%; min-width: 100%;">=0D
+<tbody>=0D
+<tr>=0D
+<td class=3D"content-cell content-start" style=3D"box-sizing: border-box;=
+ line-height: inherit; width: 100%; min-width: 0 !important; font-size: 0=
+; padding-left: 16px; padding-right: 16px; padding-top: 32px;" align=3D"c=
+enter" bgcolor=3D"#1f232b" valign=3D"top">=0D
+<div class=3D"email-row" style=3D"box-sizing: border-box; line-height: in=
+herit; font-size: 0; display: block; width: 100%; min-width: 0 !important=
+; vertical-align: top; max-width: 600px !important; clear: both; margin: =
+0 auto;" align=3D"center">=0D
+<div class=3D"col-6" style=3D"box-sizing: border-box; line-height: inheri=
+t; font-size: 0; display: inline-block; width: 100% !important; min-width=
+: 0 !important; vertical-align: top; max-width: none !important;">=0D
+<table cellpadding=3D"0" cellspacing=3D"0" class=3D"column" style=3D"box-=
+sizing: border-box; border-spacing: 0; mso-table-lspace: 0; mso-table-rsp=
+ace: 0; width: 100%; min-width: 100%;">=0D
+<tbody>=0D
+<tr>=0D
+<td class=3D"column-cell text-center" style=3D'box-sizing: border-box; li=
+ne-height: 23px; width: 100%; min-width: 100%; padding-top: 16px; padding=
+-bottom: 16px; font-family: "mastodon-font-sans-serif",sans-serif !import=
+ant; font-size: 15px; color: #9baec8; mso-line-height-rule: exactly; text=
+-rendering: optimizelegibility;' align=3D"center" valign=3D"top">=0D
+<p style=3D'font-family: "mastodon-font-sans-serif",sans-serif !important=
+; font-size: 15px; line-height: 23px; color: #9baec8; mso-line-height-rul=
+e: exactly; text-rendering: optimizelegibility; display: block; margin-to=
+p: 0; margin-bottom: 16px;'>You have created an account on mastodon.socia=
+l with this email address. You are one click away from activating it. If =
+this wasn't you, please ignore this email.</p>=0D
+</td>=0D
+</tr>=0D
+</tbody>=0D
+</table>=0D
+</div>=0D
+</div>=0D
+</td>=0D
+</tr>=0D
+</tbody>=0D
+</table>=0D
+</div>=0D
+</td>=0D
+</tr>=0D
+</tbody>=0D
+</table>=0D
+<table cellpadding=3D"0" cellspacing=3D"0" class=3D"email-table" style=3D=
+"box-sizing: border-box; border-spacing: 0; mso-table-lspace: 0; mso-tabl=
+e-rspace: 0; width: 100%; min-width: 100%;">=0D
+<tbody>=0D
+<tr>=0D
+<td class=3D"email-body" style=3D"box-sizing: border-box; font-size: 0 !i=
+mportant; line-height: 100%; padding-left: 16px; padding-right: 16px;" al=
+ign=3D"center" bgcolor=3D"#313543" valign=3D"top">=0D
+<div class=3D"email-container" style=3D"box-sizing: border-box; line-heig=
+ht: inherit; font-size: 0; display: inline-block; width: 100% !important;=
+ min-width: 0 !important; vertical-align: top; max-width: none !important=
+; margin: 0 auto;" align=3D"center">=0D
+<table cellpadding=3D"0" cellspacing=3D"0" class=3D"content-section" styl=
+e=3D"box-sizing: border-box; border-spacing: 0; mso-table-lspace: 0; mso-=
+table-rspace: 0; width: 100%; min-width: 100%;">=0D
+<tbody>=0D
+<tr>=0D
+<td class=3D"content-cell" style=3D"box-sizing: border-box; line-height: =
+inherit; width: 100%; min-width: 0 !important; font-size: 0; padding-left=
+: 16px; padding-right: 16px;" align=3D"center" bgcolor=3D"#1f232b" valign=
+=3D"top">=0D
+<table cellpadding=3D"0" cellspacing=3D"0" class=3D"column" style=3D"box-=
+sizing: border-box; border-spacing: 0; mso-table-lspace: 0; mso-table-rsp=
+ace: 0; width: 100%; min-width: 100%;">=0D
+<tbody>=0D
+<tr>=0D
+<td class=3D"column-cell button-cell" style=3D'box-sizing: border-box; li=
+ne-height: 23px; width: 100%; min-width: 100%; padding-top: 0; padding-bo=
+ttom: 16px; font-family: "mastodon-font-sans-serif",sans-serif !important=
+; font-size: 15px; color: #9baec8; mso-line-height-rule: exactly; text-re=
+ndering: optimizelegibility;' valign=3D"top">=0D
+<table align=3D"center" cellpadding=3D"0" cellspacing=3D"0" class=3D"butt=
+on" style=3D"box-sizing: border-box; border-spacing: 0; mso-table-lspace:=
+ 0; mso-table-rspace: 0; display: table; margin-left: auto; margin-right:=
+ auto;">=0D
+<tbody>=0D
+<tr>=0D
+<td class=3D"button-primary" style=3D'box-sizing: border-box; line-height=
+: 20px; font-family: "mastodon-font-sans-serif",sans-serif !important; ms=
+o-line-height-rule: exactly; border-radius: 4px; font-weight: 500; font-s=
+ize: 17px; padding: 0;' align=3D"center" bgcolor=3D"#5455ff" valign=3D"to=
+p">=0D
+<a href=3D"https://mastodon.social/auth/confirmation?confirmation_token=3D=
+K6uRsMZy2h2zoqc19RaC" style=3D"line-height: 26px !important; text-decorat=
+ion: none; color: #fff; display: block !important; text-align: center !im=
+portant; vertical-align: top !important; font-weight: 500 !important; pad=
+ding: 10px 22px;"><span style=3D"line-height: inherit !important; text-de=
+coration: none; color: #fff; display: block !important; text-align: cente=
+r !important; vertical-align: top !important;">Verify email address</span=
+>=0D
+</a>=0D
+</td>=0D
+</tr>=0D
+</tbody>=0D
+</table>=0D
+</td>=0D
+</tr>=0D
+</tbody>=0D
+</table>=0D
+</td>=0D
+</tr>=0D
+</tbody>=0D
+</table>=0D
+</div>=0D
+</td>=0D
+</tr>=0D
+</tbody>=0D
+</table>=0D
+<table cellpadding=3D"0" cellspacing=3D"0" class=3D"email-table" style=3D=
+"box-sizing: border-box; border-spacing: 0; mso-table-lspace: 0; mso-tabl=
+e-rspace: 0; width: 100%; min-width: 100%;">=0D
+<tbody>=0D
+<tr>=0D
+<td class=3D"email-body" style=3D"box-sizing: border-box; font-size: 0 !i=
+mportant; line-height: 100%; padding-left: 16px; padding-right: 16px;" al=
+ign=3D"center" bgcolor=3D"#313543" valign=3D"top">=0D
+<div class=3D"email-container" style=3D"box-sizing: border-box; line-heig=
+ht: inherit; font-size: 0; display: inline-block; width: 100% !important;=
+ min-width: 0 !important; vertical-align: top; max-width: none !important=
+; margin: 0 auto;" align=3D"center">=0D
+<table cellpadding=3D"0" cellspacing=3D"0" class=3D"content-section" styl=
+e=3D"box-sizing: border-box; border-spacing: 0; mso-table-lspace: 0; mso-=
+table-rspace: 0; width: 100%; min-width: 100%;">=0D
+<tbody>=0D
+<tr>=0D
+<td class=3D"content-cell" style=3D"box-sizing: border-box; line-height: =
+inherit; width: 100%; min-width: 0 !important; font-size: 0; padding-left=
+: 16px; padding-right: 16px;" align=3D"center" bgcolor=3D"#1f232b" valign=
+=3D"top">=0D
+<div class=3D"email-row" style=3D"box-sizing: border-box; line-height: in=
+herit; font-size: 0; display: block; width: 100%; min-width: 0 !important=
+; vertical-align: top; max-width: 600px !important; clear: both; margin: =
+0 auto;" align=3D"center">=0D
+<div class=3D"col-6" style=3D"box-sizing: border-box; line-height: inheri=
+t; font-size: 0; display: inline-block; width: 100% !important; min-width=
+: 0 !important; vertical-align: top; max-width: none !important;">=0D
+<table cellpadding=3D"0" cellspacing=3D"0" class=3D"column" style=3D"box-=
+sizing: border-box; border-spacing: 0; mso-table-lspace: 0; mso-table-rsp=
+ace: 0; width: 100%; min-width: 100%;">=0D
+<tbody>=0D
+<tr>=0D
+<td class=3D"column-cell text-center" style=3D'box-sizing: border-box; li=
+ne-height: 23px; width: 100%; min-width: 100%; padding-top: 16px; padding=
+-bottom: 16px; font-family: "mastodon-font-sans-serif",sans-serif !import=
+ant; font-size: 15px; color: #9baec8; mso-line-height-rule: exactly; text=
+-rendering: optimizelegibility;' align=3D"center" valign=3D"top">=0D
+<p style=3D'font-family: "mastodon-font-sans-serif",sans-serif !important=
+; font-size: 15px; line-height: 23px; color: #9baec8; mso-line-height-rul=
+e: exactly; text-rendering: optimizelegibility; display: block; margin-to=
+p: 0; margin-bottom: 16px;'>Please also check out <a href=3D"https://mast=
+odon.social/about/more" style=3D"line-height: inherit; text-decoration: n=
+one; color: #6364ff;">the rules of the server</a> and <a href=3D"https://=
+mastodon.social/terms" style=3D"line-height: inherit; text-decoration: no=
+ne; color: #6364ff;">our terms of service</a>.</p>=0D
+</td>=0D
+</tr>=0D
+</tbody>=0D
+</table>=0D
+</div>=0D
+</div>=0D
+</td>=0D
+</tr>=0D
+</tbody>=0D
+</table>=0D
+</div>=0D
+</td>=0D
+</tr>=0D
+</tbody>=0D
+</table>=0D
+=0D
+<table cellpadding=3D"0" cellspacing=3D"0" class=3D"email-table" style=3D=
+"box-sizing: border-box; border-spacing: 0; mso-table-lspace: 0; mso-tabl=
+e-rspace: 0; width: 100%; min-width: 100%;">=0D
+<tbody>=0D
+<tr>=0D
+<td class=3D"email-body email-end" style=3D"box-sizing: border-box; font-=
+size: 0 !important; line-height: 100%; padding-left: 16px; padding-right:=
+ 16px; padding-bottom: 16px !important;" align=3D"center" bgcolor=3D"#313=
+543" valign=3D"top">=0D
+<div class=3D"email-container" style=3D"box-sizing: border-box; line-heig=
+ht: inherit; font-size: 0; display: inline-block; width: 100% !important;=
+ min-width: 0 !important; vertical-align: top; max-width: none !important=
+; margin: 0 auto;" align=3D"center">=0D
+<table cellpadding=3D"0" cellspacing=3D"0" class=3D"content-section" styl=
+e=3D"box-sizing: border-box; border-spacing: 0; mso-table-lspace: 0; mso-=
+table-rspace: 0; width: 100%; min-width: 100%;">=0D
+<tbody>=0D
+<tr>=0D
+<td class=3D"content-cell content-end" style=3D"box-sizing: border-box; l=
+ine-height: inherit; width: 100%; min-width: 0 !important; font-size: 0; =
+padding-left: 16px; padding-right: 16px; border-radius: 0 0 5px 5px; padd=
+ing-top: 16px;" align=3D"center" bgcolor=3D"#1f232b" valign=3D"top">=0D
+=C2=A0 =0D
+</td>=0D
+</tr>=0D
+<tr>=0D
+<td class=3D"blank-cell footer" style=3D"box-sizing: border-box; line-hei=
+ght: inherit; width: 100%; font-size: 0; padding-left: 16px; padding-righ=
+t: 16px;" align=3D"center" valign=3D"top">=0D
+<div class=3D"email-row" style=3D"box-sizing: border-box; line-height: in=
+herit; font-size: 0; display: block; width: 100%; min-width: 0 !important=
+; vertical-align: top; max-width: 600px !important; clear: both; margin: =
+0 auto;" align=3D"center">=0D
+<div class=3D"col-6" style=3D"box-sizing: border-box; line-height: inheri=
+t; font-size: 0; display: inline-block; width: 100% !important; min-width=
+: 0 !important; vertical-align: top; max-width: none !important;">=0D
+<table cellpadding=3D"0" cellspacing=3D"0" class=3D"column" style=3D"box-=
+sizing: border-box; border-spacing: 0; mso-table-lspace: 0; mso-table-rsp=
+ace: 0; width: 100%; min-width: 100%;">=0D
+<tbody>=0D
+<td class=3D"column-cell" style=3D'box-sizing: border-box; line-height: 2=
+3px; width: 100%; min-width: 100%; padding-top: 16px; padding-bottom: 16p=
+x; font-family: "mastodon-font-sans-serif",sans-serif !important; font-si=
+ze: 15px; color: #737d99; mso-line-height-rule: exactly; text-rendering: =
+optimizelegibility;' valign=3D"top">=0D
+<p style=3D'font-family: "mastodon-font-sans-serif",sans-serif !important=
+; font-size: 13px; line-height: 23px; color: #737d99; mso-line-height-rul=
+e: exactly; text-rendering: optimizelegibility; display: block; margin-to=
+p: 0; margin-bottom: 0;'>Mastodon hosted on mastodon.social</p>=0D
+<p style=3D'font-family: "mastodon-font-sans-serif",sans-serif !important=
+; font-size: 13px; line-height: 23px; color: #737d99; mso-line-height-rul=
+e: exactly; text-rendering: optimizelegibility; display: block; margin-to=
+p: 0; margin-bottom: 0;'><a href=3D"https://mastodon.social/settings/pref=
+erences/notifications" style=3D"line-height: inherit; text-decoration: un=
+derline; color: #737d99;">Change e-mail preferences</a></p>=0D
+</td>=0D
+<td class=3D"column-cell text-right" style=3D'box-sizing: border-box; lin=
+e-height: 23px; width: 100%; min-width: 100%; padding-top: 16px; padding-=
+bottom: 16px; font-family: "mastodon-font-sans-serif",sans-serif !importa=
+nt; font-size: 15px; color: #737d99; mso-line-height-rule: exactly; text-=
+rendering: optimizelegibility;' align=3D"right" valign=3D"top">=0D
+<a href=3D"https://mastodon.social/" style=3D"line-height: inherit; text-=
+decoration: underline; color: #737d99;"><img alt=3D"Mastodon" height=3D"2=
+4" src=3D"https://static-cdn.mastodon.social/packs/media/images/mailer/lo=
+go-1f2f2241f1d076df46f96cac98e23603.png" style=3D"outline: none; text-dec=
+oration: none; -ms-interpolation-mode: bicubic; clear: both; line-height:=
+ 100%; opacity: .3; border: 0;">=0D
+</a>=0D
+</td>=0D
+</tbody>=0D
+</table>=0D
+</div>=0D
+</div>=0D
+</td>=0D
+</tr>=0D
+</tbody>=0D
+</table>=0D
+</div>=0D
+</td>=0D
+</tr>=0D
+</tbody>=0D
+</table>=0D
+</body>=0D
+</html>=0D

@@ -31,7 +31,7 @@ class TestHelpers {
         let postMessageHeader = MessageHeader(sender: author, from: author, to: [author], replyTo: [author], subject: "Fm", date: Date(), extraHeaders: [:], messageID: "")
        // let postMessageHeader = MessageHeader(sender: author, from: author, to: [author], replyTo: [author], subject: "Fm", date: Date())
         let postMessageBody = "Hi this is a test post about \(String.random(length: 5))."
-        let postMessage = CreatePostingMessage(uidWithMailbox: postMessageID, header: postMessageHeader, htmlBody: nil, plainTextBody: postMessageBody)
+        let postMessage = CreatePostingMessage(uidWithMailbox: postMessageID, header: postMessageHeader, htmlBody: nil, plainTextBody: postMessageBody, attachments: nil)
         return postMessage
     }
     
@@ -56,11 +56,25 @@ class TestHelpers {
         
         // Create message from email loaded from file
         
-        if let fm = MessageFactory.createMessage(settings: settings, uidWithMailbox: messageID, header: header, htmlBody: parser.htmlBodyRendering(), plainTextBody: parser.plainTextBodyRendering()) {
+        if let fm = MessageFactory.createMessage(settings: settings, uidWithMailbox: messageID, header: header, htmlBody: parser.htmlBodyRendering(), plainTextBody: parser.plainTextBodyRendering(), attachments: MailProvider.attachments(forAny: parser)) {
             return fm
         } else {
-            return Message(uidWithMailbox: messageID, header: header, htmlBody: parser.htmlBodyRendering(), plainTextBody: parser.plainTextBodyRendering())
+            return Message(uidWithMailbox: messageID, header: header, htmlBody: parser.htmlBodyRendering(), plainTextBody: parser.plainTextBodyRendering(), attachments: nil)
         }
+    }
+    
+    static func writeToTmpDir(string: String, filename: String) -> String? {
+        if let data = string.data(using: .utf8) {
+            return TestHelpers.writeToTmpDir(data: data, filename: filename)
+        }
+        return nil
+    }
+
+    static func writeToTmpDir(data: Data, filename: String) -> String? {
+        let dir = NSTemporaryDirectory()
+        let filepath = "\(dir)/\(filename)"
+        FileManager.default.createFile(atPath: filepath, contents: data)
+        return filepath
     }
     
      /*

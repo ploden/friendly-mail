@@ -11,33 +11,33 @@ class NewPostNotificationTemplate: Template {
     
     func populatePartialHTML(with post: SocialMediaPosting, notification: NewPostNotification, subscription: Subscription) -> String? {
         if let url = partialHTMLTemplateURL() {
-            return populate(with: [post, notification, subscription], withURL: url)
+            return populate(url: url, with: [post, notification, subscription])
         }
         return nil
     }
     
     func populateHTML(with post: SocialMediaPosting, notification: NewPostNotification, subscription: Subscription) -> String? {
         if
-            let partialHTML = populatePartialHTML(with: post, notification: notification, subscription: subscription),
-            let url = baseHTMLTemplateURL()
+            let baseHTML = populateBaseHTML(),
+            let partialHTML = populatePartialHTML(with: post, notification: notification, subscription: subscription)
         {
-            let html = populate(with: [post, notification, subscription], withURL: url)
-            let htmlWithPartial = html?.replacingOccurrences(of: "${partial}", with: partialHTML)
-            return htmlWithPartial
+            let payload: [String:Any] = ["payload": partialHTML]
+            let html = populate(string: baseHTML, with: payload)
+            return html
         }
         return nil
     }
 
     func populatePlainText(with post: SocialMediaPosting, notification: NewPostNotification, subscription: Subscription) -> String? {
         if let url = plainTextTemplateURL() {
-            return populate(with: [post, notification, subscription], withURL: url)
+            return populate(url: url, with: [post, notification, subscription])
         }
         return nil
     }
     
     func populateSubject(with post: SocialMediaPosting, notification: NewPostNotification, subscription: Subscription) -> String? {
         if let url = subjectTemplateURL() {
-            return populate(with: [post, notification, subscription], withURL: url)
+            return populate(url: url, with: [post, notification, subscription])
         }
         return nil
     }
@@ -66,10 +66,6 @@ class NewPostNotificationTemplate: Template {
             let commentURL = "mailto:\(replyTo)?subject=Fm%20Comment:\(createPostMessageID)"
             data["commentURL"] = commentURL
         }
-        
-        data["head_css"] = headCSS ?? ""
-        data["footer"] = footer ?? ""
-        data["header"] = header ?? ""
 
         return data
     }

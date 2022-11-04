@@ -17,6 +17,7 @@ struct NotificationsMessage: BaseMessage {
     let header: MessageHeader
     let htmlBody: String?
     let plainTextBody: String?
+    let attachments: [Attachment]?
     let notifications: [Notification]
 }
 

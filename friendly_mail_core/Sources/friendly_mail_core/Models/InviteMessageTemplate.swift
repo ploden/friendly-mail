@@ -11,33 +11,40 @@ class InviteMessageTemplate: Template {
 
     func populatePartialHTML(with invite: Invite) -> String? {
         if let url = partialHTMLTemplateURL() {
-            return populate(with: invite, withURL: url)
+            return populate(url: url, with: invite)
         }
         return nil
     }
     
     func populateHTML(with invite: Invite) -> String? {
         if
-            let partialHTML = populatePartialHTML(with: invite),
+            let baseHTML = populateBaseHTML()
+        {
+            return baseHTML
+        }
+        /*
+        if
+            //let partialHTML = populatePartialHTML(with: invite),
             let url = baseHTMLTemplateURL()
         {
-            let html = populate(with: invite, withURL: url)
-            let htmlWithPartial = html?.replacingOccurrences(of: "<!-- ${partial} -->", with: partialHTML)
-            return htmlWithPartial
+            let html = populate(url: url, with: invite)
+            //let htmlWithPartial = html?.replacingOccurrences(of: "<!-- ${partial} -->", with: partialHTML)
+            return html
         }
+         */
         return nil
     }
     
     func populatePlainText(with invite: Invite) -> String? {
         if let url = plainTextTemplateURL() {
-            return populate(with: invite, withURL: url)
+            return populate(url: url, with: invite)
         }
         return nil
     }
 
     func populateSubject(with invite: Invite) -> String? {
         if let url = subjectTemplateURL() {
-            return populate(with: invite, withURL: url)
+            return populate(url: url, with: invite)
         }
         return nil
     }
@@ -50,9 +57,10 @@ class InviteMessageTemplate: Template {
             data["replyTo"] = invite.inviter.address
         }
         
-        data["head_css"] = headCSS ?? ""
-        data["footer"] = footer ?? ""
-        data["header"] = header ?? ""
+        //data["head_css_0"] = headCSS_0 ?? ""
+        //data["head_css_1"] = headCSS_1 ?? ""
+        //data["footer"] = footer ?? ""
+        //data["header"] = header ?? ""
         
         return data
     }

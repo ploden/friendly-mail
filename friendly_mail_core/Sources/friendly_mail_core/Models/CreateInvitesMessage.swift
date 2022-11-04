@@ -17,6 +17,7 @@ struct CreateInvitesMessage: BaseMessage {
     let header: MessageHeader
     let htmlBody: String?
     let plainTextBody: String?
+    let attachments: [Attachment]?
     
     let invitees: [Address]
     let inviter: Address

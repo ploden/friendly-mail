@@ -27,11 +27,13 @@ class NewPostNotificationTemplateTests: XCTestCase {
             
         let template = NewPostNotificationTemplate(theme: theme)
         let html = template.populateHTML(with: unsentNewPostNotification.createPostMessage.post, notification: unsentNewPostNotification.notification, subscription: subscription)!
-        print(html)
         
-        let htmlPath = Bundle(for: type(of: self )).path(forResource: "expected_html", ofType: "html", inDirectory: "NewPostNotificationTemplateTests")!
+        let filename = "new_post_notification.html"
+        let writtenFilepath = TestHelpers.writeToTmpDir(string: html, filename: filename)
+        print("file://\(writtenFilepath!)")
+        
+        let htmlPath = Bundle(for: type(of: self )).path(forResource: "new_post_notification_expected", ofType: "html", inDirectory: "NewPostNotificationTemplateTests")!
         let expectedHTML = try! String(contentsOf: URL(fileURLWithPath: htmlPath))
-        
         XCTAssert(html == expectedHTML)
     }
 

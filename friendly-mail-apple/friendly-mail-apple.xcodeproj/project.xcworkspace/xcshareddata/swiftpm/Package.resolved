@@ -2,6 +2,15 @@
   "object": {
     "pins": [
       {
+        "package": "Amplify",
+        "repositoryURL": "https://github.com/aws-amplify/amplify-ios",
+        "state": {
+          "branch": null,
+          "revision": "e99749e05f8771f86bb76e7f98a3292eb1920fce",
+          "version": "1.28.2"
+        }
+      },
+      {
         "package": "AppAuth",
         "repositoryURL": "https://github.com/openid/AppAuth-iOS.git",
         "state": {
@@ -11,12 +20,48 @@
         }
       },
       {
+        "package": "AppSyncRealTimeClient",
+        "repositoryURL": "https://github.com/aws-amplify/aws-appsync-realtime-client-ios.git",
+        "state": {
+          "branch": null,
+          "revision": "da88cf1cab82e281e7277cd9feb9efc87a057041",
+          "version": "2.1.1"
+        }
+      },
+      {
+        "package": "AWSiOSSDKV2",
+        "repositoryURL": "https://github.com/aws-amplify/aws-sdk-ios-spm.git",
+        "state": {
+          "branch": null,
+          "revision": "ae4052f95e8afca4866abae75f83b395fcdeb9b9",
+          "version": "2.28.1"
+        }
+      },
+      {
         "package": "CocoaLumberjack",
         "repositoryURL": "https://github.com/CocoaLumberjack/CocoaLumberjack.git",
         "state": {
           "branch": null,
           "revision": "80ada1f753b0d53d9b57c465936a7c4169375002",
           "version": "3.7.4"
+        }
+      },
+      {
+        "package": "SQLite.swift",
+        "repositoryURL": "https://github.com/stephencelis/SQLite.swift.git",
+        "state": {
+          "branch": null,
+          "revision": "5f5ad81ac0d0a0f3e56e39e646e8423c617df523",
+          "version": "0.13.2"
+        }
+      },
+      {
+        "package": "Starscream",
+        "repositoryURL": "https://github.com/daltoniam/Starscream",
+        "state": {
+          "branch": null,
+          "revision": "df8d82047f6654d8e4b655d1b1525c64e1059d21",
+          "version": "4.0.4"
         }
       },
       {

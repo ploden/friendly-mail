@@ -24,8 +24,16 @@ public class Template {
         return String(describing: self).snakeCasedTypeName()
     }()
     
-    lazy var headCSS: String? = {
-        if let path = Bundle.module.path(forResource: "head", ofType: "css", inDirectory: "\(theme.directory)/html") {
+    lazy var headCSS_0: String? = {
+        if let path = Bundle.module.path(forResource: "head_css_0", ofType: "html", inDirectory: "\(theme.directory)/html") {
+            let url = URL(fileURLWithPath: path)
+            return try? String(contentsOf: url)
+        }
+        return nil
+    }()
+    
+    lazy var headCSS_1: String? = {
+        if let path = Bundle.module.path(forResource: "head_css_1", ofType: "html", inDirectory: "\(theme.directory)/html") {
             let url = URL(fileURLWithPath: path)
             return try? String(contentsOf: url)
         }
@@ -72,6 +80,27 @@ public class Template {
         return URL(fileURLWithPath: path!)
     }
     
+    func populateBaseHTML() -> String? {
+        if let url = baseHTMLTemplateURL() {
+            var data = [String:Any]()
+            if let headCSS_0 = headCSS_0 {
+                data["head_css_0"] = headCSS_0
+            }
+            if let headCSS_1 = headCSS_1 {
+                data["head_css_1"] = headCSS_1
+            }
+            if let footer = footer {
+                data["footer"] = footer
+            }
+            if let header = header {
+                data["header"] = header
+            }
+            let html = populate(url: url, with: data)
+            return html
+        }
+        return nil
+    }
+    
     func htmlTemplateURL() -> URL? {
         let filename = htmlTemplateFilename ?? "\(defaultResourceName)"
         let path = Bundle.module.path(forResource: filename, ofType: "html", inDirectory: "\(theme.directory)/html")
@@ -86,27 +115,45 @@ public class Template {
         }
         return nil
     }
-    
-    func populate(with: Any, withURL url: URL) -> String? {
-        if let templateString = try? String(contentsOf: url, encoding: .utf8) {
-            return data(with: with).reduce(templateString) {
-                let format = "<!-- ${\($1.key)} -->"
-                
-                if let dateValue = $1.value as? Date {
-                    return $0.replacingOccurrences(of: format, with: displayDateFormatter.string(from: dateValue))
-                } else if let stringValue = $1.value as? String {
-                    return $0.replacingOccurrences(of: format, with: stringValue)
-                } else {
-                    return $0.replacingOccurrences(of: format, with: "")
-                }
+
+    func populate(string: String, with: [String:Any]) -> String? {
+        return with.reduce(string) {
+            let format = "<!-- ${\($1.key)} -->"
+            
+            if let dateValue = $1.value as? Date {
+                return $0.replacingOccurrences(of: format, with: displayDateFormatter.string(from: dateValue))
+            } else if let stringValue = $1.value as? String {
+                return $0.replacingOccurrences(of: format, with: stringValue)
+            } else {
+                return $0.replacingOccurrences(of: format, with: "")
             }
+        }
+    }
+    
+    func populate(string: String, with: Any) -> String? {
+        let keysValues = data(with: with)
+        return populate(string: string, with: keysValues)
+    }
+    
+    func populate(url: URL, with: [String:Any]) -> String? {
+        if let templateString = try? String(contentsOf: url, encoding: .utf8) {
+            return populate(string: templateString, with: with)
+        }
+        
+        return nil
+    }
+    
+    func populate(url: URL, with: Any) -> String? {
+        if let templateString = try? String(contentsOf: url, encoding: .utf8) {
+            return populate(string: templateString, with: with)
         }
         
         return nil
     }
     
     func data(with: Any) -> [String:Any] {
-        return [:]
+        let result = with as? [String:Any] ?? [:]
+        return result
     }
 
     let displayDateFormatter : DateFormatter = {

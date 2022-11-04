@@ -17,14 +17,14 @@ class NewLikeNotificationPartial: Template {
 
     func populatePlainText(notification: Notification, createLikeMessage: CreateLikeMessage, createPostMessage: CreatePostingMessage) -> String? {
         if let url = plainTextTemplateURL() {
-            return populate(with: [notification, createLikeMessage, createPostMessage], withURL: url)
+            return populate(url: url, with: [notification, createLikeMessage, createPostMessage])
         }
         return nil
     }
     
     func populateHTML(with createLikeMessage: CreateLikeMessage, createPostMessage: CreatePostingMessage) -> String? {
         if let url = htmlTemplateURL() {
-            let str = populate(with: [createLikeMessage, createPostMessage], withURL: url)
+            let str = populate(url: url, with: [createLikeMessage, createPostMessage])
             return str
         }
         return nil
