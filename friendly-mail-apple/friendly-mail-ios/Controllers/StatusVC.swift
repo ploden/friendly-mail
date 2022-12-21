@@ -50,21 +50,25 @@ class StatusVC: FMViewController, HasMailProvider {
     func loadData() {
         guard
             let mailProvider = mailProvider,
-            let settings = (UIApplication.shared.delegate as? AppDelegate)?.settings, isLoadingData == false
+            let settings = (UIApplication.shared.delegate as? AppDelegate)?.settings,
+            isLoadingData == false
         else {
             return
         }
         
         isLoadingData = true
         
-        MailController.getAndProcessAndSendMail(sender: mailProvider, receiver: mailProvider, settings: settings, messages: mailProvider.messages) { error, updatedMessages in
+        let config = (UIApplication.shared.delegate as? AppDelegate)!.appConfig
+        let logger = (UIApplication.shared.delegate as? AppDelegate)!.logger
+        
+        MailController.getAndProcessAndSendMail(config: config, sender: mailProvider, receiver: mailProvider, messages: mailProvider.messages, logger: logger) { error, updatedMessages in
             OperationQueue.main.addOperation {
                 self.mailProvider = mailProvider.new(mergingMessageStores: updatedMessages, postNotification: true)
                 NotificationCenter.default.post(name: Foundation.Notification.Name.mailProviderDidChange, object: self.mailProvider)
                 self.tableView?.refreshControl?.endRefreshing()
-
+                
                 let friendlyMail = updatedMessages.allMessages.filter { message in
-                    message.isFriendlyMailMessage(settings: settings)
+                    message.isFriendlyMailMessage()
                 }
                 
                 if let tvc = self.tableView?.visibleCells.first as? StatusTVCell {

@@ -19,7 +19,18 @@ public struct MessageStore {
             return Array(messages.values)
         }
     }
-
+    public var account: FriendlyMailAccount? {
+        let message = allMessages.first { $0 is CreateAccountSucceededCommandResultMessage }
+        
+        if let message = message as? CreateAccountSucceededCommandResultMessage {
+            return message.account
+        }
+        return nil
+    }
+    public var preferences: Preferences? {
+        return Preferences(selectedThemeID: "")
+    }
+    
     public init() {
         messages = [MessageID : BaseMessage]()
     }

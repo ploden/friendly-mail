@@ -12,13 +12,19 @@
 		8D1A29B72863378900158188 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D1A29B62863378800158188 /* Security.framework */; };
 		8D1A29BD2869CBF300158188 /* friendly_mail_core in Frameworks */ = {isa = PBXBuildFile; productRef = 8D1A29BC2869CBF300158188 /* friendly_mail_core */; };
 		8D30D0E428FF31E900990F92 /* set_profile_pic.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8D30D0E328FF31E900990F92 /* set_profile_pic.txt */; };
+		8D39ECF32941281600C5E03E /* create_command_permission_denied.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8D39ECF22941281600C5E03E /* create_command_permission_denied.txt */; };
 		8D3D27AC27EDE253000AAF8D /* InviteMessageTemplateTests in Resources */ = {isa = PBXBuildFile; fileRef = 8D3D27AB27EDE253000AAF8D /* InviteMessageTemplateTests */; };
 		8D3D27AE27EDE2C7000AAF8D /* InviteMessageTemplateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D3D27AD27EDE2C7000AAF8D /* InviteMessageTemplateTests.swift */; };
 		8D3D27B127EE07DC000AAF8D /* NewPostNotificationTemplateTests in Resources */ = {isa = PBXBuildFile; fileRef = 8D3D27B027EE07DC000AAF8D /* NewPostNotificationTemplateTests */; };
 		8D3D27B527EE4BE4000AAF8D /* NewLikeNotificationTemplateTests in Resources */ = {isa = PBXBuildFile; fileRef = 8D3D27B427EE4BE4000AAF8D /* NewLikeNotificationTemplateTests */; };
 		8D3D27B727EE4BFD000AAF8D /* NewLikeNotificationTemplateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D3D27B627EE4BFD000AAF8D /* NewLikeNotificationTemplateTests.swift */; };
 		8D3DBE122877D1D10034B47B /* AppAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 8D3DBE112877D1D10034B47B /* AppAuth */; };
+		8D3DE584294FC2AE00E3A85E /* create_command_create_account_2.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8DB7CA6129459E6A0005E386 /* create_command_create_account_2.txt */; };
 		8D412CA627E34BFA00C1477B /* CreatePostingMessageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D412CA527E34BFA00C1477B /* CreatePostingMessageTests.swift */; };
+		8D42A9F72953B2F00057347D /* create_account_succeeded_command_result.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8D42A9F62953B2F00057347D /* create_account_succeeded_command_result.txt */; };
+		8D42A9F92953C0AD0057347D /* CreateAccountSucceededCommandResultTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D42A9F82953C0AD0057347D /* CreateAccountSucceededCommandResultTests.swift */; };
+		8D45737C291C2AEF0078872E /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 8D45737B291C2AEF0078872E /* SwiftSoup */; };
+		8D457385291CA7730078872E /* command_not_found_command_result.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8D457384291CA7730078872E /* command_not_found_command_result.txt */; };
 		8D5120E0285E8007003E6A25 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5120DD285E8007003E6A25 /* AppDelegate.swift */; };
 		8D5120E1285E8007003E6A25 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5120DE285E8007003E6A25 /* SceneDelegate.swift */; };
 		8D5120E7285E8012003E6A25 /* MainMenuTVCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8D5120E3285E8012003E6A25 /* MainMenuTVCell.xib */; };
@@ -43,11 +49,14 @@
 		8D55DB11290DEE1E00B218A8 /* StorageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D55DB10290DEE1E00B218A8 /* StorageProvider.swift */; };
 		8D55DB132910877B00B218A8 /* StorageProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D55DB122910877B00B218A8 /* StorageProviderTests.swift */; };
 		8D55DB1529108FBA00B218A8 /* amplifyconfiguration.json in Resources */ = {isa = PBXBuildFile; fileRef = 8D55DB1429108FBA00B218A8 /* amplifyconfiguration.json */; };
-		8D55DB192912D09E00B218A8 /* create_account.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8D55DB172912D01F00B218A8 /* create_account.txt */; };
+		8D55DB192912D09E00B218A8 /* create_command_create_account.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8D55DB172912D01F00B218A8 /* create_command_create_account.txt */; };
+		8D55DB1B2914998200B218A8 /* create_command_not_found.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8D55DB1A2914998200B218A8 /* create_command_not_found.txt */; };
 		8D63FDCB281436FF006B944D /* create_posting_with_image.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8D63FDCA281436FF006B944D /* create_posting_with_image.txt */; };
 		8D746B582887A45C009D046E /* UITabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D746B572887A45C009D046E /* UITabBarController.swift */; };
 		8D865AE227D8D2D900C56C07 /* friendly-mail-ios_Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8D865AE127D8D2D900C56C07 /* friendly-mail-ios_Assets.xcassets */; };
 		8D8AA0E227DF4A28009FAB32 /* AppConfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8D8AA0DC27DF4A28009FAB32 /* AppConfig.plist */; };
+		8D9B616629378A6A00E15521 /* TestSenderReceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D9B616529378A6A00E15521 /* TestSenderReceiver.swift */; };
+		8DB7CA602944F6D40005E386 /* AppleLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DB7CA5F2944F6D40005E386 /* AppleLogger.swift */; };
 		8DC0383827DD092D006F1939 /* FriendlyMailMessageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC0382327DD07AC006F1939 /* FriendlyMailMessageTests.swift */; };
 		8DC0383927DD0932006F1939 /* MailControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC0382427DD07AC006F1939 /* MailControllerTests.swift */; };
 		8DC0383A27DD0935006F1939 /* MessageFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC0382727DD07AD006F1939 /* MessageFactoryTests.swift */; };
@@ -72,6 +81,7 @@
 		8DD51BE4290B7DFB00F190D8 /* phil_profile_pic_attachment.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 8DD51BE3290B7DFB00F190D8 /* phil_profile_pic_attachment.jpeg */; };
 		8DDB6E7028AD32BE0019C8D6 /* NewPostNotificationTemplateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DDB6E6828AD32BE0019C8D6 /* NewPostNotificationTemplateTests.swift */; };
 		8DE2A85E2908CF6000141FB7 /* MailProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DE2A85D2908CF6000141FB7 /* MailProviderTests.swift */; };
+		8DED3EAE291ECF67004CB3C9 /* command_not_found_command_result_decoded.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8DED3EA6291ECF67004CB3C9 /* command_not_found_command_result_decoded.txt */; };
 		8DFA5AB4286090A100B30525 /* CocoaLumberjack in Frameworks */ = {isa = PBXBuildFile; productRef = 8DFA5AB3286090A100B30525 /* CocoaLumberjack */; };
 		8DFA5AB6286090A100B30525 /* CocoaLumberjackSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8DFA5AB5286090A100B30525 /* CocoaLumberjackSwift */; };
 /* End PBXBuildFile section */
@@ -156,12 +166,16 @@
 		8D1A29B42863378300158188 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		8D1A29B62863378800158188 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		8D30D0E328FF31E900990F92 /* set_profile_pic.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = set_profile_pic.txt; sourceTree = "<group>"; };
+		8D39ECF22941281600C5E03E /* create_command_permission_denied.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = create_command_permission_denied.txt; sourceTree = "<group>"; };
 		8D3D27AB27EDE253000AAF8D /* InviteMessageTemplateTests */ = {isa = PBXFileReference; lastKnownFileType = folder; path = InviteMessageTemplateTests; sourceTree = "<group>"; };
 		8D3D27AD27EDE2C7000AAF8D /* InviteMessageTemplateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteMessageTemplateTests.swift; sourceTree = "<group>"; };
 		8D3D27B027EE07DC000AAF8D /* NewPostNotificationTemplateTests */ = {isa = PBXFileReference; lastKnownFileType = folder; path = NewPostNotificationTemplateTests; sourceTree = "<group>"; };
 		8D3D27B427EE4BE4000AAF8D /* NewLikeNotificationTemplateTests */ = {isa = PBXFileReference; lastKnownFileType = folder; path = NewLikeNotificationTemplateTests; sourceTree = "<group>"; };
 		8D3D27B627EE4BFD000AAF8D /* NewLikeNotificationTemplateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewLikeNotificationTemplateTests.swift; sourceTree = "<group>"; };
 		8D412CA527E34BFA00C1477B /* CreatePostingMessageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePostingMessageTests.swift; sourceTree = "<group>"; };
+		8D42A9F62953B2F00057347D /* create_account_succeeded_command_result.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = create_account_succeeded_command_result.txt; sourceTree = "<group>"; };
+		8D42A9F82953C0AD0057347D /* CreateAccountSucceededCommandResultTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountSucceededCommandResultTests.swift; sourceTree = "<group>"; };
+		8D457384291CA7730078872E /* command_not_found_command_result.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = command_not_found_command_result.txt; sourceTree = "<group>"; };
 		8D5120DD285E8007003E6A25 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8D5120DE285E8007003E6A25 /* SceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		8D5120E3285E8012003E6A25 /* MainMenuTVCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenuTVCell.xib; sourceTree = "<group>"; };
@@ -185,7 +199,8 @@
 		8D55DB10290DEE1E00B218A8 /* StorageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageProvider.swift; sourceTree = "<group>"; };
 		8D55DB122910877B00B218A8 /* StorageProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageProviderTests.swift; sourceTree = "<group>"; };
 		8D55DB1429108FBA00B218A8 /* amplifyconfiguration.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = amplifyconfiguration.json; sourceTree = "<group>"; };
-		8D55DB172912D01F00B218A8 /* create_account.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = create_account.txt; sourceTree = "<group>"; };
+		8D55DB172912D01F00B218A8 /* create_command_create_account.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = create_command_create_account.txt; sourceTree = "<group>"; };
+		8D55DB1A2914998200B218A8 /* create_command_not_found.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = create_command_not_found.txt; sourceTree = "<group>"; };
 		8D620ECA26CA2629000EC454 /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
 		8D63FDCA281436FF006B944D /* create_posting_with_image.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = create_posting_with_image.txt; sourceTree = "<group>"; };
 		8D746B572887A45C009D046E /* UITabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITabBarController.swift; sourceTree = "<group>"; };
@@ -195,7 +210,10 @@
 		8D865AD627D8D2D700C56C07 /* friendly-mail-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "friendly-mail-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D865AE127D8D2D900C56C07 /* friendly-mail-ios_Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "friendly-mail-ios_Assets.xcassets"; sourceTree = "<group>"; };
 		8D8AA0DC27DF4A28009FAB32 /* AppConfig.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = AppConfig.plist; sourceTree = "<group>"; };
+		8D9B616529378A6A00E15521 /* TestSenderReceiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSenderReceiver.swift; sourceTree = "<group>"; };
 		8DA57F272882E5D000EE62A3 /* friendly_mail_ios.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = friendly_mail_ios.entitlements; sourceTree = "<group>"; };
+		8DB7CA5F2944F6D40005E386 /* AppleLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleLogger.swift; sourceTree = "<group>"; };
+		8DB7CA6129459E6A0005E386 /* create_command_create_account_2.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = create_command_create_account_2.txt; sourceTree = "<group>"; };
 		8DC0381C27DD07AC006F1939 /* create_like.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = create_like.txt; sourceTree = "<group>"; };
 		8DC0381D27DD07AC006F1939 /* hello_world.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = hello_world.txt; sourceTree = "<group>"; };
 		8DC0381E27DD07AC006F1939 /* notifications.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = notifications.txt; sourceTree = "<group>"; };
@@ -221,6 +239,7 @@
 		8DD51BE3290B7DFB00F190D8 /* phil_profile_pic_attachment.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = phil_profile_pic_attachment.jpeg; sourceTree = "<group>"; };
 		8DDB6E6828AD32BE0019C8D6 /* NewPostNotificationTemplateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPostNotificationTemplateTests.swift; sourceTree = "<group>"; };
 		8DE2A85D2908CF6000141FB7 /* MailProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailProviderTests.swift; sourceTree = "<group>"; };
+		8DED3EA6291ECF67004CB3C9 /* command_not_found_command_result_decoded.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = command_not_found_command_result_decoded.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -242,6 +261,7 @@
 				8D1A29BD2869CBF300158188 /* friendly_mail_core in Frameworks */,
 				8D55DB04290D8F0700B218A8 /* AWSPluginsCore in Frameworks */,
 				8D1A29B72863378900158188 /* Security.framework in Frameworks */,
+				8D45737C291C2AEF0078872E /* SwiftSoup in Frameworks */,
 				8D3DBE122877D1D10034B47B /* AppAuth in Frameworks */,
 				8D1A29B52863378300158188 /* CFNetwork.framework in Frameworks */,
 				8D55DB06290D8F0700B218A8 /* AWSS3StoragePlugin in Frameworks */,
@@ -298,6 +318,7 @@
 		8D865AB627D878F900C56C07 /* friendly-mailTests */ = {
 			isa = PBXGroup;
 			children = (
+				8DED3EA6291ECF67004CB3C9 /* command_not_found_command_result_decoded.txt */,
 				8DD51BE3290B7DFB00F190D8 /* phil_profile_pic_attachment.jpeg */,
 				8D30D0E328FF31E900990F92 /* set_profile_pic.txt */,
 				8D3D27B427EE4BE4000AAF8D /* NewLikeNotificationTemplateTests */,
@@ -326,7 +347,14 @@
 				8D63FDCA281436FF006B944D /* create_posting_with_image.txt */,
 				8DE2A85D2908CF6000141FB7 /* MailProviderTests.swift */,
 				8D55DB122910877B00B218A8 /* StorageProviderTests.swift */,
-				8D55DB172912D01F00B218A8 /* create_account.txt */,
+				8D55DB172912D01F00B218A8 /* create_command_create_account.txt */,
+				8D55DB1A2914998200B218A8 /* create_command_not_found.txt */,
+				8D457384291CA7730078872E /* command_not_found_command_result.txt */,
+				8D9B616529378A6A00E15521 /* TestSenderReceiver.swift */,
+				8D39ECF22941281600C5E03E /* create_command_permission_denied.txt */,
+				8DB7CA6129459E6A0005E386 /* create_command_create_account_2.txt */,
+				8D42A9F62953B2F00057347D /* create_account_succeeded_command_result.txt */,
+				8D42A9F82953C0AD0057347D /* CreateAccountSucceededCommandResultTests.swift */,
 			);
 			path = "friendly-mailTests";
 			sourceTree = "<group>";
@@ -359,6 +387,7 @@
 				8DC8266C27DC8E3400695FD8 /* AppleSettings.swift */,
 				8D55DB10290DEE1E00B218A8 /* StorageProvider.swift */,
 				8D55DB1429108FBA00B218A8 /* amplifyconfiguration.json */,
+				8DB7CA5F2944F6D40005E386 /* AppleLogger.swift */,
 			);
 			path = "friendly-mail-ios";
 			sourceTree = "<group>";
@@ -465,6 +494,7 @@
 				8D55DB03290D8F0700B218A8 /* AWSPluginsCore */,
 				8D55DB05290D8F0700B218A8 /* AWSS3StoragePlugin */,
 				8D55DB07290D8F0700B218A8 /* Amplify */,
+				8D45737B291C2AEF0078872E /* SwiftSoup */,
 			);
 			productName = "friendly-mail";
 			productReference = 8D865AD627D8D2D700C56C07 /* friendly-mail-ios.app */;
@@ -522,6 +552,7 @@
 				8DFA5AB2286090A100B30525 /* XCRemoteSwiftPackageReference "CocoaLumberjack" */,
 				8D3DBE102877D1D10034B47B /* XCRemoteSwiftPackageReference "AppAuth-iOS" */,
 				8D55DB02290D8F0700B218A8 /* XCRemoteSwiftPackageReference "amplify-ios" */,
+				8D45737A291C2AEF0078872E /* XCRemoteSwiftPackageReference "SwiftSoup" */,
 			);
 			productRefGroup = 8D87476A26A280B900D6288D /* Products */;
 			projectDirPath = "";
@@ -628,19 +659,25 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D3D27B527EE4BE4000AAF8D /* NewLikeNotificationTemplateTests in Resources */,
+				8D42A9F72953B2F00057347D /* create_account_succeeded_command_result.txt in Resources */,
+				8DED3EAE291ECF67004CB3C9 /* command_not_found_command_result_decoded.txt in Resources */,
 				8DC0384527DD0BD9006F1939 /* create_comment.txt in Resources */,
 				8DC0384327DD0BAB006F1939 /* hello_world.txt in Resources */,
 				8DC0384827DD0BD9006F1939 /* create_add_followers.txt in Resources */,
+				8D457385291CA7730078872E /* command_not_found_command_result.txt in Resources */,
 				8DC0384627DD0BD9006F1939 /* follow_realtime.txt in Resources */,
 				8DC0384727DD0BD9006F1939 /* notifications.txt in Resources */,
-				8D55DB192912D09E00B218A8 /* create_account.txt in Resources */,
+				8D55DB192912D09E00B218A8 /* create_command_create_account.txt in Resources */,
 				8D3D27AC27EDE253000AAF8D /* InviteMessageTemplateTests in Resources */,
 				8D30D0E428FF31E900990F92 /* set_profile_pic.txt in Resources */,
 				8D3D27B127EE07DC000AAF8D /* NewPostNotificationTemplateTests in Resources */,
+				8D39ECF32941281600C5E03E /* create_command_permission_denied.txt in Resources */,
 				8DC0384427DD0BD9006F1939 /* create_invite.txt in Resources */,
 				8DC0384927DD0BD9006F1939 /* create_like.txt in Resources */,
 				8D63FDCB281436FF006B944D /* create_posting_with_image.txt in Resources */,
 				8DD51BE4290B7DFB00F190D8 /* phil_profile_pic_attachment.jpeg in Resources */,
+				8D55DB1B2914998200B218A8 /* create_command_not_found.txt in Resources */,
+				8D3DE584294FC2AE00E3A85E /* create_command_create_account_2.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -660,6 +697,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8DB7CA602944F6D40005E386 /* AppleLogger.swift in Sources */,
 				8D5120E0285E8007003E6A25 /* AppDelegate.swift in Sources */,
 				8D746B582887A45C009D046E /* UITabBarController.swift in Sources */,
 				8D55DB11290DEE1E00B218A8 /* StorageProvider.swift in Sources */,
@@ -689,9 +727,11 @@
 				8DC0383C27DD093D006F1939 /* MessageReceiverTests.swift in Sources */,
 				8DC0383B27DD0937006F1939 /* MessageHeaderTests.swift in Sources */,
 				8D55DB132910877B00B218A8 /* StorageProviderTests.swift in Sources */,
+				8D9B616629378A6A00E15521 /* TestSenderReceiver.swift in Sources */,
 				8DC0383E27DD0943006F1939 /* TestHelpers.swift in Sources */,
 				8DC0383F27DD0946006F1939 /* ViewTemplateTests.swift in Sources */,
 				8DDB6E7028AD32BE0019C8D6 /* NewPostNotificationTemplateTests.swift in Sources */,
+				8D42A9F92953C0AD0057347D /* CreateAccountSucceededCommandResultTests.swift in Sources */,
 				8DE2A85E2908CF6000141FB7 /* MailProviderTests.swift in Sources */,
 				8DC0383A27DD0935006F1939 /* MessageFactoryTests.swift in Sources */,
 				8DC0383927DD0932006F1939 /* MailControllerTests.swift in Sources */,
@@ -820,7 +860,7 @@
 				CODE_SIGN_ENTITLEMENTS = "friendly-mail-ios/friendly_mail_ios.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 41;
+				CURRENT_PROJECT_VERSION = 46;
 				DEVELOPMENT_TEAM = B4553A7542;
 				EXCLUDED_ARCHS = "";
 				GENERATE_INFOPLIST_FILE = YES;
@@ -879,7 +919,7 @@
 				CODE_SIGN_ENTITLEMENTS = "friendly-mail-ios/friendly_mail_ios.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 41;
+				CURRENT_PROJECT_VERSION = 46;
 				DEVELOPMENT_TEAM = B4553A7542;
 				EXCLUDED_ARCHS = "";
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1133,6 +1173,14 @@
 				kind = branch;
 			};
 		};
+		8D45737A291C2AEF0078872E /* XCRemoteSwiftPackageReference "SwiftSoup" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/scinfu/SwiftSoup.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		8D55DB02290D8F0700B218A8 /* XCRemoteSwiftPackageReference "amplify-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/aws-amplify/amplify-ios";
@@ -1160,6 +1208,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8D3DBE102877D1D10034B47B /* XCRemoteSwiftPackageReference "AppAuth-iOS" */;
 			productName = AppAuth;
+		};
+		8D45737B291C2AEF0078872E /* SwiftSoup */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8D45737A291C2AEF0078872E /* XCRemoteSwiftPackageReference "SwiftSoup" */;
+			productName = SwiftSoup;
 		};
 		8D55DB03290D8F0700B218A8 /* AWSPluginsCore */ = {
 			isa = XCSwiftPackageProductDependency;

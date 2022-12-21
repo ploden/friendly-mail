@@ -11,6 +11,7 @@ import XCTest
 
 class InviteMessageTemplateTests: XCTestCase {
 
+    /*
     func testCreateInvitesMessage() throws {
         let uid: UInt64 = 1
 
@@ -51,5 +52,6 @@ class InviteMessageTemplateTests: XCTestCase {
         
         XCTAssert(match.htmlBody == expectedHTML)
     }
+     */
     
 }

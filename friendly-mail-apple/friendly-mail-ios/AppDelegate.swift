@@ -7,6 +7,7 @@
 
 import UIKit
 import AppAuth
+import BackgroundTasks
 import friendly_mail_core
 
 @main
@@ -14,6 +15,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var currentAuthorizationFlow: OIDExternalUserAgentSession?
     var authState: OIDAuthState?
+    static var backgroundAppRefreshTaskSchedulerIdentifier = "com.deovolentellc.friendly-mail-ios.backgroundAppRefreshIdentifier"
+
+    lazy public var logger: Logger = {
+        return AppleLogger()
+    }()
     
     lazy public var appConfig: AppConfig = {
         let targetName = Bundle.main.infoDictionary?["CFBundleName"] as! String
@@ -51,14 +57,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
-        // UIApplication.backgroundFetchIntervalMinimum = 0s
-        UIApplication.shared.setMinimumBackgroundFetchInterval(UIApplication.backgroundFetchIntervalMinimum)
-        // Period: 3600s = 1 hour
-        UIApplication.shared.setMinimumBackgroundFetchInterval(3600)
-        
         AppleSettings.addObserver(forSettings: self)
-        
         SettingsSynchronizer.shared.synciCloud()
+        
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: AppDelegate.backgroundAppRefreshTaskSchedulerIdentifier, using: nil) { task in
+        
+        }
         
         return true
     }
@@ -93,16 +97,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             self.currentAuthorizationFlow = nil
         }
         return true
-    }
-    
-    func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        if
-            let settings = self.settings,
-            settings.isValid
-        {
-            let mailProvider = MailProvider(settings: settings, messages: MessageStore())
-            MailController.getAndProcessAndSendMail(sender: mailProvider, receiver: mailProvider, settings: settings, messages: mailProvider.messages) { _, _ in}
-        }
     }
     
 }

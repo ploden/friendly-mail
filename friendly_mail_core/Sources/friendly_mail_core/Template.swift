@@ -14,6 +14,8 @@ public class Template {
     var plainTextTemplateFilename: String?
     var subjectTemplateFilename: String?
     
+    var friendlyMailData: String?
+
     let theme: Theme
     
     public init(theme: Theme) {
@@ -94,6 +96,9 @@ public class Template {
             }
             if let header = header {
                 data["header"] = header
+            }
+            if let friendlyMailData = friendlyMailData {
+                data["friendly-mail_data"] = friendlyMailData
             }
             let html = populate(url: url, with: data)
             return html

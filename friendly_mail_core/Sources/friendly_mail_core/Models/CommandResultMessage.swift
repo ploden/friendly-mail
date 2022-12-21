@@ -7,14 +7,20 @@
 
 import Foundation
 
-struct CommandResultMessage {
+struct CommandResultMessage: AnyCommandResultMessage, BaseMessage {
     let uidWithMailbox: UIDWithMailbox
-    let messageID: MessageID
+    //let messageID: MessageID
     let header: MessageHeader
     let htmlBody: String?
     let plainTextBody: String?
     let attachments: [Attachment]?
     
-    let commandMessageID: MessageID
+    //let commandMessageID: MessageID
     let commandResult: CommandResult
+}
+
+extension CommandResultMessage: Identifiable {
+    var identifier: MessageID {
+        return header.messageID
+    }
 }

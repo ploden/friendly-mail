@@ -1,7 +1,7 @@
-${likeAuthorDisplayName} liked your post.
+<!-- ${likeAuthorDisplayName} --> liked your post.
 
-${parentPostAuthorDisplayName}:
-"${parentPost}"
+<!-- ${parentPostAuthorDisplayName} -->:
+"<!-- ${parentPost} -->"
 
-${likeAuthorDisplayName}:
-"${likePost}"
+<!-- ${likeAuthorDisplayName} -->:
+"<!-- ${likePost} -->"

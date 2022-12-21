@@ -17,9 +17,11 @@ public protocol MessageReceiver {
     func getMail(withMailbox mailbox: Mailbox, completion: @escaping (Error?, MessageStore?) -> ())
     func fetchMessage(uidWithMailbox: UIDWithMailbox, completion: @escaping (Error?, BaseMessage?) -> ())
     func fetchFriendlyMailMessage(messageID: MessageID, completion: @escaping (Error?, BaseMessage?) -> ())
+    var address: Address { get }
 }
 
 public protocol MessageSender {
+    func sendDraft(draft: MessageDraft, completion: @escaping (Error?, MessageID?) -> ())        
     func sendMessage(to: [Address], subject: String?, htmlBody: String?, plainTextBody: String, friendlyMailHeaders: [HeaderKeyValue]?, completion: @escaping (Error?, MessageID?) -> ())
     func moveMessageToInbox(message: BaseMessage, completion: @escaping (Error?) -> ())
 }

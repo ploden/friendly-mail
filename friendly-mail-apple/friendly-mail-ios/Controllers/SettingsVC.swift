@@ -53,9 +53,11 @@ extension SettingsVC: UITableViewDelegate {
                 {
                     let theme = app.appConfig.themes[indexPath.row]
                     
+                    /*
                     if theme != settings.selectedTheme {
                         _ = settings.new(withSelectedTheme: theme).save(toUserDefaults: .standard)
                     }
+                     */
                 }
             }
             
@@ -98,7 +100,7 @@ extension SettingsVC: UITableViewDataSource {
                     tvc?.textLabel?.text = theme.name
                     
                     if let settings = (UIApplication.shared.delegate as? AppDelegate)?.settings {
-                        tvc?.accessoryType = theme == settings.selectedTheme ? .checkmark : .none
+                        //tvc?.accessoryType = theme == settings.selectedTheme ? .checkmark : .none
                     }
                     
                 }

@@ -87,5 +87,5 @@ Like: mailto:ploden=40gmail.com=3Fsubject=3D=46m&body=3D=F0=9F=91=8D=F0=9F=
 =8F=BB
 Comment: mailto:ploden=40gmail.com=3Fsubject=3D=46m
 
-friendly-mail, an open-source, email-based alternative to social networki=
+friendly-mail, an open-source, email-based, alternative to social networki=
 ng

@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import CocoaLumberjackSwift
+import BackgroundTasks
 import friendly_mail_core
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -23,13 +23,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         
-        let fileLogger = DDFileLogger()
-        fileLogger.rollingFrequency = 60 * 60 * 24 // 24 hour rolling
-        fileLogger.logFileManager.maximumNumberOfLogFiles = 7
-        DDLog.add(fileLogger)
-        
         AppleSettings.addObserver(forSettings: self)
-        
+        registerBackgroundTasks()
+
         if
             let app = UIApplication.shared.delegate as? AppDelegate,
             let windowScene = scene as? UIWindowScene
@@ -91,8 +87,50 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Called as the scene transitions from the foreground to the background.
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
+        submitBackgroundTasks()
     }
 
+    func submitBackgroundTasks() {
+        let timeDelay = 60.0
+        
+        do {
+            let backgroundAppRefreshTaskRequest = BGAppRefreshTaskRequest(identifier: AppDelegate.backgroundAppRefreshTaskSchedulerIdentifier)
+            backgroundAppRefreshTaskRequest.earliestBeginDate = Date(timeIntervalSinceNow: timeDelay)
+            try BGTaskScheduler.shared.submit(backgroundAppRefreshTaskRequest)
+            print("Submitted task request")
+        } catch {
+            print("Failed to submit BGTask")
+        }
+    }
+    
+    func registerBackgroundTasks() {
+        /*
+         BGTaskScheduler.shared.register(forTaskWithIdentifier: "", using: nil, launchHandler: { task in
+                    
+            print("BackgroundAppRefreshTaskScheduler is executed NOW!")
+            print("Background time remaining: \(UIApplication.shared.backgroundTimeRemaining)s")
+            
+            task.expirationHandler = {
+                task.setTaskCompleted(success: false)
+            }
+            
+            // Do some data fetching and call setTaskCompleted(success:) asap!
+            let isFetchingSuccess = true
+            
+            
+            if
+                let settings = self.settings,
+                settings.isValid
+            {
+                //let mailProvider = MailProvider(settings: settings, messages: MessageStore())
+                //MailController.getAndProcessAndSendMail(config: self.appConfig, sender: mailProvider, receiver: mailProvider, messages: mailProvider.messages) { _, _ in}
+            }
+            
+            task.setTaskCompleted(success: isFetchingSuccess)
+        })
+         */
+    }
+    
 }
 
 extension SceneDelegate: SettingsObserver {
@@ -107,8 +145,11 @@ extension SceneDelegate: SettingsObserver {
             tab.delegate = self
             let status = tab.findStatusVC()!
             status.mailProvider = MailProvider(settings: loaded, messages: MessageStore())
-            let followersFollowing = tab.viewControllers?.first(where: { $0 is FollowersFollowingVC }) as! FollowersFollowingVC
-            followersFollowing.mailProvider = status.mailProvider
+            
+            if let followersFollowing = tab.viewControllers?.first(where: { $0 is FollowersFollowingVC }) as? FollowersFollowingVC {
+                followersFollowing.mailProvider = status.mailProvider
+            }
+            
             nc.viewControllers = [tab]
         }
     }

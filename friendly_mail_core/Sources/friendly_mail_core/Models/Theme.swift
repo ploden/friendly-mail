@@ -13,3 +13,9 @@ public struct Theme: Equatable {
 }
 
 extension Theme: Codable {}
+
+extension Theme: Identifiable {
+    public var identifier: MessageID {
+        return name
+    }
+}

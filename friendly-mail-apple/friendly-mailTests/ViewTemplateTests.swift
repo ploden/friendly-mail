@@ -10,6 +10,7 @@ import XCTest
 @testable import friendly_mail_core
 
 class ViewTemplateTests: XCTestCase {
+    /*
     var webVC = WebViewController()
         
     override func setUp() {
@@ -19,7 +20,9 @@ class ViewTemplateTests: XCTestCase {
         
         super.setUp()
     }
+     */
     
+    /*
     func testViewNewLikeNotificationEmail() throws {
         var uid: UInt64 = 1
         let user = Address(name: "Phil Loden", address: "ploden@gmail.com")!
@@ -51,7 +54,9 @@ class ViewTemplateTests: XCTestCase {
             return stop
         }
     }
+     */
     
+    /*
     func testViewNewPostNotificationEmail() throws {
         var uid: UInt64 = 1
         let user = Address(name: "Phil Loden", address: "ploden@gmail.com")!
@@ -112,5 +117,6 @@ class ViewTemplateTests: XCTestCase {
         }
         
     }
+     */
     
 }

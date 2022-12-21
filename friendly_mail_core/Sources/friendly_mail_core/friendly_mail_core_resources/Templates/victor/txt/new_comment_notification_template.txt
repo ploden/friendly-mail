@@ -1,10 +1,10 @@
-${commentAuthorDisplayName} commented on your post.
+<!-- ${commentAuthorDisplayName} --> commented on your post.
 
-${parentPostAuthorDisplayName}
-"${parentPost}"
+<!-- ${parentPostAuthorDisplayName} -->
+"<!-- ${parentPost} -->"
 
-${commentAuthorDisplayName}
-"${commentPost}"
+<!-- ${commentAuthorDisplayName} -->
+"<!-- ${commentPost} -->"
 
-Like: mailto:${replyTo}?subject=Fm%20Like:${createCommentMessageID}&body=${likeBody}
-Reply: mailto:${replyTo}?subject=Fm%20Comment:${createCommentMessageID}
+Like: mailto:<!-- ${replyTo} -->?subject=Fm%20Like:<!-- ${createCommentMessageID} -->&body=<!-- ${likeBody} -->
+Reply: mailto:<!-- ${replyTo} -->?subject=Fm%20Comment:<!-- ${createCommentMessageID} -->

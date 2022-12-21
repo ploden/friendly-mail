@@ -1,6 +1,6 @@
-${authorDisplayName} posted:
+<!-- ${authorDisplayName} --> posted:
 
-"${statusUpdate}"
+"<!-- ${statusUpdate} -->"
 
-Like: mailto:${replyTo}?subject=Fm%20Like:${createPostMessageID}&body=${likeBody}
-Comment: mailto:${replyTo}?subject=Fm%20Comment:${createPostMessageID}
+Like: mailto:<!-- ${replyTo} -->?subject=Fm%20Like:<!-- ${createPostMessageID} -->&body=<!-- ${likeBody} -->
+Comment: mailto:<!-- ${replyTo} -->?subject=Fm%20Comment:<!-- ${createPostMessageID} -->

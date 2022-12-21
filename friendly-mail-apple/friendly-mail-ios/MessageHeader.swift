@@ -10,7 +10,7 @@ import friendly_mail_core
 
 extension MessageHeader {
     init?(header: MCOMessageHeader, mailbox: Mailbox) {
-        let to: [Address] = header.to.compactMap {
+        let to: [Address]? = header.to?.compactMap {
             if
                 let mcoAddress = $0 as? MCOAddress,
                 let addr = mcoAddress.mailbox
@@ -19,6 +19,11 @@ extension MessageHeader {
             }
             return nil
         }
+        
+        guard let to = to, to.count > 0 else {
+            return nil
+        }
+        
         let replyTo: [Address] = header.replyTo?.compactMap {
             if
                 let mcoAddress = $0 as? MCOAddress,

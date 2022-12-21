@@ -13,7 +13,6 @@ public struct AppleSettings: Settings {
     public var user: Address
     public var authState: OIDAuthState?
     public var password: String?
-    public var selectedTheme: Theme
     public var isValid: Bool {
         if let authState = authState {
             return authState.isAuthorized && user.address.count > 0
@@ -32,7 +31,7 @@ public struct AppleSettings: Settings {
     
     public init(user: Address, selectedTheme: Theme) {
         self.user = user
-        self.selectedTheme = selectedTheme
+        //self.selectedTheme = selectedTheme
     }
     
     public func new(withUser user: Address) -> AppleSettings {
@@ -63,7 +62,7 @@ public struct AppleSettings: Settings {
     
     public func new(withSelectedTheme selectedTheme: Theme) -> AppleSettings {
         var newWith = self
-        newWith.selectedTheme = selectedTheme
+        //newWith.selectedTheme = selectedTheme
         return newWith
     }
     
@@ -80,7 +79,7 @@ extension AppleSettings: Codable {
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         user = try values.decode(Address.self, forKey: .user)
-        selectedTheme = try values.decode(Theme.self, forKey: .selectedTheme)
+        //selectedTheme = try values.decode(Theme.self, forKey: .selectedTheme)
         password = try? values.decode(String.self, forKey: .password)
 
         let data = try values.decode(Data.self, forKey: .authState)
@@ -100,7 +99,7 @@ extension AppleSettings: Codable {
 
         try container.encode(user, forKey: .user)
         try container.encode(password, forKey: .password)
-        try container.encode(selectedTheme, forKey: .selectedTheme)
+        //try container.encode(selectedTheme, forKey: .selectedTheme)
     }
 }
 

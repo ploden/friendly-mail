@@ -31,17 +31,72 @@ class TestHelpers {
         let postMessageHeader = MessageHeader(sender: author, from: author, to: [author], replyTo: [author], subject: "Fm", date: Date(), extraHeaders: [:], messageID: "")
        // let postMessageHeader = MessageHeader(sender: author, from: author, to: [author], replyTo: [author], subject: "Fm", date: Date())
         let postMessageBody = "Hi this is a test post about \(String.random(length: 5))."
-        let postMessage = CreatePostingMessage(uidWithMailbox: postMessageID, header: postMessageHeader, htmlBody: nil, plainTextBody: postMessageBody, attachments: nil)
+        let postMessage = CreatePostingMessage(uidWithMailbox: postMessageID, header: postMessageHeader!, htmlBody: nil, plainTextBody: postMessageBody, attachments: nil)
         return postMessage
     }
     
-    static func loadEmail(withPath path: String, uid: inout UInt64, settings: Settings, messages: inout MessageStore) {
-        let message = TestHelpers.loadEmail(withPath: path, uid: uid, settings: settings)
-        uid += 1
-        messages = messages.addingMessage(message: message!, messageID: message!.header.messageID)
+    static func processMailAndSend(config: AppConfig,
+                                   sender: MessageSender,
+                                   receiver: MessageReceiver,
+                                   testCase: XCTestCase,
+                                   provider: inout MailProvider)
+    {
+        var messages = provider.messages
+        TestHelpers.processMailAndSend(config: config, sender: sender, receiver: receiver, testCase: testCase, messages: &messages)
+        provider = provider.new(mergingMessageStores: messages, postNotification: false)
     }
     
-    static func loadEmail(withPath path: String, uid: UInt64, settings: Settings) -> BaseMessage? {
+    static func processMailAndSend(config: AppConfig,
+                                   sender: MessageSender,
+                                   receiver: MessageReceiver,
+                                   testCase: XCTestCase,
+                                   messages: inout MessageStore)
+    {
+        let results = MailController.processMail(config: config, sender: sender, receiver: receiver, messages: messages)
+        
+        results.drafts.forEach { draft in
+            let group = DispatchGroup()
+            group.enter()
+            
+            var anID: MessageID? = nil
+            
+            // avoid deadlocks by not using .main queue here
+            DispatchQueue.global(qos: .background).async {
+                sender.sendDraft(draft: draft) { error, messageID in
+                    anID = messageID
+                    group.leave()
+                }
+            }
+            
+            // wait ...
+            group.wait()
+            
+            if
+                let messageID = anID,
+                let testSender = sender as? TestSenderReceiver,
+                let sentMessage = testSender.sentMessages.getMessage(for: messageID)
+            {
+                messages = messages.addingMessage(message: sentMessage, messageID: messageID)
+            }
+        }
+    }
+    
+    static func loadEmail(account: FriendlyMailAccount?, withPath path: String, uid: inout UInt64, messages: inout MessageStore) -> BaseMessage? {
+        let message = TestHelpers.loadEmail(account: account, withPath: path, uid: uid)
+        uid += 1
+        messages = messages.addingMessage(message: message!, messageID: message!.header.messageID)
+        return message
+    }
+    
+    static func loadEmail(account: FriendlyMailAccount?, withPath path: String, uid: inout UInt64, provider: inout MailProvider) -> BaseMessage? {
+        var inoutMessages: MessageStore! = provider.messages
+        let message = TestHelpers.loadEmail(account: inoutMessages.account, withPath: path, uid: &uid, messages: &inoutMessages)
+        provider = provider.new(mergingMessageStores: inoutMessages, postNotification: false)
+        inoutMessages = nil
+        return message
+    }
+    
+    static func loadEmail(account: FriendlyMailAccount?, withPath path: String, uid: UInt64) -> BaseMessage? {
         let fileURL = URL(fileURLWithPath: path)
         let emailString = try! String(contentsOf: fileURL, encoding: .ascii)
         
@@ -56,7 +111,18 @@ class TestHelpers {
         
         // Create message from email loaded from file
         
-        if let fm = MessageFactory.createMessage(settings: settings, uidWithMailbox: messageID, header: header, htmlBody: parser.htmlBodyRendering(), plainTextBody: parser.plainTextBodyRendering(), attachments: MailProvider.attachments(forAny: parser)) {
+        let htmlBody = parser.htmlBodyRendering()
+        
+        if
+            let fm = MessageFactory.createMessage(account: account,
+                                                  uidWithMailbox: messageID,
+                                                  header: header,
+                                                  htmlBody: htmlBody,
+                                                  friendlyMailData: MailProvider.friendlyMailData(for: htmlBody),
+                                                  plainTextBody: parser.plainTextBodyRendering(),
+                                                  attachments: MailProvider.attachments(forAny: parser),
+                                                  logger: nil)
+        {
             return fm
         } else {
             return Message(uidWithMailbox: messageID, header: header, htmlBody: parser.htmlBodyRendering(), plainTextBody: parser.plainTextBodyRendering(), attachments: nil)
@@ -75,6 +141,33 @@ class TestHelpers {
         let filepath = "\(dir)/\(filename)"
         FileManager.default.createFile(atPath: filepath, contents: data)
         return filepath
+    }
+    
+    static func printDiff(first: String, second: String) {
+        let firstLines = first.split(whereSeparator: \.isNewline)
+        let secondLines = second.split(whereSeparator: \.isNewline)
+        
+        let num = min(firstLines.count, secondLines.count)
+        
+        for i in 0..<num {
+            let firstLine = firstLines[i]
+            let secondLine = secondLines[i]
+            
+            if firstLine != secondLine {
+                print("Lines \(i) do not match:")
+                print(firstLine)
+                print(secondLine)
+                return
+            }
+        }
+        
+        if firstLines.count != secondLines.count {
+            print("printDiff: number of lines does not match")
+            print("first last line: \(firstLines.last!)")
+            print("second last line: \(secondLines.last!)")
+        } else {
+            print("printDiff: strings match")
+        }
     }
     
      /*

@@ -11,6 +11,7 @@ import XCTest
 
 class NewLikeNotificationTemplateTests: XCTestCase {
 
+    /*
     func test() throws {
         var uid: UInt64 = 1
         let user = Address(name: "Phil Loden", address: "ploden@gmail.com")!
@@ -39,5 +40,6 @@ class NewLikeNotificationTemplateTests: XCTestCase {
 
         XCTAssert(html == expectedHTML)
     }
+     */
     
 }

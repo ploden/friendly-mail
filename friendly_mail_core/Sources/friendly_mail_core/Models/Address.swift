@@ -12,7 +12,7 @@ public struct Address {
     public let givenName: String?
     public let familyName: String?
     public let address: String
-    public var displayName: String? {
+    public var displayName: String {
         get {
             if
                 let name = name,
@@ -35,6 +35,13 @@ public struct Address {
         }
     }
 
+    public init(address: String) {
+        self.name = nil
+        self.givenName = nil
+        self.familyName = nil
+        self.address = address
+    }
+    
     public init?(name: String?, address: String?) {
         if let address = address {
             self.name = name
@@ -54,6 +61,27 @@ public struct Address {
             self.address = address
         } else {
             return nil
+        }
+    }
+    
+    static func isNameValid(name: String?, givenName: String?, familyName: String?) -> Bool {
+        if
+            let name = name,
+            name.count > 0
+        {
+            return true
+        }
+        else if
+            let givenName = givenName,
+            givenName.count > 0,
+            let familyName = familyName,
+            familyName.count > 0
+        {
+            return true
+        }
+        else
+        {
+            return false
         }
     }
 }

@@ -7,10 +7,10 @@
 
 import Foundation
 
-struct MessageDraft {
-    let to: [Address]
-    let subject: String
-    let htmlBody: String?
-    let plainTextBody: String
-    let friendlyMailHeaders: [HeaderKeyValue]?
+public struct MessageDraft {
+    public let to: [Address]
+    public let subject: String
+    public let htmlBody: String?
+    public let plainTextBody: String
+    public let friendlyMailHeaders: [HeaderKeyValue]?
 }

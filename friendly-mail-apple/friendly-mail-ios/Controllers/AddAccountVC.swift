@@ -8,7 +8,6 @@
 import Foundation
 import UIKit
 import AppAuth
-import CocoaLumberjackSwift
 import friendly_mail_core
 
 class AddAccountVC: UIViewController {
@@ -40,11 +39,13 @@ class AddAccountVC: UIViewController {
         
         let fetchOperation: MCOIMAPFetchMessagesOperation = session.fetchMessagesOperation(withFolder: folder, requestKind: requestKind, uids: uids)
         
+        let logger = (UIApplication.shared.delegate as? AppDelegate)?.logger
+        
         fetchOperation.start { error, fetchedFolders, arg  in
             if let error = error {
-                DDLogDebug("AddAccountVC: doneButtonTapped: error: \(error)")
+                logger?.log(message: "AddAccountVC: doneButtonTapped: error: \(error)")
             } else {
-                DDLogDebug("AddAccountVC: doneButtonTapped: authentication succeeded")
+                logger?.log(message: "AddAccountVC: doneButtonTapped: authentication succeeded")
                 if let settings = (UIApplication.shared.delegate as? AppDelegate)?.settings {
                     let user = friendly_mail_core.Address(name: self.nameTextField!.text!, address: session.username)!
                     _ = settings.new(withUser: user, password: session.password).save(toUserDefaults: .standard)
@@ -97,35 +98,33 @@ class AddAccountVC: UIViewController {
         }
     }
     
-    func logMessage(_ message: String) {
-        DDLogDebug(message)
-    }
-    
     func getUserInfo(authState: OIDAuthState) {
+        let logger = (UIApplication.shared.delegate as? AppDelegate)?.logger
+
         guard let userinfoEndpoint = authState.lastAuthorizationResponse.request.configuration.discoveryDocument?.userinfoEndpoint else {
-            self.logMessage("Userinfo endpoint not declared in discovery document")
+            logger?.log(message: "Userinfo endpoint not declared in discovery document")
             return
         }
 
-        self.logMessage("Performing userinfo request")
+        logger?.log(message: "Performing userinfo request")
 
         let currentAccessToken: String? = authState.lastTokenResponse?.accessToken
 
         authState.performAction() { (accessToken, idToken, error) in
             if error != nil  {
-                self.logMessage("Error fetching fresh tokens: \(error?.localizedDescription ?? "ERROR")")
+                logger?.log(message: "Error fetching fresh tokens: \(error?.localizedDescription ?? "ERROR")")
                 return
             }
 
             guard let accessToken = accessToken else {
-                self.logMessage("Error getting accessToken")
+                logger?.log(message: "Error getting accessToken")
                 return
             }
 
             if currentAccessToken != accessToken {
-                self.logMessage("Access token was refreshed automatically (\(currentAccessToken ?? "CURRENT_ACCESS_TOKEN") to \(accessToken))")
+                logger?.log(message: "Access token was refreshed automatically (\(currentAccessToken ?? "CURRENT_ACCESS_TOKEN") to \(accessToken))")
             } else {
-                self.logMessage("Access token was fresh and not updated \(accessToken)")
+                logger?.log(message: "Access token was fresh and not updated \(accessToken)")
             }
 
             var urlRequest = URLRequest(url: userinfoEndpoint)
@@ -137,17 +136,17 @@ class AddAccountVC: UIViewController {
                 DispatchQueue.main.async {
                     
                     guard error == nil else {
-                        self.logMessage("HTTP request failed \(error?.localizedDescription ?? "ERROR")")
+                        logger?.log(message: "HTTP request failed \(error?.localizedDescription ?? "ERROR")")
                         return
                     }
 
                     guard let response = response as? HTTPURLResponse else {
-                        self.logMessage("Non-HTTP response")
+                        logger?.log(message: "Non-HTTP response")
                         return
                     }
 
                     guard let data = data else {
-                        self.logMessage("HTTP response data is empty")
+                        logger?.log(message: "HTTP response data is empty")
                         return
                     }
 
@@ -156,7 +155,7 @@ class AddAccountVC: UIViewController {
                     do {
                         json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
                     } catch {
-                        self.logMessage("JSON Serialization Error")
+                        logger?.log(message: "JSON Serialization Error")
                     }
 
                     if response.statusCode != 200 {
@@ -170,9 +169,9 @@ class AddAccountVC: UIViewController {
                                                                                                 errorResponse: json,
                                                                                                 underlyingError: error)
                             authState.update(withAuthorizationError: oauthError)
-                            self.logMessage("Authorization Error (\(oauthError)). Response: \(responseText ?? "RESPONSE_TEXT")")
+                            logger?.log(message: "Authorization Error (\(oauthError)). Response: \(responseText ?? "RESPONSE_TEXT")")
                         } else {
-                            self.logMessage("HTTP: \(response.statusCode), Response: \(responseText ?? "RESPONSE_TEXT")")
+                            logger?.log(message: "HTTP: \(response.statusCode), Response: \(responseText ?? "RESPONSE_TEXT")")
                         }
 
                         return
@@ -182,7 +181,7 @@ class AddAccountVC: UIViewController {
                         let json = json,
                         let email = json["email"] as? String
                     {
-                        self.logMessage("Success: \(json)")
+                        logger?.log(message: "Success: \(json)")
                         let name = json["name"] as? String ?? nil
                         let given = json["given_name"] as? String ?? nil
                         let family = json["family_name"] as? String ?? nil

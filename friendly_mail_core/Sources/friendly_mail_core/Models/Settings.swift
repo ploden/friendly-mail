@@ -22,8 +22,6 @@ public protocol AuthStateDelegate: Codable {
 }
 
 public protocol Settings {
-    var user: Address { get set }
-    var password: String? { get set }
-    var selectedTheme: Theme { get set }
+    //var selectedTheme: Theme { get set }
     var isValid: Bool { get }
 }

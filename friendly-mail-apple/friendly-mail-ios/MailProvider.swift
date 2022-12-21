@@ -6,7 +6,9 @@
 //
 
 import Foundation
+import UIKit
 import friendly_mail_core
+import SwiftSoup
 
 @objc public protocol MailProviderObserver {
     @objc func mailProviderDidChange(_ notification: Foundation.Notification)
@@ -19,6 +21,19 @@ public extension Foundation.Notification.Name {
 public struct MailProvider {
     public let settings: AppleSettings
     public private(set) var messages: MessageStore
+    /*
+    public var account: FriendlyMailAccount? {
+        let message = messages.allMessages.first { $0 is CreateAccountMessage }
+        
+        if let message = message as? CreateAccountSucceededCommandResultMessage {
+            return message.account
+        }
+        return nil
+    }
+     */
+    public var preferences: Preferences? {
+        return Preferences(selectedThemeID: "")
+    }
     private let imapSession: MCOIMAPSession
     
     public func new(withSettings: Settings, postNotification: Bool) -> MailProvider {
@@ -29,6 +44,7 @@ public struct MailProvider {
         return newWith
     }
     
+    /*
     public func new(mergingMessages messages: [MessageID : BaseMessage], postNotification: Bool) -> MailProvider {
         var newWith = self
         let newMessages = self.messages.merging(messages: messages)
@@ -38,6 +54,7 @@ public struct MailProvider {
         }
         return newWith
     }
+     */
     
     public func new(mergingMessageStores messageStore: MessageStore, postNotification: Bool) -> MailProvider {
         var newWith = self
@@ -66,6 +83,10 @@ public struct MailProvider {
 }
 
 extension MailProvider: MessageSender {
+    
+    public func sendDraft(draft: MessageDraft, completion: @escaping (Error?, MessageID?) -> ()) {
+        sendMessage(to: draft.to, subject: draft.subject, htmlBody: draft.htmlBody, plainTextBody: draft.plainTextBody, friendlyMailHeaders: draft.friendlyMailHeaders, completion: completion)
+    }
     
     public func sendMessage(to: [Address], subject: String?, htmlBody: String?, plainTextBody: String, friendlyMailHeaders: [HeaderKeyValue]?, completion: @escaping (Error?, MessageID?) -> ()) {
         guard settings.isValid else {
@@ -140,6 +161,12 @@ extension MailProvider: MessageSender {
 
 extension MailProvider: MessageReceiver {
 
+    public var address: Address {
+        get {
+            return Address(address: imapSession.username)
+        }
+    }
+    
     public func downloadFriendlyMailMessages(completion: @escaping (Error?, MessageStore?) -> ()) {
         guard settings.isValid else {
             completion(NSError(domain: "fm", code: 1, userInfo: [:]), nil)
@@ -182,7 +209,7 @@ extension MailProvider: MessageReceiver {
                             if let header = MessageHeader(header: $0.header, mailbox: mailbox) {
                                 let messageID = UIDWithMailbox(UID: UInt64($0.uid), mailbox: mailbox)
                                 
-                                return MessageFactory.createMessage(settings: self.settings, uidWithMailbox: messageID, header: header, htmlBody: nil, plainTextBody: nil, attachments: MailProvider.attachments(forAny: $0))
+                                return MessageFactory.createMessage(account: self.messages.account, uidWithMailbox: messageID, header: header, htmlBody: nil, friendlyMailData: nil, plainTextBody: nil, attachments: MailProvider.attachments(forAny: $0), logger: nil)
                             }
                             return nil
                         }
@@ -210,6 +237,8 @@ extension MailProvider: MessageReceiver {
             completion(NSError(domain: "fm", code: 1, userInfo: [:]), nil)
             return
         }
+        
+        let logger = (UIApplication.shared.delegate as! AppDelegate).logger
         
         let requestKind: MCOIMAPMessagesRequestKind = .fullHeaders
         
@@ -249,7 +278,17 @@ extension MailProvider: MessageReceiver {
                                 let messages: [BaseMessage]? = fetchedMessages?.compactMap {
                                     if let header = MessageHeader(header: $0.header, mailbox: mailbox) {
                                         let messageID = UIDWithMailbox(UID: UInt64($0.uid), mailbox: mailbox)
-                                        return MessageFactory.createMessage(settings: self.settings, uidWithMailbox: messageID, header: header, htmlBody: nil, plainTextBody: nil, attachments: nil)
+                                        
+                                        //let address = Address(name: nil, address: imapSession.username)!
+                                        
+                                        return MessageFactory.createMessage(account: self.messages.account,
+                                                                            uidWithMailbox: messageID,
+                                                                            header: header,
+                                                                            htmlBody: nil,
+                                                                            friendlyMailData: nil,
+                                                                            plainTextBody: nil,
+                                                                            attachments: nil,
+                                                                            logger: nil)
                                     }
                                     return nil
                                 }
@@ -316,16 +355,22 @@ extension MailProvider: MessageReceiver {
                 let data = data,
                 let messageParser = MCOMessageParser(data: data),
                 let header = MessageHeader(header: messageParser.header, mailbox: uidWithMailbox.mailbox)
-            {
-                //DDLogDebug("MailController: fetchMessage: fetch succeeded")
-                
+            {                
                 let message: BaseMessage = {
-                    if let fm = MessageFactory.createMessage(settings: self.settings,
+                    let htmlBody = messageParser.htmlBodyRendering()
+                    
+                    let accountUsername = imapSession.username
+                    
+                    let address = Address(name: nil, address: accountUsername)!
+                    
+                    if let fm = MessageFactory.createMessage(account: self.messages.account,
                                                              uidWithMailbox: uidWithMailbox,
                                                              header: header,
-                                                             htmlBody: messageParser.htmlBodyRendering(),
+                                                             htmlBody: htmlBody,
+                                                             friendlyMailData: MailProvider.friendlyMailData(for: htmlBody),
                                                              plainTextBody: messageParser.plainTextBodyRendering(),
-                                                             attachments: MailProvider.attachments(forAny: messageParser))
+                                                             attachments: MailProvider.attachments(forAny: messageParser),
+                                                             logger: nil)
                     {
                         return fm
                     } else {
@@ -368,5 +413,15 @@ extension MailProvider: MessageReceiver {
         }
         return nil
     }
-    
+  
+    static func friendlyMailData(for htmlBody: String?) -> String? {
+        if
+            let htmlBody = htmlBody,
+            let doc: Document = try? SwiftSoup.parse(htmlBody),
+            let script = try? doc.head()?.select("script").first { $0.id() == "friendly-mail-data" }
+        {
+            return try? script.html()
+        }
+        return nil
+    }
 }

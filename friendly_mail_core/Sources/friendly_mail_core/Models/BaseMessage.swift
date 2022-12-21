@@ -19,7 +19,7 @@ public protocol BaseMessage: Identifiable {
 
 extension BaseMessage {
     public var shouldFetch: Bool {
-        return plainTextBody == nil || htmlBody == nil
+        return plainTextBody == nil /* || htmlBody == nil */
     }
 }
 
@@ -36,7 +36,7 @@ extension BaseMessage {
 }
 
 extension BaseMessage {
-    public func isFriendlyMailMessage(settings: Settings) -> Bool {
-        return MessageFactory.isFriendlyMailMessage(settings: settings, uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody)
+    public func isFriendlyMailMessage() -> Bool {
+        return MessageFactory.isFriendlyMailMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody)
     }
 }

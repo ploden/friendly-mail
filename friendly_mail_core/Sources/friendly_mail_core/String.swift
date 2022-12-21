@@ -92,3 +92,10 @@ extension String {
         return self
     }
 }
+
+// https://stackoverflow.com/questions/36364324/swift-base64-decoding-returns-nil/36366421#36366421
+extension String {
+    var paddedForBase64Decoding: String {
+        appending(String(repeating: "=", count: (4 - count % 4) % 4))
+    }
+}

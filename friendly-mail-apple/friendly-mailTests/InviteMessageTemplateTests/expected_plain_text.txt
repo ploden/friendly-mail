@@ -5,4 +5,4 @@ Follow Weekly: mailto:ploden@gmail.com?subject=Fm&body=Follow%20weekly
 Follow Monthly: mailto:ploden@gmail.com?subject=Fm&body=Follow%20monthly
 Follow Realtime: mailto:ploden@gmail.com?subject=Fm&body=Follow%20realtime
 
-friendly-mail, an open-source, email-based alternative to social networking
+friendly-mail, an open-source, email-based, alternative social network

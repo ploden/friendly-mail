@@ -26,7 +26,7 @@ public struct MessageHeader {
         return nil
     }
     
-    public init(sender: Address?,
+    public init?(sender: Address?,
                 from: Address,
                 to: [Address],
                 replyTo: [Address],
@@ -35,6 +35,10 @@ public struct MessageHeader {
                 extraHeaders: [String : String],
                 messageID: String)
     {
+        guard to.count > 0 else {
+            print("TO IS EMPTY")
+            return nil
+        }
         self.sender = sender
         self.fromAddress = from
         self.toAddress = to
@@ -58,6 +62,7 @@ public struct MessageHeader {
         }
         return keyValues
     }
+    
     static func headerString(from headerKeyValues: [HeaderKeyValue]) -> String {
         var pairs = [String]()
         

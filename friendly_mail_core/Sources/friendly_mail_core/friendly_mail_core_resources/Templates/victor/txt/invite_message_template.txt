@@ -1,8 +1,8 @@
-${authorDisplayName} has invited you to their friendly-mail. Follow to receive their updates and photos:
+<!-- ${authorDisplayName} --> has invited you to their friendly-mail. Follow to receive their updates and photos:
 
-Follow Daily: mailto:${replyTo}?subject=Fm&body=Follow%20daily
-Follow Weekly: mailto:${replyTo}?subject=Fm&body=Follow%20weekly
-Follow Monthly: mailto:${replyTo}?subject=Fm&body=Follow%20monthly
-Follow Realtime: mailto:${replyTo}?subject=Fm&body=Follow%20realtime
+Follow Daily: mailto:<!-- ${replyTo} -->?subject=Fm&body=Follow%20daily
+Follow Weekly: mailto:<!-- ${replyTo} -->?subject=Fm&body=Follow%20weekly
+Follow Monthly: mailto:<!-- ${replyTo} -->?subject=Fm&body=Follow%20monthly
+Follow Realtime: mailto:<!-- ${replyTo} -->?subject=Fm&body=Follow%20realtime
 
-friendly-mail, an open-source, email-based alternative to social networking
+friendly-mail, an open-source, email-based, alternative social network
