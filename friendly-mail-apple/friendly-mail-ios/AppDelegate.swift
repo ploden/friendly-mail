@@ -9,6 +9,9 @@ import UIKit
 import AppAuth
 import BackgroundTasks
 import friendly_mail_core
+import Amplify
+import AWSCognitoAuthPlugin
+import AWSS3StoragePlugin
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -17,7 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var authState: OIDAuthState?
     static var backgroundAppRefreshTaskSchedulerIdentifier = "com.deovolentellc.friendly-mail-ios.backgroundAppRefreshIdentifier"
 
-    lazy public var logger: Logger = {
+    lazy public var logger: friendly_mail_core.Logger = {
         return AppleLogger()
     }()
     
@@ -40,6 +43,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return result!
     }()
     
+    lazy var storageProvider: AppleStorageProvider = {
+        return AppleStorageProvider()
+    }()
+    
     lazy var settings: AppleSettings? = {
         if let existing = AppleSettings(fromUserDefaults: .standard) {
             return existing
@@ -56,6 +63,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        do {
+            try Amplify.add(plugin: AWSCognitoAuthPlugin())
+            try Amplify.add(plugin: AWSS3StoragePlugin())
+            try Amplify.configure()
+            print("Amplify configured with Auth and Storage plugins")
+        } catch {
+            print("Failed to initialize Amplify with \(error)")
+        }
         
         AppleSettings.addObserver(forSettings: self)
         SettingsSynchronizer.shared.synciCloud()

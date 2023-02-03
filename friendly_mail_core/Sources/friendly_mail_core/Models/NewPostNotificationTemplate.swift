@@ -9,17 +9,17 @@ import Foundation
 
 class NewPostNotificationTemplate: Template {
     
-    func populatePartialHTML(with post: SocialMediaPosting, notification: NewPostNotification, subscription: Subscription) -> String? {
+    func populatePartialHTML(with post: SocialMediaPosting, notification: NewPostNotification, follow: Follow) -> String? {
         if let url = partialHTMLTemplateURL() {
-            return populate(url: url, with: [post, notification, subscription])
+            return populate(url: url, with: [post, notification, follow])
         }
         return nil
     }
     
-    func populateHTML(with post: SocialMediaPosting, notification: NewPostNotification, subscription: Subscription) -> String? {
+    func populateHTML(with post: SocialMediaPosting, notification: NewPostNotification, follow: Follow) -> String? {
         if
             let baseHTML = populateBaseHTML(),
-            let partialHTML = populatePartialHTML(with: post, notification: notification, subscription: subscription)
+            let partialHTML = populatePartialHTML(with: post, notification: notification, follow: follow)
         {
             let payload: [String:Any] = ["payload": partialHTML]
             let html = populate(string: baseHTML, with: payload)
@@ -28,16 +28,16 @@ class NewPostNotificationTemplate: Template {
         return nil
     }
 
-    func populatePlainText(with post: SocialMediaPosting, notification: NewPostNotification, subscription: Subscription) -> String? {
+    func populatePlainText(with post: SocialMediaPosting, notification: NewPostNotification, follow: Follow) -> String? {
         if let url = plainTextTemplateURL() {
-            return populate(url: url, with: [post, notification, subscription])
+            return populate(url: url, with: [post, notification, follow])
         }
         return nil
     }
     
-    func populateSubject(with post: SocialMediaPosting, notification: NewPostNotification, subscription: Subscription) -> String? {
+    func populateSubject(with post: SocialMediaPosting, notification: NewPostNotification, follow: Follow) -> String? {
         if let url = subjectTemplateURL() {
-            return populate(url: url, with: [post, notification, subscription])
+            return populate(url: url, with: [post, notification, follow])
         }
         return nil
     }
@@ -53,8 +53,8 @@ class NewPostNotificationTemplate: Template {
                 } else if let post = withFromArray as? SocialMediaPosting {
                     data["authorDisplayName"] = post.author.displayName
                     data["statusUpdate"] = post.articleBody
-                } else if let subscription = withFromArray as? Subscription {
-                    data["replyTo"] = subscription.followee.address
+                } else if let follow = withFromArray as? Follow {
+                    data["replyTo"] = follow.followee.address
                 }
             }
         }

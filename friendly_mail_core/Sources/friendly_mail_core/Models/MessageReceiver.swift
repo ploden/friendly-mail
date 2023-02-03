@@ -21,7 +21,9 @@ public protocol MessageReceiver {
 }
 
 public protocol MessageSender {
-    func sendDraft(draft: MessageDraft, completion: @escaping (Error?, MessageID?) -> ())        
-    func sendMessage(to: [Address], subject: String?, htmlBody: String?, plainTextBody: String, friendlyMailHeaders: [HeaderKeyValue]?, completion: @escaping (Error?, MessageID?) -> ())
+    func sendDraft(draft: MessageDraft) async throws -> MessageID
+    @available(*, deprecated, renamed: "sendDraft")
+    func sendDraft(draft: MessageDraft, completion: @escaping (Result<MessageID, Error>) -> Void)
+    func sendMessage(to: [Address], subject: String?, htmlBody: String?, plainTextBody: String, friendlyMailHeaders: [HeaderKeyValue]?, completion: @escaping (Result<MessageID, Error>) -> Void)
     func moveMessageToInbox(message: BaseMessage, completion: @escaping (Error?) -> ())
 }

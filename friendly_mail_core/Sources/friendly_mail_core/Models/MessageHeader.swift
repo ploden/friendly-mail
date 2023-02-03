@@ -9,6 +9,22 @@ import Foundation
 
 public typealias HeaderKeyValue = (key: String, value: String)
 
+typealias MailHeader = [HeaderKeyValue]
+
+extension MailHeader {
+    var friendlyMailMessageType: FriendlyMailMessageType? {
+        get {
+            if
+                let messageTypeString = self.first(where: { $0.key == HeaderKey.type.rawValue })?.value,
+                let messageType = FriendlyMailMessageType(rawValue: messageTypeString)
+            {
+                return messageType
+            }
+            return nil
+        }
+    }
+}
+
 public struct MessageHeader {
     public let sender: Address?
     public let fromAddress: Address

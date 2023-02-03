@@ -1,5 +1,5 @@
 //
-//  CreateSubscriptionMessage.swift
+//  CreateFollowMessage.swift
 //  friendly-mail
 //
 //  Created by Philip Loden on 11/24/21.
@@ -12,7 +12,7 @@ import Foundation
  in response to an invite, to follow to them.
  */
 
-struct CreateSubscriptionMessage: BaseMessage {
+struct CreateFollowMessage: BaseMessage {
     let uidWithMailbox: UIDWithMailbox
     let header: MessageHeader
     let htmlBody: String?
@@ -21,16 +21,16 @@ struct CreateSubscriptionMessage: BaseMessage {
     
     let follower: Address
     let followee: Address
-    let frequency: SubscriptionFrequency
+    let frequency: UpdateFrequency
     
-    var subscription: Subscription {
+    var subscription: Follow {
         get {
-            return Subscription(follower: follower, followee: followee, frequency: frequency, messageID: header.messageID)
+            return Follow(follower: follower, followee: followee, frequency: frequency, messageID: header.messageID)
         }
     }
 }
 
-extension CreateSubscriptionMessage: Identifiable {
+extension CreateFollowMessage: Identifiable {
     var identifier: MessageID {
         return header.messageID
     }

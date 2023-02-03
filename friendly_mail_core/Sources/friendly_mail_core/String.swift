@@ -99,3 +99,15 @@ extension String {
         appending(String(repeating: "=", count: (4 - count % 4) % 4))
     }
 }
+
+extension String {
+    var decodedBase64: String? {
+        if
+            let decodedData = Data(base64Encoded: self.paddedForBase64Decoding, options: .ignoreUnknownCharacters),
+            let decodedDataString = String(data: decodedData, encoding: .utf8)
+        {
+            return decodedDataString
+        }
+        return nil
+    }
+}

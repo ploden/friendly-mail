@@ -39,10 +39,10 @@ class TestHelpers {
                                    sender: MessageSender,
                                    receiver: MessageReceiver,
                                    testCase: XCTestCase,
-                                   provider: inout MailProvider)
+                                   provider: inout MailProvider) async
     {
         var messages = provider.messages
-        TestHelpers.processMailAndSend(config: config, sender: sender, receiver: receiver, testCase: testCase, messages: &messages)
+        await TestHelpers.processMailAndSend(config: config, sender: sender, receiver: receiver, testCase: testCase, messages: &messages)
         provider = provider.new(mergingMessageStores: messages, postNotification: false)
     }
     
@@ -50,9 +50,36 @@ class TestHelpers {
                                    sender: MessageSender,
                                    receiver: MessageReceiver,
                                    testCase: XCTestCase,
-                                   messages: inout MessageStore)
+                                   messages: inout MessageStore) async
     {
-        let results = MailController.processMail(config: config, sender: sender, receiver: receiver, messages: messages)
+        let results = await MailController.processMail(config: config, sender: sender, receiver: receiver, messages: messages, storageProvider: TestStorageProvider())
+        
+        
+        let sentMessageIDs = await withTaskGroup(of: MessageID.self, returning: [MessageID].self) { group in
+            for draft in results.drafts {
+                group.async {
+                    return try! await sender.sendDraft(draft: draft)
+                }
+            }
+            
+            var result: [MessageID] = []
+            for await individualResult in group {
+                result.append(individualResult)
+            }
+            return result
+        }
+        
+        sentMessageIDs.forEach {
+            if
+                let testSender = sender as? TestSenderReceiver,
+                let sentMessage = testSender.sentMessages.getMessage(for: $0)
+            {
+                messages = messages.addingMessage(message: sentMessage, messageID: $0)
+            }
+        }
+        
+        /*
+        var sentMessageIDs = [MessageID]()
         
         results.drafts.forEach { draft in
             let group = DispatchGroup()
@@ -62,8 +89,11 @@ class TestHelpers {
             
             // avoid deadlocks by not using .main queue here
             DispatchQueue.global(qos: .background).async {
-                sender.sendDraft(draft: draft) { error, messageID in
-                    anID = messageID
+                sender.sendDraft(draft: draft) { sendDraftResult in
+                    //anID = messageID
+                    if let messageID = try? sendDraftResult.get() {
+                        sentMessageIDs.append(messageID)
+                    }
                     group.leave()
                 }
             }
@@ -79,6 +109,7 @@ class TestHelpers {
                 messages = messages.addingMessage(message: sentMessage, messageID: messageID)
             }
         }
+         */
     }
     
     static func loadEmail(account: FriendlyMailAccount?, withPath path: String, uid: inout UInt64, messages: inout MessageStore) -> BaseMessage? {
@@ -183,4 +214,33 @@ class TestHelpers {
         return notificationMessage
     }
     */
+    
+    static func defaultSetup(testCase: XCTestCase) async -> (MailProvider, TestSenderReceiver, UInt64) {
+        var uid: UInt64 = 1
+        let user = Address(name: "Phil Loden", address: "ploden@gmail.com")!
+        let theme = await (UIApplication.shared.delegate as! AppDelegate).appConfig.defaultTheme
+        let settings = AppleSettings(user: user, selectedTheme: theme)
+        
+        let senderReceiver = TestSenderReceiver()
+        senderReceiver.user = user
+        senderReceiver.settings = settings
+        
+        var provider = MailProvider(settings: settings, messages: MessageStore())
+        
+        let config = await (UIApplication.shared.delegate as! AppDelegate).appConfig
+        
+        var inoutMessages: MessageStore! = provider.messages
+        
+        await MessageReceiverTests.loadCreateAccountEmailAndSendResponse(config: config,
+                                                                         sender: senderReceiver,
+                                                                         receiver: senderReceiver,
+                                                                         testCase: testCase,
+                                                                         uid: &uid,
+                                                                         messages: &inoutMessages)
+        
+        provider = provider.new(mergingMessageStores: inoutMessages, postNotification: false)
+        
+        return (provider, senderReceiver, uid)
+    }
+    
 }

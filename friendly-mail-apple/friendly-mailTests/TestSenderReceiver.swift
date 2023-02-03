@@ -39,6 +39,7 @@ class TestSenderReceiver: MessageSender, MessageReceiver {
     
     var sentMessages = MessageStore()
     var user: Address!
+    var account: FriendlyMailAccount?
     var settings: Settings!
     
     func fetchMessage(uidWithMailbox: UIDWithMailbox, completion: @escaping (Error?, BaseMessage?) -> ()) {
@@ -56,11 +57,36 @@ class TestSenderReceiver: MessageSender, MessageReceiver {
     }
      */
     
-    func sendDraft(draft: MessageDraft, completion: @escaping (Error?, MessageID?) -> ()) {
-        sendMessage(to: draft.to, subject: draft.subject, htmlBody: draft.htmlBody, plainTextBody: draft.plainTextBody, friendlyMailHeaders: draft.friendlyMailHeaders, completion: completion)
+    func sendDraft(draft: MessageDraft) async throws -> MessageID {
+        return try await withCheckedThrowingContinuation { continuation in
+            sendMessage(to: draft.to,
+                        subject: draft.subject,
+                        htmlBody: draft.htmlBody,
+                        plainTextBody: draft.plainTextBody,
+                        friendlyMailHeaders: draft.friendlyMailHeaders)
+            { result in
+                switch result {
+                case .success(let value):
+                    continuation.resume(returning: value)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+
+    func sendDraft(draft: MessageDraft, completion: @escaping (Result<MessageID, Error>) -> Void) {
+        Task {
+            do {
+                let result = try await sendDraft(draft: draft)
+                completion(.success(result))
+            } catch {
+                completion(.failure(error))
+            }
+        }
     }
     
-    func sendMessage(to: [Address], subject: String?, htmlBody: String?, plainTextBody: String, friendlyMailHeaders: [HeaderKeyValue]?, completion: @escaping (Error?, MessageID?) -> ()) {
+    func sendMessage(to: [Address], subject: String?, htmlBody: String?, plainTextBody: String, friendlyMailHeaders: [HeaderKeyValue]?, completion: @escaping (Result<MessageID, Error>) -> Void) {
         let extraHeaders: [String : String] = {
             if let friendlyMailHeaders = friendlyMailHeaders {
                 let pairs = friendlyMailHeaders.compactMap { "\($0.key)=\($0.value)" }
@@ -73,7 +99,7 @@ class TestSenderReceiver: MessageSender, MessageReceiver {
         let header = MessageHeader(sender: user, from: user!, to: to, replyTo: [user!], subject: subject, date: Date.now, extraHeaders: extraHeaders, messageID: NSUUID().uuidString.lowercased())
         
         let uidWithMailbox = UIDWithMailbox(UID: 1, mailbox: Mailbox(name: .friendlyMail, UIDValidity: 0))
-        let message = MessageFactory.createMessage(account: nil,
+        let message = MessageFactory.createMessage(account: account,
                                                    uidWithMailbox: uidWithMailbox,
                                                    header: header!,
                                                    htmlBody: htmlBody,
@@ -83,7 +109,7 @@ class TestSenderReceiver: MessageSender, MessageReceiver {
                                                    logger: nil)
         sentMessages = sentMessages.addingMessage(message: message!, messageID: message!.header.messageID)
         
-        completion(nil, message!.header.messageID)
+        completion(.success(message!.header.messageID))
     }
 }
-    
+

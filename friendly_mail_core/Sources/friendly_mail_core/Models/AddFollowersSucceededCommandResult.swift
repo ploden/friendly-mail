@@ -1,21 +1,26 @@
 //
-//  CreateAccountSucceededCommandResult.swift
+//  AddFollowersSucceededCommandResult.swift
 //  
 //
-//  Created by Philip Loden on 12/1/22.
+//  Created by Philip Loden on 1/28/23.
 //
 
 import Foundation
 
-public class CreateAccountSucceededCommandResult: CommandResult {
+public class AddFollowersSucceededCommandResult: CommandResult {
     enum CodingKeys: String, CodingKey {
-        case account
+        case follows
     }
     
-    let account: FriendlyMailAccount
+    var followee: Address {
+        get {
+            return user
+        }
+    }
+    let follows: [Follow]
     
-    public required init(createCommandMessageID: MessageID, commandType: CommandType, command: Command, user: Address, message: String, exitCode: CommandExitCode, account: FriendlyMailAccount) {
-        self.account = account
+    public required init(createCommandMessageID: MessageID, commandType: CommandType, command: Command, user: Address, message: String, exitCode: CommandExitCode, follows: [Follow]) {
+        self.follows = follows
         super.init(createCommandMessageID: createCommandMessageID, commandType: commandType, command: command, user: user, message: message, exitCode: exitCode)
     }
     
@@ -23,7 +28,7 @@ public class CreateAccountSucceededCommandResult: CommandResult {
         let commandResult = try CommandResult.init(from: decoder)
         
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        let account = try values.decode(FriendlyMailAccount.self, forKey: .account)
+        let follows = try values.decode([Follow].self, forKey: .follows)
         
         self.init(createCommandMessageID: commandResult.createCommandMessageID,
                   commandType: commandResult.commandType,
@@ -31,12 +36,12 @@ public class CreateAccountSucceededCommandResult: CommandResult {
                   user: commandResult.user,
                   message: commandResult.message,
                   exitCode: commandResult.exitCode,
-                  account: account)
+                  follows: follows)
     }
     
     public override func encode(to encoder: Encoder) throws {
         try super.encode(to: encoder)
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(account, forKey: .account)
+        try container.encode(follows, forKey: .follows)
     }
 }

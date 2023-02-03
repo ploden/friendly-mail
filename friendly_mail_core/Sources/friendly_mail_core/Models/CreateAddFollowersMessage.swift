@@ -21,11 +21,11 @@ struct CreateAddFollowersMessage: BaseMessage {
     
     let followers: [Address]
     let followee: Address
-    let frequency: SubscriptionFrequency
+    let frequency: UpdateFrequency
     
-    var subscriptions: [Subscription] {
+    var follows: [Follow] {
         get {
-            return followers.map { Subscription(follower: $0, followee: followee, frequency: frequency, messageID: header.messageID) }
+            return followers.map { Follow(follower: $0, followee: followee, frequency: frequency, messageID: header.messageID) }
         }
     }
 }

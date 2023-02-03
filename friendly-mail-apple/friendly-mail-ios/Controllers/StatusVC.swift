@@ -60,8 +60,9 @@ class StatusVC: FMViewController, HasMailProvider {
         
         let config = (UIApplication.shared.delegate as? AppDelegate)!.appConfig
         let logger = (UIApplication.shared.delegate as? AppDelegate)!.logger
-        
-        MailController.getAndProcessAndSendMail(config: config, sender: mailProvider, receiver: mailProvider, messages: mailProvider.messages, logger: logger) { error, updatedMessages in
+        let storageProvider = (UIApplication.shared.delegate as? AppDelegate)!.storageProvider
+
+        MailController.getAndProcessAndSendMail(config: config, sender: mailProvider, receiver: mailProvider, messages: mailProvider.messages, storageProvider: storageProvider, logger: logger) { error, updatedMessages in
             OperationQueue.main.addOperation {
                 self.mailProvider = mailProvider.new(mergingMessageStores: updatedMessages, postNotification: true)
                 NotificationCenter.default.post(name: Foundation.Notification.Name.mailProviderDidChange, object: self.mailProvider)

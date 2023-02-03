@@ -22,20 +22,20 @@ open class MessageReceiverTests: XCTestCase {
                                                       receiver: MessageReceiver,
                                                       testCase: XCTestCase,
                                                       uid: inout UInt64,
-                                                      messages: inout MessageStore)
+                                                      messages: inout MessageStore) async
     {
         MessageReceiverTests.loadCreateAccountEmail(testCase: testCase, uid: &uid, messages: &messages)
-        TestHelpers.processMailAndSend(config: config, sender: sender, receiver: receiver, testCase: testCase, messages: &messages)
+        await TestHelpers.processMailAndSend(config: config, sender: sender, receiver: receiver, testCase: testCase, messages: &messages)
     }
     
-    static func loadCreatePostEmail(testCase: XCTestCase, uid: inout UInt64, account: FriendlyMailAccount, messages: inout MessageStore) {
+    static func loadCreatePostEmail(testCase: XCTestCase, uid: inout UInt64, account: FriendlyMailAccount, messages: inout MessageStore) -> BaseMessage? {
         let createPostEmailPath = Bundle(for: type(of: testCase )).path(forResource: "hello_world", ofType: "txt")!
-        TestHelpers.loadEmail(account: account, withPath: createPostEmailPath, uid: &uid, messages: &messages)
+        return TestHelpers.loadEmail(account: account, withPath: createPostEmailPath, uid: &uid, messages: &messages)
     }
     
-    static func loadCreateSubscriptionEmail(testCase: XCTestCase, uid: inout UInt64, account: FriendlyMailAccount, messages: inout MessageStore) {
-        let followEmailPath = Bundle(for: type(of: testCase )).path(forResource: "follow_realtime", ofType: "txt")!
-        TestHelpers.loadEmail(account: account, withPath: followEmailPath, uid: &uid, messages: &messages)
+    static func loadCreateAddFollowersEmail(testCase: XCTestCase, uid: inout UInt64, account: FriendlyMailAccount, messages: inout MessageStore) -> BaseMessage? {
+        let followEmailPath = Bundle(for: type(of: testCase )).path(forResource: "create_add_followers", ofType: "txt")!
+        return TestHelpers.loadEmail(account: account, withPath: followEmailPath, uid: &uid, messages: &messages)
     }
 
     static func loadCreateInvitesEmail(testCase: XCTestCase, uid: inout UInt64, account: FriendlyMailAccount, messages: inout MessageStore) {

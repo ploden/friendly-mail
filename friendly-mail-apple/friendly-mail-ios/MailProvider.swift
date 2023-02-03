@@ -84,19 +84,59 @@ public struct MailProvider {
 
 extension MailProvider: MessageSender {
     
-    public func sendDraft(draft: MessageDraft, completion: @escaping (Error?, MessageID?) -> ()) {
+    /*
+    public func sendDraft(draft: MessageDraft, completion: @escaping (Result<MessageID, Error>) -> Void) {
         sendMessage(to: draft.to, subject: draft.subject, htmlBody: draft.htmlBody, plainTextBody: draft.plainTextBody, friendlyMailHeaders: draft.friendlyMailHeaders, completion: completion)
     }
     
-    public func sendMessage(to: [Address], subject: String?, htmlBody: String?, plainTextBody: String, friendlyMailHeaders: [HeaderKeyValue]?, completion: @escaping (Error?, MessageID?) -> ()) {
+    public func sendDraft(draft: MessageDraft) async throws -> MessageID {
+        return await withCheckedContinuation { continuation in
+            sendDraft(draft: draft) { result in
+                continuation.resume(returning: result)
+            }
+        }
+    }
+     */
+    
+    public func sendDraft(draft: MessageDraft) async throws -> MessageID {
+        return try await withCheckedThrowingContinuation { continuation in
+            sendMessage(to: draft.to,
+                        subject: draft.subject,
+                        htmlBody: draft.htmlBody,
+                        plainTextBody: draft.plainTextBody,
+                        friendlyMailHeaders: draft.friendlyMailHeaders)
+            { result in
+                switch result {
+                case .success(let value):
+                    continuation.resume(returning: value)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+
+    public func sendDraft(draft: MessageDraft, completion: @escaping (Result<MessageID, Error>) -> Void) {
+        Task {
+            do {
+                let result = try await sendDraft(draft: draft)
+                completion(.success(result))
+            } catch {
+                completion(.failure(error))
+            }
+        }
+    }
+    
+    public func sendMessage(to: [Address], subject: String?, htmlBody: String?, plainTextBody: String, friendlyMailHeaders: [HeaderKeyValue]?, completion: @escaping (Result<MessageID, Error>) -> Void) {
         guard settings.isValid else {
-            completion(NSError(domain: "fm", code: 1, userInfo: [:]), nil)
+            completion(.failure(NSError(domain: "fm", code: 1, userInfo: [:])))
             return
         }
         
         settings.authState?.performAction(freshTokens: { accessToken, idToken, freshTokensError in
             guard let accessToken = accessToken else {
-                completion(freshTokensError, nil)
+                //completion(.failure(freshTokensError))
+                completion(.failure(NSError(domain: "fm", code: 1, userInfo: [:])))
                 return
             }
             
@@ -135,7 +175,12 @@ extension MailProvider: MessageSender {
                 } else {
                     //DDLogDebug("MailController: sendMessage: send succeeded")
                 }
-                completion(error, error == nil ? builder.header.messageID : nil)
+                if let error = error {
+                    completion(.failure(error))
+                } else {
+                    completion(.success(builder.header.messageID))
+                }
+                //completion(error, error == nil ? builder.header.messageID : nil)
             }
         })
     }

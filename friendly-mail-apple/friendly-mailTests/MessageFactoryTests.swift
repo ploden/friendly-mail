@@ -11,7 +11,7 @@ import XCTest
 
 class MessageFactoryTests: XCTestCase {
     
-    func testCreatePostMessage() throws {
+    func testCreatePostMessage() async throws {
         let user = Address(name: "Phil Loden", address: "ploden@gmail.com")!
         let subject = "Fm"
         let body = "This is a test post."
@@ -19,18 +19,18 @@ class MessageFactoryTests: XCTestCase {
         let header = MessageHeader(sender: user, from: user, to: [user], replyTo: [user], subject: subject, date: Date(), extraHeaders: [:], messageID: "")
 
         var uid: UInt64 = 1
-        let theme = (UIApplication.shared.delegate as! AppDelegate).appConfig.defaultTheme
+        let theme = await (UIApplication.shared.delegate as! AppDelegate).appConfig.defaultTheme
         let settings = AppleSettings(user: user, selectedTheme: theme)
                         
         let senderReceiver = TestSenderReceiver()
         senderReceiver.user = user
         senderReceiver.settings = settings
         
-        let config = (UIApplication.shared.delegate as! AppDelegate).appConfig
+        let config = await (UIApplication.shared.delegate as! AppDelegate).appConfig
         
         var messages = MessageStore()
         
-        MessageReceiverTests.loadCreateAccountEmailAndSendResponse(config: config,
+        await MessageReceiverTests.loadCreateAccountEmailAndSendResponse(config: config,
                                                                    sender: senderReceiver,
                                                                    receiver: senderReceiver,
                                                                    testCase: self,
@@ -51,33 +51,14 @@ class MessageFactoryTests: XCTestCase {
         XCTAssert(message?.plainTextBody == body, "post body is not correct")
     }
     
-    func testCreateAccountSucceededCommandResultMessage() throws {
-        let user = Address(name: "Phil Loden", address: "ploden@gmail.com")!
-
-        var uid: UInt64 = 1
-        let theme = (UIApplication.shared.delegate as! AppDelegate).appConfig.defaultTheme
-        let settings = AppleSettings(user: user, selectedTheme: theme)
-                        
-        let senderReceiver = TestSenderReceiver()
-        senderReceiver.user = user
-        senderReceiver.settings = settings
-        
-        let config = (UIApplication.shared.delegate as! AppDelegate).appConfig
-        
-        var messages = MessageStore()
-        
-        MessageReceiverTests.loadCreateAccountEmailAndSendResponse(config: config,
-                                                                   sender: senderReceiver,
-                                                                   receiver: senderReceiver,
-                                                                   testCase: self,
-                                                                   uid: &uid,
-                                                                   messages: &messages)
-        
-        var provider = MailProvider(settings: settings, messages: messages)
+    func testCreateAccountSucceededCommandResultMessage() async throws {
+        let (_, senderReceiver, _) = await TestHelpers.defaultSetup(testCase: self)
         
         let sentMessage = senderReceiver.sentMessages.allMessages.last!
 
         XCTAssertNotNil(sentMessage)
+        XCTAssert(sentMessage is CreateAccountSucceededCommandResultMessage)
+        XCTAssert((sentMessage as! CreateAccountSucceededCommandResultMessage).commandResult is CreateAccountSucceededCommandResult)
         
         let result = MessageFactory.extractCreateCommandSucceededCommandResult(htmlBody: sentMessage.htmlBody, friendlyMailHeader: sentMessage.header.friendlyMailHeader, friendlyMailData: MailProvider.friendlyMailData(for: sentMessage.htmlBody))
 
@@ -139,31 +120,25 @@ class MessageFactoryTests: XCTestCase {
     }
      */
     
-    /*
-    func testSetProfilePicMessage() throws {
-        // Load email from file
+    func testSetProfilePicMessage() async throws {
+        let config = await (UIApplication.shared.delegate as! AppDelegate).appConfig
+        var (provider, _, uid) = await TestHelpers.defaultSetup(testCase: self)
+        
         let path = Bundle(for: type(of: self )).path(forResource: "set_profile_pic", ofType: "txt")!
+        let correctMessage = TestHelpers.loadEmail(account: provider.messages.account, withPath: path, uid: &uid, provider: &provider)
 
-        let uid: UInt64 = 1
-        let user = Address(name: "Phil Loden", address: "ploden@gmail.com")!
-        let theme = (UIApplication.shared.delegate as! AppDelegate).appConfig.defaultTheme
-        let correctSettings = TestSettings(user: user, password: "", selectedTheme: theme)
-        let correctMessage = TestHelpers.loadEmail(accountAddress: user, withPath: path, uid: uid)
-        
         XCTAssert(correctMessage is CreateCommandsMessage)
-         let commandMessage = correctMessage as! CreateCommandsMessage
-        XCTAssert(commandMessage.commands.first!.commandType == .setProfilePic)
         
-        /*
-        if let correctMessage = correctMessage as? CreateCommandMessage {
-            XCTAssert(correctMessage.commands.count == 1)
+        if let commandMessage = correctMessage as? CreateCommandsMessage {
+            XCTAssert(commandMessage.commands.count == 1)
             
-            let command = correctMessage.commands.first!
+            let command = commandMessage.commands.first!
             XCTAssert(command.commandType == .setProfilePic)
             
-            let photoAttachmentOrNil = correctMessage.attachments!.first { $0.mimeType == "image/jpeg" }
+            let photoAttachmentOrNil = commandMessage.attachments!.first { $0.mimeType == "image/jpeg" }
             XCTAssertNotNil(photoAttachmentOrNil)
             
+            /*
             let photoAttachment = photoAttachmentOrNil!
             let profilePicPath = Bundle(for: type(of: self )).path(forResource: "phil_profile_pic_attachment", ofType: "jpeg")!
             let profilePicURL = URL(fileURLWithPath: profilePicPath)
@@ -173,46 +148,32 @@ class MessageFactoryTests: XCTestCase {
             print(path!)
             TestHelpers.writeToTmpDir(data: profilePicData, filename: "profile_pic_file.jpeg")
 
-            
             XCTAssert(photoAttachment.data == profilePicData)
+             */
         }
-         */
     }
-     */
     
-    /*
-    func testCreateAccountMessage() throws {
-        // Load email from file
-        let path = Bundle(for: type(of: self )).path(forResource: "create_account", ofType: "txt")!
+    func testCreateAccountMessage() async throws {
+        let path = Bundle(for: type(of: self )).path(forResource: "create_command_create_account", ofType: "txt")!
 
-        let uid: UInt64 = 1
-        let user = Address(name: "Phil Loden", address: "ploden@gmail.com")!
-        let theme = (UIApplication.shared.delegate as! AppDelegate).appConfig.defaultTheme
-        let correctSettings = TestSettings(user: user, password: "", selectedTheme: theme)
-        let correctMessage = TestHelpers.loadEmail(accountAddress: user, withPath: path, uid: uid)
+        let (provider, _, uid) = await TestHelpers.defaultSetup(testCase: self)
+        let correctMessage = TestHelpers.loadEmail(account: provider.messages.account, withPath: path, uid: uid)
         
         XCTAssert(correctMessage is CreateCommandsMessage)
         let commandMessage = correctMessage as! CreateCommandsMessage
         XCTAssert(commandMessage.commands.first!.commandType == .createAccount)
     }
-     */
     
-    /*
-    func testCommandNotFoundMessage() throws {
-        // Load email from file
-        let path = Bundle(for: type(of: self )).path(forResource: "command_not_found", ofType: "txt")!
+    func testCommandNotFoundMessage() async throws {
+        let path = Bundle(for: type(of: self )).path(forResource: "create_command_not_found", ofType: "txt")!
 
-        let uid: UInt64 = 1
-        let user = Address(name: "Phil Loden", address: "ploden@gmail.com")!
-        let theme = (UIApplication.shared.delegate as! AppDelegate).appConfig.defaultTheme
-        let correctSettings = TestSettings(user: user, password: "", selectedTheme: theme)
-        let correctMessage = TestHelpers.loadEmail(accountAddress: user, withPath: path, uid: uid)
+        let (provider, _, uid) = await TestHelpers.defaultSetup(testCase: self)
+        let correctMessage = TestHelpers.loadEmail(account: provider.messages.account, withPath: path, uid: uid)
         
         XCTAssert(correctMessage is CreateCommandsMessage)
         let commandMessage = correctMessage as! CreateCommandsMessage
         XCTAssert(commandMessage.commands.first!.commandType == .unknown)
     }
-     */
 
     func testExtractMessageID() throws {
         let mID = "4EC2D8F3-DD53-43CD-B38C-1AFDD5149C7C@gmail.com"
@@ -220,33 +181,56 @@ class MessageFactoryTests: XCTestCase {
         let commentString = "Fm \(label):\(mID)"
         let extracted = MessageFactory.extractMessageID(withLabel: label, from: commentString)
         XCTAssert(extracted == mID)
-        
     }
     
-    func testExtractCommands() throws {
+    func testExtractCommandsSetProfilePic() throws {
         let plainTextBody = "Fm: set profile pic"
         let messageID = ""
         let extracted = MessageFactory.extractCommands(messageID: messageID, htmlBody: nil, plainTextBody: plainTextBody)
         XCTAssert(extracted!.first!.commandType == .setProfilePic)
     }
+
+    func testExtractCommandsAddSingleFollower() throws {
+        let plainTextBody = "Fm: add follower ploden.postcards@gmail.com"
+        let messageID = ""
+        let extracted = MessageFactory.extractCommands(messageID: messageID, htmlBody: nil, plainTextBody: plainTextBody)
+        XCTAssert(extracted!.first!.commandType == .addFollowers)
+    }
+
+    func testExtractCommandsAddMultipleFollowers() throws {
+        let plainTextBody = "Fm: add followers ploden.postcards@gmail.com second@second.com"
+        let messageID = ""
+        let extracted = MessageFactory.extractCommands(messageID: messageID, htmlBody: nil, plainTextBody: plainTextBody)
+        XCTAssert(extracted!.first!.commandType == .addFollowers)
+    }
     
-    func testExtractCreateCommandSucceededCommandResult() throws {
+    func testExtractFollowersToAdd() throws {
+        let single = "add follower ploden.postcards@gmail.com"
+        let singleFollower = MessageFactory.extractFollowersToAdd(plainTextBody: single)
+        XCTAssert(singleFollower.count == 1)
+        let multiple = "add followers ploden.postcards@gmail.com second@second.com"
+        let multipleFollowers = MessageFactory.extractFollowersToAdd(plainTextBody: multiple)
+        XCTAssert(multipleFollowers.count == 2)
+    }
+    
+    /*
+    func testExtractCreateCommandSucceededCommandResult() async throws {
         let user = Address(name: "Phil Loden", address: "ploden@gmail.com")!
         let subject = "Fm"
 
         var uid: UInt64 = 1
-        let theme = (UIApplication.shared.delegate as! AppDelegate).appConfig.defaultTheme
+        let theme = await (UIApplication.shared.delegate as! AppDelegate).appConfig.defaultTheme
         let settings = AppleSettings(user: user, selectedTheme: theme)
                         
         let senderReceiver = TestSenderReceiver()
         senderReceiver.user = user
         senderReceiver.settings = settings
         
-        let config = (UIApplication.shared.delegate as! AppDelegate).appConfig
+        let config = await (UIApplication.shared.delegate as! AppDelegate).appConfig
         
         var messages = MessageStore()
         
-        MessageReceiverTests.loadCreateAccountEmailAndSendResponse(config: config,
+        await MessageReceiverTests.loadCreateAccountEmailAndSendResponse(config: config,
                                                                    sender: senderReceiver,
                                                                    receiver: senderReceiver,
                                                                    testCase: self,
@@ -260,12 +244,6 @@ class MessageFactoryTests: XCTestCase {
         let result = MessageFactory.extractCreateCommandSucceededCommandResult(htmlBody: message!.htmlBody, friendlyMailHeader: message!.header.friendlyMailHeader, friendlyMailData: MailProvider.friendlyMailData(for: message!.htmlBody))
         
         XCTAssertNotNil(result)
-    }
-    
-    /*
-    func testExtractCommandResult() throws {
-        let result = CommandResult(createCommandMessageID: <#T##MessageID#>, command: <#T##Command#>, user: <#T##Address#>, message: <#T##String#>)
-        MessageFactory.extractCommandResult(uidWithMailbox: , header: <#T##MessageHeader#>, htmlBody: <#T##String?#>, plainTextBody: <#T##String#>)
     }
      */
     
