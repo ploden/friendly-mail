@@ -15,15 +15,15 @@ public enum HeaderName: String {
 public protocol MessageReceiver {
     func downloadFriendlyMailMessages(completion: @escaping (Error?, MessageStore?) -> ())
     func getMail(withMailbox mailbox: Mailbox, completion: @escaping (Error?, MessageStore?) -> ())
-    func fetchMessage(uidWithMailbox: UIDWithMailbox, completion: @escaping (Error?, BaseMessage?) -> ())
-    func fetchFriendlyMailMessage(messageID: MessageID, completion: @escaping (Error?, BaseMessage?) -> ())
+    func fetchMessage(uidWithMailbox: UIDWithMailbox, completion: @escaping (Error?, (any AnyBaseMessage)?) -> ())
+    func fetchFriendlyMailMessage(messageID: MessageID, completion: @escaping (Error?, (any AnyBaseMessage)?) -> ())
     var address: Address { get }
 }
 
 public protocol MessageSender {
-    func sendDraft(draft: MessageDraft) async throws -> MessageID
+    func sendDraft(draft: AnyMessageDraft) async throws -> MessageID
     @available(*, deprecated, renamed: "sendDraft")
     func sendDraft(draft: MessageDraft, completion: @escaping (Result<MessageID, Error>) -> Void)
     func sendMessage(to: [Address], subject: String?, htmlBody: String?, plainTextBody: String, friendlyMailHeaders: [HeaderKeyValue]?, completion: @escaping (Result<MessageID, Error>) -> Void)
-    func moveMessageToInbox(message: BaseMessage, completion: @escaping (Error?) -> ())
+    func moveMessageToInbox(message: any AnyBaseMessage, completion: @escaping (Error?) -> ())
 }

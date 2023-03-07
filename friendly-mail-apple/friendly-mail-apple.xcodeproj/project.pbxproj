@@ -17,6 +17,7 @@
 		8D1EE7022966198800C14EF0 /* amplifyconfiguration.json in Resources */ = {isa = PBXBuildFile; fileRef = 8D1EE7012966198800C14EF0 /* amplifyconfiguration.json */; };
 		8D30D0E428FF31E900990F92 /* set_profile_pic.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8D30D0E328FF31E900990F92 /* set_profile_pic.txt */; };
 		8D369F88297261E50023E5C3 /* TestStorageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D369F87297261E50023E5C3 /* TestStorageProvider.swift */; };
+		8D37263C29AF01BA00CD4C8B /* CommandResultMessageDraftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D37263B29AF01BA00CD4C8B /* CommandResultMessageDraftTests.swift */; };
 		8D39ECF32941281600C5E03E /* create_command_permission_denied.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8D39ECF22941281600C5E03E /* create_command_permission_denied.txt */; };
 		8D3D27AC27EDE253000AAF8D /* InviteMessageTemplateTests in Resources */ = {isa = PBXBuildFile; fileRef = 8D3D27AB27EDE253000AAF8D /* InviteMessageTemplateTests */; };
 		8D3D27AE27EDE2C7000AAF8D /* InviteMessageTemplateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D3D27AD27EDE2C7000AAF8D /* InviteMessageTemplateTests.swift */; };
@@ -170,6 +171,7 @@
 		8D1EE7012966198800C14EF0 /* amplifyconfiguration.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = amplifyconfiguration.json; sourceTree = SOURCE_ROOT; };
 		8D30D0E328FF31E900990F92 /* set_profile_pic.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = set_profile_pic.txt; sourceTree = "<group>"; };
 		8D369F87297261E50023E5C3 /* TestStorageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestStorageProvider.swift; sourceTree = "<group>"; };
+		8D37263B29AF01BA00CD4C8B /* CommandResultMessageDraftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandResultMessageDraftTests.swift; sourceTree = "<group>"; };
 		8D39ECF22941281600C5E03E /* create_command_permission_denied.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = create_command_permission_denied.txt; sourceTree = "<group>"; };
 		8D3D27AB27EDE253000AAF8D /* InviteMessageTemplateTests */ = {isa = PBXFileReference; lastKnownFileType = folder; path = InviteMessageTemplateTests; sourceTree = "<group>"; };
 		8D3D27AD27EDE2C7000AAF8D /* InviteMessageTemplateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteMessageTemplateTests.swift; sourceTree = "<group>"; };
@@ -355,6 +357,7 @@
 				8DA18FA72963DE820074C9A8 /* AppleStorageProviderTests.swift */,
 				8D369F87297261E50023E5C3 /* TestStorageProvider.swift */,
 				8D8E26252976E8F100AF0445 /* Base64JSONCodableTests.swift */,
+				8D37263B29AF01BA00CD4C8B /* CommandResultMessageDraftTests.swift */,
 			);
 			path = "friendly-mailTests";
 			sourceTree = "<group>";
@@ -738,6 +741,7 @@
 				8DC0383B27DD0937006F1939 /* MessageHeaderTests.swift in Sources */,
 				8D9B616629378A6A00E15521 /* TestSenderReceiver.swift in Sources */,
 				8D8E26262976E8F100AF0445 /* Base64JSONCodableTests.swift in Sources */,
+				8D37263C29AF01BA00CD4C8B /* CommandResultMessageDraftTests.swift in Sources */,
 				8DC0383E27DD0943006F1939 /* TestHelpers.swift in Sources */,
 				8DC0383F27DD0946006F1939 /* ViewTemplateTests.swift in Sources */,
 				8DDB6E7028AD32BE0019C8D6 /* NewPostNotificationTemplateTests.swift in Sources */,

@@ -6,8 +6,7 @@
 //
 
 import Foundation
-//import os
-//import mailcore2
+import Stencil
 
 enum FMError: Error {
     case unknown
@@ -28,7 +27,6 @@ public typealias NewPostNotificationWithMessage = (notification: NewPostNotifica
 public typealias NewCommentNotificationWithMessages = (notification: NewCommentNotification, createCommentMessage: CreateCommentMessage, createPostMessage: CreatePostingMessage)
 
 public class MailController {
-    //static let logger = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "misc")
     
     public static func newsFeedNotifications(messages: MessageStore) -> [Any] {
         let account = messages.account!
@@ -135,7 +133,7 @@ public class MailController {
         }
     }
     
-    static func getAndProcessMail(config: AppConfig, sender: MessageSender, receiver: MessageReceiver, messages: MessageStore, storageProvider: StorageProvider, logger: Logger?, completion: @escaping (Error?, MessageStore, [MessageDraft]) -> ()) {
+    static func getAndProcessMail(config: AppConfig, sender: MessageSender, receiver: MessageReceiver, messages: MessageStore, storageProvider: StorageProvider, logger: Logger?, completion: @escaping (Error?, MessageStore, [AnyMessageDraft]) -> ()) {
         // first get sent mail, or we might send duplicates. Or do we? Sent messages are tagged friendly-mail.
         
         // fetch messages with nil bodies
@@ -196,8 +194,8 @@ public class MailController {
     /*
      Process mail should only be used on a complete message store. Create account, etc. 
      */
-    static func processMail(config: AppConfig, sender: MessageSender, receiver: MessageReceiver, messages: MessageStore, storageProvider: StorageProvider) async -> (error: Error?, messageStore: MessageStore, drafts: [MessageDraft]) {
-        var drafts = [MessageDraft]()
+    static func processMail(config: AppConfig, sender: MessageSender, receiver: MessageReceiver, messages: MessageStore, storageProvider: StorageProvider) async -> (error: Error?, messageStore: MessageStore, drafts: [AnyMessageDraft]) {
+        var drafts = [AnyMessageDraft]()
         
         let account = messages.account
         let prefs = messages.preferences!
@@ -206,44 +204,61 @@ public class MailController {
         // handle commands
         let host = account?.user ?? receiver.address
         let unhandledCommands = MailController.unhandledCommands(messages: messages, host: host)
-                
-        let resultTemplate = CommandResultMessageTemplate(theme: theme)
         
-        for unhandledCommand in unhandledCommands {
-            let commandsMessage = messages.getMessage(for: unhandledCommand.createCommandsMessageID) as! CreateCommandsMessage
+        /*
+         let unhandledCommandsGrouped = Dictionary(grouping: unhandledCommands) { (command) -> MessageID in
+         return command.createCommandsMessageID
+         }
+         */
+        
+        do {
+            let results = await MailController.handle(commands: unhandledCommands, messages: messages, host: host, storageProvider: storageProvider, theme: theme)
             
-            do {
-                let results = await MailController.handle(createCommandsMessage: commandsMessage, command: unhandledCommand, messages: messages, host: host, storageProvider: storageProvider)
+            drafts += results
+            
+            /*
+             if let draft = CommandResultMessageDraft(to: [commandsMessage.header.fromAddress], commandResults: results, theme: theme) {
+             //let draft = MessageDraft(to: [commandsMessage.header.fromAddress], subject: subject, htmlBody: html, plainTextBody: plainTextBody, friendlyMailHeaders: friendlyMailHeaders)
+             drafts.append(draft)
+             }
+             */
+            
+            results.forEach { result in
+                /*
+                 let plainText = resultTemplate.populatePlainText(with: result)!
+                 let plainTextBody = "\(plainText)\n\(SignatureTemplate(theme: theme).populatePlainText()!)"
+                 let subject = resultTemplate.populateSubject(with: result)!
+                 let html = resultTemplate.populateHTML(with: result)
+                 */
                 
-                results.forEach { result in
-                    let plainText = resultTemplate.populatePlainText(with: result)!
-                    let plainTextBody = "\(plainText)\n\(SignatureTemplate(theme: theme).populatePlainText()!)"
-                    let subject = resultTemplate.populateSubject(with: result)!
-                    let html = resultTemplate.populateHTML(with: result)
-                    
-                    var friendlyMailHeaders = [
-                        HeaderKeyValue(key: HeaderKey.createCommandsMessageID.rawValue, unhandledCommand.createCommandsMessageID),
-                    ]
-                    
-                    if result is CreateAccountSucceededCommandResult {
-                        friendlyMailHeaders.append(HeaderKeyValue(key: HeaderKey.type.rawValue, value: FriendlyMailMessageType.createAccountSucceededCommandResult.rawValue))
-                    } else if result is SetProfilePicSucceededCommandResult {
-                        friendlyMailHeaders.append(HeaderKeyValue(key: HeaderKey.type.rawValue, value: FriendlyMailMessageType.setProfilePicSucceededCommandResult.rawValue))
-                    } else if result is AddFollowersSucceededCommandResult {
-                        friendlyMailHeaders.append(HeaderKeyValue(key: HeaderKey.type.rawValue, value: FriendlyMailMessageType.addFollowersSucceededCommandResult.rawValue))
-                    } else {
-                        friendlyMailHeaders.append(HeaderKeyValue(key: HeaderKey.type.rawValue, value: FriendlyMailMessageType.commandResult.rawValue))
-                    }
-                    
-                    let base64JSONString = result.encodeAsBase64JSON()
-                    friendlyMailHeaders.append(HeaderKeyValue(key: HeaderKey.base64JSON.rawValue, base64JSONString))
-                    
-                    let draft = MessageDraft(to: [commandsMessage.header.fromAddress], subject: subject, htmlBody: html, plainTextBody: plainTextBody, friendlyMailHeaders: friendlyMailHeaders)
-                    drafts.append(draft)
-                }
-            } catch {
-                // suppress error
+                /*
+                 var friendlyMailHeaders = [
+                 HeaderKeyValue(key: HeaderKey.createCommandsMessageID.rawValue, unhandledCommand.createCommandsMessageID),
+                 ]
+                 
+                 if result is CreateAccountSucceededCommandResult {
+                 friendlyMailHeaders.append(HeaderKeyValue(key: HeaderKey.type.rawValue, value: FriendlyMailMessageType.createAccountSucceededCommandResult.rawValue))
+                 } else if result is SetProfilePicSucceededCommandResult {
+                 friendlyMailHeaders.append(HeaderKeyValue(key: HeaderKey.type.rawValue, value: FriendlyMailMessageType.setProfilePicSucceededCommandResult.rawValue))
+                 } else if result is AddFollowersSucceededCommandResult {
+                 friendlyMailHeaders.append(HeaderKeyValue(key: HeaderKey.type.rawValue, value: FriendlyMailMessageType.addFollowersSucceededCommandResult.rawValue))
+                 } else {
+                 friendlyMailHeaders.append(HeaderKeyValue(key: HeaderKey.type.rawValue, value: FriendlyMailMessageType.commandResult.rawValue))
+                 }
+                 
+                 let base64JSONString = result.encodeAsBase64JSON()
+                 friendlyMailHeaders.append(HeaderKeyValue(key: HeaderKey.base64JSON.rawValue, base64JSONString))
+                 */
+                
+                /*
+                 if let draft = CommandResultMessageDraft(to: [commandsMessage.header.fromAddress], commandResult: result, theme: theme) {
+                 //let draft = MessageDraft(to: [commandsMessage.header.fromAddress], subject: subject, htmlBody: html, plainTextBody: plainTextBody, friendlyMailHeaders: friendlyMailHeaders)
+                 drafts.append(draft)
+                 }
+                 */
             }
+        } catch {
+            // suppress error
         }
         
         // can only proceed if we have an account
@@ -339,7 +354,7 @@ public class MailController {
             let template = NewLikeNotificationTemplate(theme: theme)
             
             let plainText = template.populatePlainText(notification: unsent.notification, createLikeMessage: unsent.createLikeMessage, createPostMessage: unsent.createPostMessage)
-
+            
             let body = "\(plainText ?? "")\n\(SignatureTemplate(theme: theme).populatePlainText()!)"
             
             var headers = [HeaderKeyValue]()
@@ -662,22 +677,12 @@ public class MailController {
      Return all follows for address.
      */
     static func follows(forAddress address: Address, messages: MessageStore) -> [Follow] {
-        let follows: [Follow] = messages.allMessages.compactMap {
-            if
-                let fm = $0 as? AddFollowersSucceededCommandResultMessage,
-                fm.addFollowersSucceededCommandResult.followee == address
-            {
-                return fm.addFollowersSucceededCommandResult.follows
-            }
-            else if
-                let fm = $0 as? CreateAddFollowersMessage,
-                fm.followee == address
-            {
-                return fm.follows
+        let follows: [Follow] = messages.addFollowersSucceededCommandResults.compactMap { result in
+            if result.followee == address {
+                return result.follows
             }
             return nil
         }.reduce([], +)
-
         return follows
     }
     
@@ -737,36 +742,57 @@ public class MailController {
      Return all handled commands. A handled command will have a corresponding CommandResultMessage.
      */
     static func handledCommands(messages: MessageStore, host: Address) -> [Command] {
-        let commandResultMessages = messages.allMessages.compactMap {
-            return $0 as? AnyCommandResultMessage
-        }
-        
-        let commandResultMessagesForAccountUser = commandResultMessages.filter { $0.header.fromAddress == host }
-        
-        let handledCommands: [Command] = commandResultMessagesForAccountUser.compactMap { $0.commandResult.command }
+        let handledCommandResults = messages.commandResultsMessages.compactMap { $0.commandResults }.reduce([], +)
+        let handledCommandResultsForUser = handledCommandResults.filter { $0.user == host }
+        let handledCommands = handledCommandResultsForUser.compactMap { $0.command }
         return handledCommands
+        
+        // FIXME: Incomplete
+
+        // TODO: -
+        // TODO: Need to handle case where another user sends a command that we need to handle
+        // TODO: -
     }
     
-    static func handle(createCommandsMessage: CreateCommandsMessage, command: Command, messages: MessageStore, host: Address, storageProvider: StorageProvider) async -> [CommandResult] {
-        switch command.commandType {
-        case .createAccount:
-            return CommandController.handleCreateAccount(createCommandsMessage: createCommandsMessage, command: command, messages: messages, host: host)
-        case .setProfilePic:
-            let result = await CommandController.handleSetProfilePic(createCommandsMessage: createCommandsMessage, command: command, messages: messages, storageProvider: storageProvider)
-            return [result]
-        case .addFollowers:
-            return [CommandController.handleAddFollowers(createCommandsMessage: createCommandsMessage, command: command, messages: messages, host: host)]
-        case .createInvites, .unknown:
-            let message = "command not found"
+    static func handle(commands: [Command], messages: MessageStore, host: Address, storageProvider: StorageProvider, theme: Theme) async -> [AnyMessageDraft] {
+        var drafts = [AnyMessageDraft]()
+        
+        let to = messages.account?.user ?? host
+        
+        for command in commands {
             
-            let result = CommandResult(createCommandMessageID: command.createCommandsMessageID,
-                                       commandType: command.commandType,
-                                       command: command,
-                                       user: createCommandsMessage.header.fromAddress,
-                                       message: message,
-                                       exitCode: .fail)
-            return [result]
+            if let createCommandsMessage = messages.getMessage(for: command.createCommandsMessageID) as? CreateCommandsMessage {
+                
+                    switch command.commandType {
+                    case .createAccount:
+                        let resultDrafts = CommandController.handleCreateAccount(createCommandsMessage: createCommandsMessage, command: command, messages: messages, host: host, theme: theme)
+                        drafts += resultDrafts
+                    case .setProfilePic:
+                        let result = await CommandController.handleSetProfilePic(createCommandsMessage: createCommandsMessage, command: command, messages: messages, storageProvider: storageProvider)
+                        let commandResultDraft = CommandResultMessageDraft(to: [to], commandResults: [result], theme: theme)
+                        drafts += [commandResultDraft!]
+                    case .addFollowers:
+                        let result = CommandController.handleAddFollowers(createCommandsMessage: createCommandsMessage, command: command, messages: messages, host: host)
+                        let commandResultDraft = CommandResultMessageDraft(to: [to], commandResults: [result], theme: theme)
+                        drafts += [commandResultDraft!]
+                    case .createInvites, .unknown:
+                        let message = "command not found"
+                        
+                        let result = CommandResult(createCommandMessageID: command.createCommandsMessageID,
+                                                   commandType: command.commandType,
+                                                   command: command,
+                                                   user: createCommandsMessage.header.fromAddress,
+                                                   message: message,
+                                                   exitCode: .fail)
+                        let commandResultDraft = CommandResultMessageDraft(to: [to], commandResults: [result], theme: theme)
+                        drafts += [commandResultDraft!]
+                    }
+                
+            }
+            
         }
+        
+        return drafts
     }
     
 }

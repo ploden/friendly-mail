@@ -12,13 +12,12 @@ import Foundation
  create a friendly-mail account.
  */
 
-public struct CreateAccountMessage: BaseMessage {
+public struct CreateAccountMessage: AnyBaseMessage {
     public let uidWithMailbox: UIDWithMailbox
     public let header: MessageHeader
     public let htmlBody: String?
     public let plainTextBody: String?
     public let attachments: [Attachment]?
-    
 }
 
 extension CreateAccountMessage: Hashable {}

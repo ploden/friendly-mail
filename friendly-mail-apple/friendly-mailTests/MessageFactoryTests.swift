@@ -54,15 +54,19 @@ class MessageFactoryTests: XCTestCase {
     func testCreateAccountSucceededCommandResultMessage() async throws {
         let (_, senderReceiver, _) = await TestHelpers.defaultSetup(testCase: self)
         
-        let sentMessage = senderReceiver.sentMessages.allMessages.last!
-
-        XCTAssertNotNil(sentMessage)
-        XCTAssert(sentMessage is CreateAccountSucceededCommandResultMessage)
-        XCTAssert((sentMessage as! CreateAccountSucceededCommandResultMessage).commandResult is CreateAccountSucceededCommandResult)
+        let sentMessage = senderReceiver.sentMessages.allMessages.first(where: { $0 is CommandResultsMessage })
         
-        let result = MessageFactory.extractCreateCommandSucceededCommandResult(htmlBody: sentMessage.htmlBody, friendlyMailHeader: sentMessage.header.friendlyMailHeader, friendlyMailData: MailProvider.friendlyMailData(for: sentMessage.htmlBody))
-
+        XCTAssertNotNil(sentMessage)
+        XCTAssert(sentMessage is CommandResultsMessage)
+        
+        let resultsMessage = sentMessage as! CommandResultsMessage
+        print(resultsMessage)
+        XCTAssert(resultsMessage.commandResults.first! is CreateAccountSucceededCommandResult)
+        
+        let result = MessageFactory.extractCreateCommandSucceededCommandResult(htmlBody: resultsMessage.htmlBody, friendlyMailHeader: resultsMessage.header.friendlyMailHeader, friendlyMailData: MailProvider.friendlyMailData(for: resultsMessage.htmlBody))
+        
         XCTAssertNotNil(result)
+        XCTAssert(result == resultsMessage.commandResults.first)
     }
     
     /*
@@ -160,8 +164,10 @@ class MessageFactoryTests: XCTestCase {
         let correctMessage = TestHelpers.loadEmail(account: provider.messages.account, withPath: path, uid: uid)
         
         XCTAssert(correctMessage is CreateCommandsMessage)
-        let commandMessage = correctMessage as! CreateCommandsMessage
-        XCTAssert(commandMessage.commands.first!.commandType == .createAccount)
+        
+        if let commandMessage = correctMessage as? CreateCommandsMessage {
+            XCTAssert(commandMessage.commands.first!.commandType == .createAccount)
+        }
     }
     
     func testCommandNotFoundMessage() async throws {

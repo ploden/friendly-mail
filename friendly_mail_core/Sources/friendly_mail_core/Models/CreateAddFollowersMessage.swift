@@ -12,7 +12,7 @@ import Foundation
  in response to an invite, to follow to them.
  */
 
-struct CreateAddFollowersMessage: BaseMessage {
+struct CreateAddFollowersMessage: AnyBaseMessage {
     let uidWithMailbox: UIDWithMailbox
     let header: MessageHeader
     let htmlBody: String?
@@ -27,7 +27,7 @@ struct CreateAddFollowersMessage: BaseMessage {
         get {
             return followers.map { Follow(follower: $0, followee: followee, frequency: frequency, messageID: header.messageID) }
         }
-    }
+    }    
 }
 
 extension CreateAddFollowersMessage: Identifiable {

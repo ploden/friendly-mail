@@ -7,24 +7,32 @@
 
 import Foundation
 
-public protocol BaseMessage: Identifiable {
+public protocol AnyBaseMessage: Identifiable {
     var uidWithMailbox: UIDWithMailbox { get }
     var header: MessageHeader { get }
     var htmlBody: String? { get }
     var plainTextBody: String? { get }
     var attachments: [Attachment]? { get }
     var shouldFetch: Bool { get }
-    func merging(message: BaseMessage) -> BaseMessage
+    func merging(message: any AnyBaseMessage) -> any AnyBaseMessage
 }
 
-extension BaseMessage {
+/*
+extension AnyBaseMessage {
+    public func compare(_ lhs: any AnyBaseMessage, _ rhs: any AnyBaseMessage) -> ComparisonResult {
+        return lhs.header.date.compare(rhs.header.date)
+    }
+}
+*/
+
+extension AnyBaseMessage {
     public var shouldFetch: Bool {
         return plainTextBody == nil /* || htmlBody == nil */
     }
 }
 
-extension BaseMessage {
-    public func merging(message: BaseMessage) -> BaseMessage {
+extension AnyBaseMessage {
+    public func merging(message: any AnyBaseMessage) -> any AnyBaseMessage {
         if self is Message && (message is Message) == false {
             return message
         } else if type(of: self) == type(of: message) {
@@ -35,7 +43,7 @@ extension BaseMessage {
     }
 }
 
-extension BaseMessage {
+extension AnyBaseMessage {
     public func isFriendlyMailMessage() -> Bool {
         return MessageFactory.isFriendlyMailMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody)
     }

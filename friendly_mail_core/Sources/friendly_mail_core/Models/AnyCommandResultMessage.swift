@@ -7,7 +7,6 @@
 
 import Foundation
 
-protocol AnyCommandResultMessage: BaseMessage {
-    //var commandMessageID: MessageID { get }
-    var commandResult: CommandResult { get }
+public protocol AnyCommandResultsMessage: AnyBaseMessage {
+    var commandResults: [any AnyCommandResult] { get }
 }

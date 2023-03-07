@@ -10,7 +10,7 @@ import Foundation
 /*
  This message is sent to the invitee.
  */
-struct InviteMessage: BaseMessage {
+struct InviteMessage: AnyBaseMessage {    
     let uidWithMailbox: UIDWithMailbox
     let header: MessageHeader
     let htmlBody: String?

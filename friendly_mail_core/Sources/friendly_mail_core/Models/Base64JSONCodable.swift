@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import GenericJSON
 
 public protocol Base64JSONCodable {
     func encodeAsBase64JSON() -> String
@@ -22,16 +23,15 @@ extension Base64JSONCodable where Self: Codable {
             let decodedData = Data(base64Encoded: base64JSON.paddedForBase64Decoding, options: .ignoreUnknownCharacters),
             let decodedDataString = String(data: decodedData, encoding: .utf8),
             let jsonData = decodedDataString.data(using: .utf8),
-            let result = try? decoder.decode([String:Self].self, from: jsonData)
+            let result = try? decoder.decode(Self.self, from: jsonData)
         {
-            return result[jsonKey()]
+            return result
         }
         return nil
     }
     
     public func encodeAsBase64JSON() -> String {
-        let dict = [jsonKey(): self]
-        let jsonData = try! JSONEncoder().encode(dict)
+        let jsonData = try! JSONEncoder().encode(self)
         let base64JSONString = jsonData.base64EncodedString()
         return base64JSONString
     }
@@ -46,3 +46,5 @@ extension Base64JSONCodable where Self: Codable {
         return type(of: self).jsonKey()
     }
 }
+
+extension JSON: Base64JSONCodable {}

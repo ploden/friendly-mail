@@ -9,7 +9,7 @@ import Foundation
 
 public struct CommandController {
     
-    static func handleCreateAccount(createCommandsMessage: CreateCommandsMessage, command: Command, messages: MessageStore, host: Address) -> [CommandResult] {
+    static func handleCreateAccount(createCommandsMessage: CreateCommandsMessage, command: Command, messages: MessageStore, host: Address, theme: Theme) -> [AnyMessageDraft] {
         let fromUser = createCommandsMessage.header.fromAddress
         
         if
@@ -28,17 +28,19 @@ public struct CommandController {
                                                              exitCode: .success,
                                                              account: account)
             
-            // self follow
-            if let followSelf = Self.createAddFollowersSucceededCommandResult(createCommandsMessage: createCommandsMessage, command: command, followersToAdd: [account.user]) {
-                return [result, followSelf]
-            } else {
-                return [result]
-            }
+            let commandResultDraft = CommandResultMessageDraft(to: [account.user], commandResults: [result], theme: theme)
+            
+            let plainTextBody = "Fm: add follower \(account.user.address)"
+            let followMessageDraft = MessageDraft(to: [account.user], subject: Constants.fmSubject.rawValue, htmlBody: nil, plainTextBody: plainTextBody, friendlyMailHeaders: nil)
+
+            return [commandResultDraft!, followMessageDraft]
         } else if
             let account = messages.account
         {
             guard Self.hasPermission(createCommandsMessage: createCommandsMessage, command: command, messages: messages) else {
-                return [Self.createPermissionDeniedCommandResult(createCommandsMessage: createCommandsMessage, command: command)]
+                let result = Self.createPermissionDeniedCommandResult(createCommandsMessage: createCommandsMessage, command: command)
+                let commandResultDraft = CommandResultMessageDraft(to: [account.user], commandResults: [result], theme: theme)
+                return [commandResultDraft!]
             }
             if fromUser == account.user {
                 let message = "account already exists for \(account.user.address)"
@@ -49,16 +51,19 @@ public struct CommandController {
                                            user: fromUser,
                                            message: message,
                                            exitCode: .fail)
-                return [result]
+                let commandResultDraft = CommandResultMessageDraft(to: [account.user], commandResults: [result], theme: theme)
+                return [commandResultDraft!]
             }
         }
-        return [Self.createUnknownErrorCommandResult(createCommandsMessage: createCommandsMessage, command: command)]
+        let result = Self.createUnknownErrorCommandResult(createCommandsMessage: createCommandsMessage, command: command)
+        let commandResultDraft = CommandResultMessageDraft(to: [host], commandResults: [result], theme: theme)
+        return [commandResultDraft!]
     }
 
     static func handleSetProfilePic(createCommandsMessage: CreateCommandsMessage,
                                     command: Command,
                                     messages: MessageStore,
-                                    storageProvider: StorageProvider) async -> CommandResult
+                                    storageProvider: StorageProvider) async -> any AnyCommandResult
     {
         guard Self.hasPermission(createCommandsMessage: createCommandsMessage, command: command, messages: messages) else {
             return Self.createPermissionDeniedCommandResult(createCommandsMessage: createCommandsMessage, command: command)
@@ -115,7 +120,7 @@ public struct CommandController {
         return Self.createUnknownErrorCommandResult(createCommandsMessage: createCommandsMessage, command: command)
     }
     
-    static func handleAddFollowers(createCommandsMessage: CreateCommandsMessage, command: Command, messages: MessageStore, host: Address) -> CommandResult {
+    static func handleAddFollowers(createCommandsMessage: CreateCommandsMessage, command: Command, messages: MessageStore, host: Address) -> any AnyCommandResult {
         guard Self.hasPermission(createCommandsMessage: createCommandsMessage, command: command, messages: messages) else {
             return Self.createPermissionDeniedCommandResult(createCommandsMessage: createCommandsMessage, command: command)
         }
@@ -141,7 +146,7 @@ public struct CommandController {
         return false
     }
     
-    static func createPermissionDeniedCommandResult(createCommandsMessage: CreateCommandsMessage, command: Command) -> CommandResult {
+    static func createPermissionDeniedCommandResult(createCommandsMessage: CreateCommandsMessage, command: Command) -> any AnyCommandResult {
         let message = "permission denied"
         
         let result = CommandResult(createCommandMessageID: command.createCommandsMessageID,
@@ -153,7 +158,7 @@ public struct CommandController {
         return result
     }
     
-    static func createUnknownErrorCommandResult(createCommandsMessage: CreateCommandsMessage, command: Command) -> CommandResult {
+    static func createUnknownErrorCommandResult(createCommandsMessage: CreateCommandsMessage, command: Command) -> any AnyCommandResult {
         let message = "an unknown error occurred"
         
         let result = CommandResult(createCommandMessageID: command.createCommandsMessageID,

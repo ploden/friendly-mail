@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class CreateCommentMessage: BaseMessage {
+public class CreateCommentMessage: AnyBaseMessage {
     public let uidWithMailbox: UIDWithMailbox
     public let header: MessageHeader
     public let htmlBody: String?
@@ -32,6 +32,20 @@ public class CreateCommentMessage: BaseMessage {
         } else {
             return nil
         }
+    }
+}
+
+extension CreateCommentMessage: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(uidWithMailbox)
+    }
+}
+extension CreateCommentMessage: Equatable {
+    public static func ==(lhs: CreateCommentMessage, rhs: CreateCommentMessage) -> Bool {
+        return lhs.uidWithMailbox == rhs.uidWithMailbox &&
+        lhs.header == rhs.header &&
+        lhs.htmlBody == rhs.htmlBody &&
+        lhs.plainTextBody == rhs.plainTextBody
     }
 }
 

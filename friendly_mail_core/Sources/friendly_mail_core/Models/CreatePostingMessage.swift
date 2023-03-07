@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct CreatePostingMessage: BaseMessage {
+public struct CreatePostingMessage: AnyBaseMessage {
     public let uidWithMailbox: UIDWithMailbox
     public let header: MessageHeader
     public let htmlBody: String?

@@ -6,19 +6,49 @@
 //
 
 import Foundation
+import SerializedSwift
 
-public class SetProfilePicSucceededCommandResult: CommandResult {
+public class SetProfilePicSucceededCommandResult: AnyCommandResult {
+    /*
     enum CodingKeys: String, CodingKey {
         case profilePicURL
     }
+     */
     
-    let profilePicURL: URL
+    //@Serialized
+    public var createCommandMessageID: MessageID
+    //@Serialized
+    public var commandType: CommandType
+    //@Serialized
+    public var command: Command
+    //@Serialized
+    public var user: Address
+    //@Serialized
+    public var message: String
+    //@Serialized
+    public var exitCode: CommandExitCode
+    //@Serialized
+    var profilePicURL: URL
+    
+    /*
+    public required init() {
+        super.init()
+        profilePicURL = URL(string: "")!
+    }
+     */
     
     public required init(createCommandMessageID: MessageID, commandType: CommandType, command: Command, user: Address, message: String, exitCode: CommandExitCode, profilePicURL: URL) {
+        //super.init(createCommandMessageID: createCommandMessageID, commandType: commandType, command: command, user: user, message: message, exitCode: exitCode)
+        self.createCommandMessageID = createCommandMessageID
+        self.commandType = commandType
+        self.command = command
+        self.user = user
+        self.message = message
+        self.exitCode = exitCode
         self.profilePicURL = profilePicURL
-        super.init(createCommandMessageID: createCommandMessageID, commandType: commandType, command: command, user: user, message: message, exitCode: exitCode)
     }
     
+     /*
     public required convenience init(from decoder: Decoder) throws {
         let commandResult = try CommandResult.init(from: decoder)
         
@@ -38,5 +68,21 @@ public class SetProfilePicSucceededCommandResult: CommandResult {
         try super.encode(to: encoder)
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(profilePicURL, forKey: .profilePicURL)
+    }
+     */
+}
+
+public extension SetProfilePicSucceededCommandResult {
+    static func == (lhs: SetProfilePicSucceededCommandResult, rhs: SetProfilePicSucceededCommandResult) -> Bool {
+        return lhs.createCommandMessageID == rhs.createCommandMessageID &&
+        lhs.command == rhs.command
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(command)
+        //hasher.combine(commandType)
+        //hasher.combine(sender)
+        //hasher.combine(receiver)
+        hasher.combine(createCommandMessageID)
     }
 }

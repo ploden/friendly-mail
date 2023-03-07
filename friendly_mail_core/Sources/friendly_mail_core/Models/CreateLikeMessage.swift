@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class CreateLikeMessage: BaseMessage {
+public class CreateLikeMessage: AnyBaseMessage {
     public let uidWithMailbox: UIDWithMailbox
     public let header: MessageHeader
     public let htmlBody: String?
@@ -15,7 +15,7 @@ public class CreateLikeMessage: BaseMessage {
     public let attachments: [Attachment]?
     let post: SocialMediaPosting
     let like: Like
-    
+
     required init?(uidWithMailbox: UIDWithMailbox, header: MessageHeader, htmlBody: String?, plainTextBody: String?, attachments: [Attachment]?) {
         if
             let subject = header.subject,

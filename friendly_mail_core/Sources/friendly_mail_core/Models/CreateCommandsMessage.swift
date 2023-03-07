@@ -11,7 +11,7 @@ import Foundation
  This is the message that is used to update user settings.
  */
 
-struct CreateCommandsMessage: BaseMessage {
+struct CreateCommandsMessage: AnyBaseMessage {
     let uidWithMailbox: UIDWithMailbox
     let header: MessageHeader
     let htmlBody: String?

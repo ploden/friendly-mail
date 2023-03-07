@@ -11,8 +11,8 @@ public struct FriendlyMailAccount {
     let user: Address
     
     func getProfilePicURL(messageStore: MessageStore) -> URL? {
-        let message = messageStore.allMessages.first { $0.header.sender == user && $0 is SetProfilePicSucceededCommandResultMessage } as? SetProfilePicSucceededCommandResultMessage
-        return message?.setProfilePicSucceededCommandResult.profilePicURL
+        let result = messageStore.setProfilePicSucceededCommandResults.last
+        return result?.profilePicURL
     }
 }
 

@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct LikeNotificationMessage: BaseMessage {
+struct LikeNotificationMessage: AnyBaseMessage {
     let uidWithMailbox: UIDWithMailbox
     let messageID: MessageID
     let header: MessageHeader

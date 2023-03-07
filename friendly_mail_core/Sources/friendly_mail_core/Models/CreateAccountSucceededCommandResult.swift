@@ -6,19 +6,50 @@
 //
 
 import Foundation
+import SerializedSwift
 
-public class CreateAccountSucceededCommandResult: CommandResult {
+public class CreateAccountSucceededCommandResult: AnyCommandResult {
+    /*
     enum CodingKeys: String, CodingKey {
         case account
     }
+     */
     
-    let account: FriendlyMailAccount
+    //@Serialized
+    public var createCommandMessageID: MessageID
+    //@Serialized
+    public var commandType: CommandType
+    //@Serialized
+    public var command: Command
+    //@Serialized
+    public var user: Address
+    //@Serialized
+    public var message: String
+    //@Serialized
+    public var exitCode: CommandExitCode
+    
+    //@Serialized
+    var account: FriendlyMailAccount
+    
+    /*
+    public required init() {
+        super.init()
+        account = FriendlyMailAccount(user: Address(address: ""))
+    }
+     */
     
     public required init(createCommandMessageID: MessageID, commandType: CommandType, command: Command, user: Address, message: String, exitCode: CommandExitCode, account: FriendlyMailAccount) {
+        //super.init(createCommandMessageID: createCommandMessageID, commandType: commandType, command: command, user: user, message: message, exitCode: exitCode)
+        self.createCommandMessageID = createCommandMessageID
+        self.commandType = commandType
+        self.command = command
+        self.user = user
+        self.message = message
+        self.exitCode = exitCode
         self.account = account
-        super.init(createCommandMessageID: createCommandMessageID, commandType: commandType, command: command, user: user, message: message, exitCode: exitCode)
     }
     
+     /*
     public required convenience init(from decoder: Decoder) throws {
         let commandResult = try CommandResult.init(from: decoder)
         
@@ -38,5 +69,21 @@ public class CreateAccountSucceededCommandResult: CommandResult {
         try super.encode(to: encoder)
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(account, forKey: .account)
+    }
+     */
+}
+
+public extension CreateAccountSucceededCommandResult {
+    static func == (lhs: CreateAccountSucceededCommandResult, rhs: CreateAccountSucceededCommandResult) -> Bool {
+        return lhs.createCommandMessageID == rhs.createCommandMessageID &&
+        lhs.command == rhs.command
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(command)
+        //hasher.combine(commandType)
+        //hasher.combine(sender)
+        //hasher.combine(receiver)
+        hasher.combine(createCommandMessageID)
     }
 }

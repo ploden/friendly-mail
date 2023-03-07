@@ -12,7 +12,7 @@ import Foundation
  that contains the content we've created.
  */
 
-struct NotificationsMessage: BaseMessage {
+struct NotificationsMessage: AnyBaseMessage {
     let uidWithMailbox: UIDWithMailbox
     let header: MessageHeader
     let htmlBody: String?

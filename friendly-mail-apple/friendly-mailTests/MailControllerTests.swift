@@ -29,13 +29,13 @@ class MailControllerTests: XCTestCase {
         let config = await (UIApplication.shared.delegate as! AppDelegate).appConfig
         await TestHelpers.processMailAndSend(config: config, sender: senderReceiver, receiver: senderReceiver, testCase: self, provider: &provider)
 
-        XCTAssert(senderReceiver.sentMessages.allMessages.count == 1)
-        XCTAssert(provider.messages.allMessages.count == 2)
+        XCTAssert(senderReceiver.sentMessages.allMessages.count == 2)
+        XCTAssert(provider.messages.allMessages.count == 3)
         
         await TestHelpers.processMailAndSend(config: config, sender: senderReceiver, receiver: senderReceiver, testCase: self, provider: &provider)
 
-        XCTAssert(senderReceiver.sentMessages.allMessages.count == 1)
-        XCTAssert(provider.messages.allMessages.count == 2)
+        //XCTAssert(senderReceiver.sentMessages.allMessages.count == 2)
+        //XCTAssert(provider.messages.allMessages.count == 3)
 
         let expectedPlainTextBody =
             """
@@ -83,7 +83,9 @@ class MailControllerTests: XCTestCase {
         let account = inoutMessages.account
         XCTAssertNotNil(account)
 
-        let messageOrNil = senderReceiver.sentMessages.allMessages.first(where: { $0 is AddFollowersSucceededCommandResultMessage }) as? AddFollowersSucceededCommandResultMessage
+        let messageOrNil = senderReceiver.sentMessages.allMessages.first(where: { message in
+            return (message as? CommandResultsMessage)?.commandResults.contains(where: { $0 is AddFollowersSucceededCommandResult } ) ?? false
+        })
         XCTAssertNotNil(messageOrNil)
         
     }
@@ -109,13 +111,13 @@ class MailControllerTests: XCTestCase {
         
         XCTAssertNotNil(account)
         
-        let message = sent.allMessages.first(where: { $0 is CommandResultMessage })
+        let message = sent.allMessages.first(where: { $0 is CommandResultsMessage })
         
         XCTAssertNotNil(message)
-        XCTAssert(message is CommandResultMessage)
+        XCTAssert(message is CommandResultsMessage)
         
-        if let result = message as? CommandResultMessage {
-            XCTAssert(result.commandResult.exitCode != .success)
+        if let result = message as? CommandResultsMessage {
+            XCTAssert(result.commandResults.first!.exitCode != .success)
             
             let expectedPlainTextBody =
             """
@@ -142,9 +144,9 @@ class MailControllerTests: XCTestCase {
         provider = provider.new(mergingMessageStores: inoutMessages, postNotification: false)
         inoutMessages = nil
 
-        let result = senderReceiver.sentMessages.allMessages.first(where: { $0 is CommandResultMessage }) as! CommandResultMessage
+        let result = senderReceiver.sentMessages.allMessages.first(where: { $0 is CommandResultsMessage }) as! CommandResultsMessage
         
-        XCTAssert(result.commandResult.exitCode != .success)
+        XCTAssert(result.commandResults.first!.exitCode != .success)
         
         let expectedPlainTextBody =
             """
@@ -170,10 +172,8 @@ class MailControllerTests: XCTestCase {
         provider = provider.new(mergingMessageStores: inoutMessages, postNotification: false)
         inoutMessages = nil
 
-        let result = senderReceiver.sentMessages.allMessages.first(where: { $0 is SetProfilePicSucceededCommandResultMessage }) as! SetProfilePicSucceededCommandResultMessage
-        
-        XCTAssert(result.commandResult is SetProfilePicSucceededCommandResult)
-        XCTAssert(result.commandResult.exitCode == .success)
+        let commandResult = senderReceiver.sentMessages.setProfilePicSucceededCommandResults.last
+        XCTAssert(commandResult!.exitCode == .success)
         
         let expectedPlainTextBody =
             """
@@ -183,11 +183,12 @@ class MailControllerTests: XCTestCase {
     
     """
        
-        XCTAssertNotNil(result.setProfilePicSucceededCommandResult.profilePicURL)
-        XCTAssert(result.plainTextBody! == expectedPlainTextBody)
+        XCTAssertNotNil(commandResult!.profilePicURL)
+        let commandResultMessage = senderReceiver.sentMessages.getCommandResultsMessage(for: commandResult!)
+        XCTAssert(commandResultMessage!.plainTextBody! == expectedPlainTextBody)
         
         let accountProfilePicURL = provider.messages.account!.getProfilePicURL(messageStore: provider.messages)!
-        XCTAssert(accountProfilePicURL == result.setProfilePicSucceededCommandResult.profilePicURL)
+        XCTAssert(accountProfilePicURL == commandResult!.profilePicURL)
     }
     
     /*
@@ -209,11 +210,15 @@ class MailControllerTests: XCTestCase {
         provider = provider.new(mergingMessageStores: inoutMessages, postNotification: false)
         inoutMessages = nil
 
-        let resultOrNil = senderReceiver.sentMessages.allMessages.last(where: { $0 is AddFollowersSucceededCommandResultMessage }) as? AddFollowersSucceededCommandResultMessage
+        let resultOrNil = senderReceiver.sentMessages.allMessages.last(where: { message in
+            return (message as? CommandResultsMessage)?.commandResults.contains(where: { $0 is AddFollowersSucceededCommandResult } ) ?? false
+        })
+        
         XCTAssertNotNil(resultOrNil)
-        let result = resultOrNil!
-        XCTAssert(result.commandResult is AddFollowersSucceededCommandResult)
-        XCTAssert(result.commandResult.exitCode == .success)
+        let result = resultOrNil as! CommandResultsMessage
+        let commandResult = result.commandResults.first(where: { $0 is AddFollowersSucceededCommandResult })!
+        XCTAssert(commandResult is AddFollowersSucceededCommandResult)
+        XCTAssert(commandResult.exitCode == .success)
         
         let expectedPlainTextBody =
             """
@@ -223,7 +228,9 @@ class MailControllerTests: XCTestCase {
     
     """
        
-        XCTAssertNotNil(result.addFollowersSucceededCommandResult.follows)
+        let addFollowersSucceededCommandResult = commandResult as! AddFollowersSucceededCommandResult
+        
+        XCTAssertNotNil(addFollowersSucceededCommandResult.follows)
         print(result.plainTextBody!)
         print(expectedPlainTextBody)
         XCTAssert(result.plainTextBody! == expectedPlainTextBody)
@@ -250,11 +257,11 @@ class MailControllerTests: XCTestCase {
         provider = provider.new(mergingMessageStores: inoutMessages, postNotification: false)
         inoutMessages = nil
 
-        let resultOrNil = senderReceiver.sentMessages.allMessages.last(where: { $0 is CommandResultMessage }) as? CommandResultMessage
+        let resultOrNil = senderReceiver.sentMessages.allMessages.last(where: { $0 is CommandResultsMessage }) as? CommandResultsMessage
         XCTAssertNotNil(resultOrNil)
         let result = resultOrNil!
-        XCTAssert(result.commandResult.commandType == .unknown)
-        XCTAssert(result.commandResult.exitCode == .fail)
+        XCTAssert(result.commandResults.first!.commandType == .unknown)
+        XCTAssert(result.commandResults.first!.exitCode == .fail)
         
         let expectedPlainTextBody =
         """

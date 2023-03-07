@@ -6,12 +6,17 @@
 //
 
 import Foundation
+import GenericJSON
+
+enum Constants: String {
+    case fmSubject = "Fm"
+}
 
 enum FriendlyMailMessageType: String {
     case invite = "invite"
     case notifications = "notifications"
     case commandResult = "command_result"
-    case createAccountSucceededCommandResult = "create_account_succeeded_command_result"
+    //case createAccountSucceededCommandResult = "create_account_succeeded_command_result"
     case setProfilePicSucceededCommandResult = "set_profile_pic_succeeded_command_result"
     case addFollowersSucceededCommandResult = "add_followers_succeeded_command_result"
 }
@@ -34,7 +39,7 @@ public struct MessageFactory {
                                      friendlyMailData: String?,
                                      plainTextBody: String?,
                                      attachments: [Attachment]?,
-                                     logger: Logger?) -> BaseMessage?
+                                     logger: Logger?) -> AnyBaseMessage?
     {
         let friendlyMailMessage = {
             if MessageFactory.isFriendlyMailMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody) {
@@ -55,16 +60,13 @@ public struct MessageFactory {
                                           htmlBody: String?,
                                           friendlyMailData: String?,
                                           plainTextBody: String?,
-                                          attachments: [Attachment]?) -> BaseMessage?
+                                          attachments: [Attachment]?) -> AnyBaseMessage?
     {
         if Self.isCreateCommandMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody)
         {
             return Self.createCreateCommandsMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, friendlyMailData: friendlyMailData, plainTextBody: plainTextBody, attachments: attachments)
         }
-        else if Self.isCreateAccountSucceededCommandResultMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody)
-        {
-            return Self.createCreateAccountSucceededCommandResultMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, friendlyMailData: friendlyMailData, plainTextBody: plainTextBody, attachments: attachments)
-        }
+        /*
         else if Self.isSetProfilePicSucceededCommandResultMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody)
         {
             return Self.createSetProfilePicSucceededCommandResultMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, friendlyMailData: friendlyMailData, plainTextBody: plainTextBody, attachments: attachments)
@@ -73,9 +75,10 @@ public struct MessageFactory {
         {
             return Self.createAddFollowersSucceededCommandResultMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, friendlyMailData: friendlyMailData, plainTextBody: plainTextBody, attachments: attachments)
         }
+         */
         else if Self.isCommandResultMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody)
         {
-            return Self.createCommandResultMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, friendlyMailData: friendlyMailData, plainTextBody: plainTextBody, attachments: attachments)
+            return Self.createCommandResultsMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, friendlyMailData: friendlyMailData, plainTextBody: plainTextBody, attachments: attachments)
         }
         /*
          else if
@@ -156,7 +159,7 @@ public struct MessageFactory {
         } else if
             let subject = subject,
             subject.count >= 2,
-            subject[..<subject.index(subject.startIndex, offsetBy: 2)] == "Fm" || subject[..<subject.index(subject.startIndex, offsetBy: 2)] == "fm"
+            subject[..<subject.index(subject.startIndex, offsetBy: 2)].lowercased() == Constants.fmSubject.rawValue.lowercased() || subject[..<subject.index(subject.startIndex, offsetBy: 2)].lowercased() == Constants.fmSubject.rawValue.lowercased()
         {
             return true
         } else {
@@ -362,47 +365,35 @@ public struct MessageFactory {
     }
     
     static func isCommandResultMessage(uidWithMailbox: UIDWithMailbox, header: MessageHeader, htmlBody: String?, plainTextBody: String?) -> Bool {
-        return header.friendlyMailHeader?.friendlyMailMessageType == .commandResult
+        let isCommandResult = header.friendlyMailHeader?.friendlyMailMessageType == .commandResult
+        return isCommandResult
     }
     
-    static func createCommandResultMessage(uidWithMailbox: UIDWithMailbox,
+    static func createCommandResultsMessage(uidWithMailbox: UIDWithMailbox,
                                            header: MessageHeader,
                                            htmlBody: String?,
                                            friendlyMailData: String?,
                                            plainTextBody: String?,
-                                           attachments: [Attachment]?) -> CommandResultMessage?
+                                           attachments: [Attachment]?) -> CommandResultsMessage?
     {
-        if let result = Self.extractCommandResult(htmlBody: htmlBody, friendlyMailHeader: header.friendlyMailHeader, friendlyMailData: friendlyMailData)
+        if let results = Self.extractCommandResults(htmlBody: htmlBody, friendlyMailHeader: header.friendlyMailHeader, friendlyMailData: friendlyMailData)
         {
-            let message = CommandResultMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody, attachments: attachments, commandResult: result)
+            let message = CommandResultsMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody, attachments: attachments, commandResults: results)
             return message
         }
         return nil
     }
     
     static func isCreateAccountSucceededCommandResultMessage(uidWithMailbox: UIDWithMailbox, header: MessageHeader, htmlBody: String?, plainTextBody: String?) -> Bool {
-        return header.friendlyMailHeader?.friendlyMailMessageType == .createAccountSucceededCommandResult
-    }
-
-    static func createCreateAccountSucceededCommandResultMessage(uidWithMailbox: UIDWithMailbox,
-                                                                 header: MessageHeader,
-                                                                 htmlBody: String?,
-                                                                 friendlyMailData: String?,
-                                                                 plainTextBody: String?,
-                                                                 attachments: [Attachment]?) -> CreateAccountSucceededCommandResultMessage?
-    {
-        if let result = Self.extractCreateCommandSucceededCommandResult(htmlBody: htmlBody, friendlyMailHeader: header.friendlyMailHeader, friendlyMailData: friendlyMailData)
-        {
-            let message = CreateAccountSucceededCommandResultMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody, attachments: attachments, account: result.account, commandResult: result)
-            return message
-        }
-        return nil
+        return false
+        //return header.friendlyMailHeader?.friendlyMailMessageType == .createAccountSucceededCommandResult
     }
 
     static func isSetProfilePicSucceededCommandResultMessage(uidWithMailbox: UIDWithMailbox, header: MessageHeader, htmlBody: String?, plainTextBody: String?) -> Bool {
         return header.friendlyMailHeader?.friendlyMailMessageType == .setProfilePicSucceededCommandResult
     }
     
+    /*
     static func createSetProfilePicSucceededCommandResultMessage(uidWithMailbox: UIDWithMailbox,
                                                                  header: MessageHeader,
                                                                  htmlBody: String?,
@@ -436,6 +427,7 @@ public struct MessageFactory {
         }
         return nil
     }
+     */
     
     static func isCreateCommentMessage(uidWithMailbox: UIDWithMailbox, header: MessageHeader, htmlBody: String?, plainTextBody: String?) -> Bool {
         if
@@ -495,6 +487,10 @@ public struct MessageFactory {
     }
     
     static func extractCreateCommandSucceededCommandResult(htmlBody: String?, friendlyMailHeader: [HeaderKeyValue]?, friendlyMailData: String?) -> CreateAccountSucceededCommandResult? {
+        
+        let results = Self.extractCommandResults(htmlBody: htmlBody, friendlyMailHeader: friendlyMailHeader, friendlyMailData: friendlyMailData)
+        return results?.first(where: { $0.commandType == .createAccount} ) as? CreateAccountSucceededCommandResult
+        
         let decoder = JSONDecoder()
         
         if
@@ -551,22 +547,49 @@ public struct MessageFactory {
         return nil
     }
     
-    static func extractCommandResult(htmlBody: String?, friendlyMailHeader: [HeaderKeyValue]?, friendlyMailData: String?) -> CommandResult? {
+    static func extractCommandResults(htmlBody: String?, friendlyMailHeader: [HeaderKeyValue]?, friendlyMailData: String?) -> [any AnyCommandResult]? {
         let decoder = JSONDecoder()
         
         if
             let json = friendlyMailData,
-            let dict = try? decoder.decode([String:CommandResult].self, from: json.data(using: .utf8)!),
-            let commandResult = dict["commandResult"]
+            let dict = try? decoder.decode([String:[CommandResult]].self, from: json.data(using: .utf8)!),
+            let commandResults = dict["commandResults"]
         {
-            return commandResult
+            return commandResults
         } else if
-            let json = MessageFactory.base64JSONString(forFriendlyMailHeader: friendlyMailHeader),
-            let commandResult = CommandResult.decode(fromBase64JSON: json)
+            let json = Self.json(forFriendlyMailHeader: friendlyMailHeader),
+            let commandResultsJSON: [JSON] = json["commandResults"]?.arrayValue
         {
-            return commandResult
+            let commandResults = commandResultsJSON.compactMap { commandResultJSON in
+                if
+                    let commandTypeString = commandResultJSON.command?.commandType?.stringValue,
+                    let commandType = CommandType(rawValue: commandTypeString)
+                {
+                    switch commandType {
+                    case .createAccount:
+                        if let x = try? JSONEncoder().encode(commandResultJSON) {
+                            let y = try? decoder.decode(CreateAccountSucceededCommandResult.self, from: x)
+                            return y
+                        }
+                    default:
+                        return nil
+                    }
+                }
+                return nil
+            }
+            return commandResults
         }
 
+        return nil
+    }
+    
+    static func json(forFriendlyMailHeader friendlyMailHeader: [HeaderKeyValue]?) -> JSON? {
+        if
+            let base64JSONString = Self.base64JSONString(forFriendlyMailHeader: friendlyMailHeader),
+            let json = JSON.decode(fromBase64JSON: base64JSONString)
+        {
+            return json
+        }
         return nil
     }
     
@@ -609,15 +632,15 @@ public struct MessageFactory {
                                      htmlBody: String?,
                                      friendlyMailData: String?,
                                      plainTextBody: String?,
-                                     attachments: [Attachment]?) -> CommandResultMessage?
+                                     attachments: [Attachment]?) -> CommandResultsMessage?
     {
         if MessageFactory.isFriendlyMailMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody) {
             if
                 MessageFactory.isCommandResultMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody),
                 let createCommandsMessageID = header.friendlyMailHeader?.first(where: { $0.key == HeaderKey.createCommandsMessageID.rawValue })?.value,
-                let commandResult = MessageFactory.extractCommandResult(htmlBody: htmlBody, friendlyMailHeader: header.friendlyMailHeader, friendlyMailData: friendlyMailData)
+                let commandResults = MessageFactory.extractCommandResults(htmlBody: htmlBody, friendlyMailHeader: header.friendlyMailHeader, friendlyMailData: friendlyMailData)
             {
-                return CommandResultMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody, attachments: attachments, commandResult: commandResult)
+                return CommandResultsMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody, attachments: attachments, commandResults: commandResults)
             }
         }
         return nil

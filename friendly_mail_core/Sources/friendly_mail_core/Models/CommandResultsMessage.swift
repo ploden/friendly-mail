@@ -1,24 +1,23 @@
 //
-//  File 2.swift
+//  CommandResultMessage.swift
 //  
 //
-//  Created by Philip Loden on 11/19/22.
+//  Created by Philip Loden on 11/3/22.
 //
 
 import Foundation
 
-public struct CreateAccountSucceededCommandResultMessage: AnyCommandResultMessage, BaseMessage {
+public struct CommandResultsMessage: AnyCommandResultsMessage, AnyBaseMessage {
     public let uidWithMailbox: UIDWithMailbox
     public let header: MessageHeader
     public let htmlBody: String?
     public let plainTextBody: String?
     public let attachments: [Attachment]?
     
-    public let account: FriendlyMailAccount
-    let commandResult: CommandResult
+    public let commandResults: [any AnyCommandResult]
 }
 
-extension CreateAccountSucceededCommandResultMessage: Identifiable {
+extension CommandResultsMessage: Identifiable {
     public var identifier: MessageID {
         return header.messageID
     }

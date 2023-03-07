@@ -28,12 +28,12 @@ open class MessageReceiverTests: XCTestCase {
         await TestHelpers.processMailAndSend(config: config, sender: sender, receiver: receiver, testCase: testCase, messages: &messages)
     }
     
-    static func loadCreatePostEmail(testCase: XCTestCase, uid: inout UInt64, account: FriendlyMailAccount, messages: inout MessageStore) -> BaseMessage? {
+    static func loadCreatePostEmail(testCase: XCTestCase, uid: inout UInt64, account: FriendlyMailAccount, messages: inout MessageStore) -> AnyBaseMessage? {
         let createPostEmailPath = Bundle(for: type(of: testCase )).path(forResource: "hello_world", ofType: "txt")!
         return TestHelpers.loadEmail(account: account, withPath: createPostEmailPath, uid: &uid, messages: &messages)
     }
     
-    static func loadCreateAddFollowersEmail(testCase: XCTestCase, uid: inout UInt64, account: FriendlyMailAccount, messages: inout MessageStore) -> BaseMessage? {
+    static func loadCreateAddFollowersEmail(testCase: XCTestCase, uid: inout UInt64, account: FriendlyMailAccount, messages: inout MessageStore) -> AnyBaseMessage? {
         let followEmailPath = Bundle(for: type(of: testCase )).path(forResource: "create_add_followers", ofType: "txt")!
         return TestHelpers.loadEmail(account: account, withPath: followEmailPath, uid: &uid, messages: &messages)
     }

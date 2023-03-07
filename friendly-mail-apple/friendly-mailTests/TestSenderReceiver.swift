@@ -20,11 +20,11 @@ class TestSenderReceiver: MessageSender, MessageReceiver {
         
     }
     
-    func moveMessageToInbox(message: BaseMessage, completion: @escaping (Error?) -> ()) {
+    func moveMessageToInbox(message: AnyBaseMessage, completion: @escaping (Error?) -> ()) {
         completion(nil)
     }
     
-    func fetchFriendlyMailMessage(messageID: MessageID, completion: @escaping (Error?, BaseMessage?) -> ()) {
+    func fetchFriendlyMailMessage(messageID: MessageID, completion: @escaping (Error?, AnyBaseMessage?) -> ()) {
         completion(nil, nil)
     }
     
@@ -42,7 +42,7 @@ class TestSenderReceiver: MessageSender, MessageReceiver {
     var account: FriendlyMailAccount?
     var settings: Settings!
     
-    func fetchMessage(uidWithMailbox: UIDWithMailbox, completion: @escaping (Error?, BaseMessage?) -> ()) {
+    func fetchMessage(uidWithMailbox: UIDWithMailbox, completion: @escaping (Error?, AnyBaseMessage?) -> ()) {
         completion(nil, nil)
     }
     
@@ -57,7 +57,7 @@ class TestSenderReceiver: MessageSender, MessageReceiver {
     }
      */
     
-    func sendDraft(draft: MessageDraft) async throws -> MessageID {
+    func sendDraft(draft: AnyMessageDraft) async throws -> MessageID {
         return try await withCheckedThrowingContinuation { continuation in
             sendMessage(to: draft.to,
                         subject: draft.subject,

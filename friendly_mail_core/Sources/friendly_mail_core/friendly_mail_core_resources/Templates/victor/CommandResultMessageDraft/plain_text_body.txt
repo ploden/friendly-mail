@@ -1,0 +1,3 @@
+{% for commandResult in commandResults %}
+friendly-mail: {{ commandResult.command.input }}: {{ commandResult.message }}
+{% endfor %}

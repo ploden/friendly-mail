@@ -7,6 +7,7 @@
 
 import XCTest
 @testable import friendly_mail_core
+@testable import GenericJSON
 
 class MessageHeaderTests: XCTestCase {
 
@@ -24,4 +25,34 @@ class MessageHeaderTests: XCTestCase {
         }
     }
 
+    func testEncodeDecodeFriendlyMailHeader() throws {
+        let mID = "12345"
+        let command = Command(index: 0, commandType: .unknown, createCommandsMessageID: mID, input: "aoeu")
+        let user = Address(name: nil, address: "ploden@gmail.com")!
+        let result = CommandResult(createCommandMessageID: command.createCommandsMessageID,
+                                   commandType: command.commandType,
+                                   command: command,
+                                   user: user,
+                                   message: "message",
+                                   exitCode: .fail)
+        
+        let commandResults = [result]
+        
+        let commandResultsJSON = try! JSON(encodable: commandResults)
+        
+        let inJSON: JSON = [
+            "commandResults": commandResultsJSON
+        ]
+
+        let base64JSONString: String = inJSON.encodeAsBase64JSON()
+        
+        var friendlyMailHeaders = [HeaderKeyValue]()
+
+        friendlyMailHeaders.append(HeaderKeyValue(key: HeaderKey.base64JSON.rawValue, base64JSONString))
+
+        let outJSON = MessageFactory.json(forFriendlyMailHeader: friendlyMailHeaders)
+        
+        XCTAssert(inJSON == outJSON)
+    }
+    
 }

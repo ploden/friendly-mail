@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "friendly_mail_core",
     platforms: [
-        .iOS("14.0"),
+        .iOS("15.0"),
         //.macOS(.v11)
     ],
     products: [
@@ -18,13 +18,16 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
+        .package(name: "Stencil", url: "https://github.com/stencilproject/Stencil.git", from: "0.15.1"),
+        .package(name: "GenericJSON", url: "https://github.com/iwill/generic-json-swift", from: "2.0.1"),
+        .package(name: "SerializedSwift", url: "https://github.com/dejanskledar/SerializedSwift.git", from: "0.2.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "friendly_mail_core",
-            dependencies: [],
+            dependencies: ["Stencil", "GenericJSON", "SerializedSwift"],
             resources: [
                 .copy("friendly_mail_core_resources/Templates/victor"),
                 /*
