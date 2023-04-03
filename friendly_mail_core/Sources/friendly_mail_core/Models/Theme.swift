@@ -14,39 +14,31 @@ public struct Theme: Equatable {
     let directory: String
     
     func render(type: AnyMessageDraft.Type, context: [String:Any]) throws -> (subject: String, plainTextBody: String, htmlBody: String) {
-        /*
-        let context = [
-          "message": message
-        ]
-         */
-
         let dir = String(describing: type)
         let inDirectory = "\(directory)/\(dir)"
-        
-        //let path1 = Bundle.module.url(forResource: "subject", withExtension: "txt", subdirectory: inDirectory)
-        
-        
-        let path1 = Bundle.module.path(forResource: "subject", ofType: "txt", inDirectory: inDirectory)
-        print(path1!)
-        
-        //let path = Path("Templates/\(directory)/\(dir)")
-        let path = Path(inDirectory)
-        
-        
-        //let environment = Environment(loader: FileSystemLoader(paths: [path]))
-        let environment = Environment(loader: FileSystemLoader(bundle: [Bundle.module]))
-                
+                        
+        let environment = Environment(loader: FileSystemLoader(bundle: [Bundle.module]), trimBehaviour: .all)
+                        
         let subject = try! environment.renderTemplate(name: "\(inDirectory)/subject.txt", context: context)
         let plainTextBody = try! environment.renderTemplate(name: "\(inDirectory)/plain_text_body.txt", context: context)
-
+        
+        assert(subject.count > 0)
+        
         return (subject, plainTextBody, "")
     }
+    
+    func renderTemplate(name: String, context: [String:Any]) throws -> String {
+        let environment = Environment(loader: FileSystemLoader(bundle: [Bundle.module]))
+        let result = try! environment.renderTemplate(name: name, context: context)
+        return result
+    }
+    
 }
 
 extension Theme: Codable {}
 
 extension Theme: Identifiable {
-    public var identifier: MessageID {
+    public var id: String {
         return name
     }
 }

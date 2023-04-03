@@ -15,16 +15,16 @@ struct Invite {
 
 extension Invite: Equatable {
     static func ==(lhs: Invite, rhs: Invite) -> Bool {
-        return lhs.inviter.identifier == rhs.inviter.identifier &&
-        lhs.invitee.identifier == rhs.invitee.identifier &&
+        return lhs.inviter.id == rhs.inviter.id &&
+        lhs.invitee.id == rhs.invitee.id &&
         lhs.createInvitesMessageID == rhs.createInvitesMessageID
     }
 }
 
 extension Invite: Hashable {
     func hash(into hasher: inout Hasher) {
-        hasher.combine(inviter.identifier)
-        hasher.combine(invitee.identifier)
+        hasher.combine(inviter.id)
+        hasher.combine(invitee.id)
         hasher.combine(createInvitesMessageID)
     }
 }

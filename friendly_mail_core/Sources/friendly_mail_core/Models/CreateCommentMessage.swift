@@ -49,8 +49,10 @@ extension CreateCommentMessage: Equatable {
     }
 }
 
+/*
 extension CreateCommentMessage: Identifiable {
     public var identifier: MessageID {
         return header.messageID
     }
 }
+*/

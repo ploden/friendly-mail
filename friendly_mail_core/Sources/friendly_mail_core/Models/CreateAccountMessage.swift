@@ -25,7 +25,7 @@ extension CreateAccountMessage: Equatable {}
 extension CreateAccountMessage: Codable {}
 
 extension CreateAccountMessage: Identifiable {
-    public var identifier: MessageID {
+    public var id: String {
         return header.messageID
     }
 }

@@ -6,8 +6,9 @@
 //
 
 import Foundation
+import Stencil
 
-class Article: CreativeWork {
+public class Article: CreativeWork, DynamicMemberLookup {
     let author: Person
     let dateCreated: Date
     let articleBody: String
@@ -18,4 +19,14 @@ class Article: CreativeWork {
         self.articleBody = articleBody
     }
     
+    public subscript(dynamicMember member: String) -> Any? {
+        if member == "author" {
+            return author
+        } else if member == "dateCreated" { 
+            return dateCreated
+        } else if member == "articleBody" {
+            return articleBody
+        }
+        return nil
+    }
 }

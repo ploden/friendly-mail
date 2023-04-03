@@ -1,0 +1,6 @@
+{{ createPostMessage.posting.author.displayName }} posted:
+
+"{{ createPostMessage.posting.articleBody }}"
+
+Like: mailto:{{ createPostMessage.posting.author.email }}?subject=Fm%20Like:{{ createPostMessage.header.messageID }}&body={{ likeBody }}
+Comment: mailto:{{ createPostMessage.posting.author.email }}?subject=Fm%20Comment:{{ createPostMessage.header.messageID }}

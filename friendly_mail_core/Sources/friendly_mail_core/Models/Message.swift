@@ -32,7 +32,7 @@ extension Message: Hashable {}
 extension Message: Codable {}
 
 extension Message: Identifiable {
-    public var identifier: MessageID {
+    public var id: String {
         return header.messageID
     }
 }

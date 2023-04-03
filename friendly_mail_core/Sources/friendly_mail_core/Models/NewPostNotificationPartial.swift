@@ -40,8 +40,8 @@ class NewPostNotificationPartial: Template {
                 let createPostMessage = withArray.first(where: { $0 is CreatePostingMessage }) as? CreatePostingMessage
             {
                 data["likeAuthorDisplayName"] = createLikeMessage.post.author.displayName
-                data["parentPostAuthorDisplayName"] = createPostMessage.post.author.displayName
-                data["parentPost"] = createPostMessage.post.articleBody
+                data["parentPostAuthorDisplayName"] = createPostMessage.posting.author.displayName
+                data["parentPost"] = createPostMessage.posting.articleBody
                 data["likePost"] = createLikeMessage.post.articleBody
             }
             

@@ -39,7 +39,7 @@ public struct MessageFactory {
                                      friendlyMailData: String?,
                                      plainTextBody: String?,
                                      attachments: [Attachment]?,
-                                     logger: Logger?) -> AnyBaseMessage?
+                                     logger: Logger?) -> (any AnyBaseMessage)?
     {
         let friendlyMailMessage = {
             if MessageFactory.isFriendlyMailMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody) {
@@ -60,7 +60,7 @@ public struct MessageFactory {
                                           htmlBody: String?,
                                           friendlyMailData: String?,
                                           plainTextBody: String?,
-                                          attachments: [Attachment]?) -> AnyBaseMessage?
+                                          attachments: [Attachment]?) -> (any AnyBaseMessage)?
     {
         if Self.isCreateCommandMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody)
         {
@@ -113,7 +113,7 @@ public struct MessageFactory {
          */
         else if
             MessageFactory.isNotificationsMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody),
-            let notifications = MessageFactory.extractNotifications(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody)
+            let notifications = MessageFactory.extractNotifications(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, friendlyMailHeader: header.friendlyMailHeader, plainTextBody: plainTextBody)
         {
             return NotificationsMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody, attachments: attachments, notifications: notifications)
         }
@@ -252,7 +252,7 @@ public struct MessageFactory {
         return nil
     }
     
-    static func extractCommands(messageID: MessageID, htmlBody: String?, plainTextBody: String?) -> [Command]? {
+    static func extractCommands(host: Address, user: Address, messageID: MessageID, htmlBody: String?, plainTextBody: String?) -> [Command]? {
         guard let plainTextBody = plainTextBody else {
             return nil
         }
@@ -269,8 +269,25 @@ public struct MessageFactory {
                 
                 let remaining = splittedFirst[1...].joined(separator: " ")
                 
+                let commandType: CommandType = {
+                    if remaining.lowercased() == "create account" {
+                        return .createAccount
+                    } else if remaining.lowercased() == "set profile pic" {
+                        return .setProfilePic
+                    } else if Command.isAddFollowerInput(input: remaining) {
+                        return .addFollowers
+                    } else {
+                        return .unknown
+                    }
+                }()
+                
+                let firstCommand = Command(index: counter, commandType: commandType, createCommandsMessageID: messageID, input: remaining, host: host, user: user)
+                counter += 1
+                commands.append(firstCommand)
+                
+                /*
                 if remaining.lowercased() == "create account" {
-                    let firstCommand = Command(index: counter, commandType: .createAccount, createCommandsMessageID: messageID, input: remaining)
+                    let firstCommand = Command(index: counter, commandType: .createAccount, createCommandsMessageID: messageID, input: remaining, host: host, user: user)
                     counter += 1
                     commands.append(firstCommand)
                 } else if remaining.lowercased() == "set profile pic" {
@@ -286,6 +303,7 @@ public struct MessageFactory {
                     counter += 1
                     commands.append(firstCommand)
                 }
+                 */
                 
                 return commands
             }
@@ -356,7 +374,7 @@ public struct MessageFactory {
                                            attachments: [Attachment]?) -> CreateCommandsMessage?
     {
         if
-            let commands = MessageFactory.extractCommands(messageID: header.messageID, htmlBody: htmlBody, plainTextBody: plainTextBody),
+            let commands = MessageFactory.extractCommands(host: header.host, user: header.fromAddress, messageID: header.messageID, htmlBody: htmlBody, plainTextBody: plainTextBody),
             commands.count > 0
         {
             return CreateCommandsMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody, attachments: attachments, commands: commands)
@@ -461,29 +479,50 @@ public struct MessageFactory {
         return false
     }
     
-    static func extractNotifications(uidWithMailbox: UIDWithMailbox, header: MessageHeader, htmlBody: String?, plainTextBody: String?) -> [Notification]? {
-        let notifications: [Notification]? = header.friendlyMailHeader?.compactMap {
-            if let headerKey = HeaderKey(rawValue: $0.key) {
-                switch headerKey {
-                case .type:
-                    return nil
-                case .notificationCreateCommentMessageID:
-                    return NewCommentNotification(createCommentMessageID: $0.value)
-                case .notificationCreatePostMessageID:
-                    return NewPostNotification(createPostMessageID: $0.value)
-                case .notificationCreateLikeMessageID:
-                    return NewLikeNotification(createLikeMessageID: $0.value)
-                case .createInvitesMessageID:
-                    return nil
-                case .createCommandsMessageID:
-                    return nil
-                case .base64JSON:
-                    return nil
+    static func extractNotifications(uidWithMailbox: UIDWithMailbox, header: MessageHeader, htmlBody: String?, friendlyMailHeader: [HeaderKeyValue]?, plainTextBody: String?) -> [Notification]? {
+        if
+            let json = Self.json(forFriendlyMailHeader: friendlyMailHeader),
+            let notificationsJSON: [JSON] = json["notifications"]?.arrayValue
+        {
+            let decoder = JSONDecoder()
+            
+            var notifications = [Notification]()
+            
+            for notificationJSON in notificationsJSON {
+                if
+                    let notificationTypeString: String = notificationJSON.notificationType?.stringValue,
+                    let notificationType = NotificationType(rawValue: notificationTypeString)
+                {
+                    switch notificationType {
+                    case .newLike:
+                        if
+                            let x = try? JSONEncoder().encode(notificationJSON),
+                            let y = try? decoder.decode(NewLikeNotification.self, from: x)
+                        {
+                            notifications.append(y)
+                        }
+                    case .newComment:
+                        if
+                            let x = try? JSONEncoder().encode(notificationJSON),
+                            let y = try? decoder.decode(NewCommentNotification.self, from: x)
+                        {
+                            notifications.append(y)
+                        }
+                    case .newPost:
+                        if
+                            let x = try? JSONEncoder().encode(notificationJSON),
+                            let y = try? decoder.decode(NewPostingNotification.self, from: x)
+                        {
+                            notifications.append(y)
+                        }
+                    default:
+                        break
+                    }
                 }
             }
-            return nil
+            return notifications
         }
-        return notifications
+        return nil
     }
     
     static func extractCreateCommandSucceededCommandResult(htmlBody: String?, friendlyMailHeader: [HeaderKeyValue]?, friendlyMailData: String?) -> CreateAccountSucceededCommandResult? {
@@ -547,7 +586,7 @@ public struct MessageFactory {
         return nil
     }
     
-    static func extractCommandResults(htmlBody: String?, friendlyMailHeader: [HeaderKeyValue]?, friendlyMailData: String?) -> [any AnyCommandResult]? {
+    static func extractCommandResults(htmlBody: String?, friendlyMailHeader: [HeaderKeyValue]?, friendlyMailData: String?) -> [CommandResult]? {
         let decoder = JSONDecoder()
         
         if
@@ -560,19 +599,39 @@ public struct MessageFactory {
             let json = Self.json(forFriendlyMailHeader: friendlyMailHeader),
             let commandResultsJSON: [JSON] = json["commandResults"]?.arrayValue
         {
-            let commandResults = commandResultsJSON.compactMap { commandResultJSON in
+            let commandResults: [CommandResult] = commandResultsJSON.compactMap { commandResultJSON in
                 if
                     let commandTypeString = commandResultJSON.command?.commandType?.stringValue,
                     let commandType = CommandType(rawValue: commandTypeString)
                 {
                     switch commandType {
                     case .createAccount:
+                        let exitCodeInt = Int(commandResultJSON.exitCode!.doubleValue!)
+                        
                         if let x = try? JSONEncoder().encode(commandResultJSON) {
-                            let y = try? decoder.decode(CreateAccountSucceededCommandResult.self, from: x)
+                            if CommandExitCode(rawValue: exitCodeInt)! == CommandExitCode.success {
+                                let y = try? decoder.decode(CreateAccountSucceededCommandResult.self, from: x)
+                                return y
+                            } else {
+                                let y = try? decoder.decode(CommandResult.self, from: x)
+                                return y
+                            }
+                        }
+                    case .setProfilePic:
+                        if let x = try? JSONEncoder().encode(commandResultJSON) {
+                            let y = try? decoder.decode(SetProfilePicSucceededCommandResult.self, from: x)
+                            return y
+                        }
+                    case .addFollowers:
+                        if let x = try? JSONEncoder().encode(commandResultJSON) {
+                            let y = try? decoder.decode(AddFollowersSucceededCommandResult.self, from: x)
                             return y
                         }
                     default:
-                        return nil
+                        if let x = try? JSONEncoder().encode(commandResultJSON) {
+                            let y = try? decoder.decode(CommandResult.self, from: x)
+                            return y
+                        }
                     }
                 }
                 return nil

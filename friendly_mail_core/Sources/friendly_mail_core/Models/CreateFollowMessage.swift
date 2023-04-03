@@ -31,7 +31,7 @@ struct CreateFollowMessage: AnyBaseMessage {
 }
 
 extension CreateFollowMessage: Identifiable {
-    var identifier: MessageID {
+    public var id: String {
         return header.messageID
     }
 }

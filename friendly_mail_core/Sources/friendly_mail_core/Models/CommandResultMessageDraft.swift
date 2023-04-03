@@ -9,7 +9,7 @@ import Foundation
 import GenericJSON
 
 struct CommandResultMessageDraft: AnyMessageDraft {
-    var commandResults: [any AnyCommandResult]
+    var commandResults: [CommandResult]
     
     var to: [Address]
     
@@ -21,12 +21,16 @@ struct CommandResultMessageDraft: AnyMessageDraft {
     
     var friendlyMailHeaders: [HeaderKeyValue]?
     
-    init?(to: [Address], commandResults: [any AnyCommandResult], theme: Theme) {
+    init?(to: [Address], commandResults: [CommandResult], theme: Theme) {
         self.to = to
         self.commandResults = commandResults
         
-        let context = [
-            "commandResults": commandResults
+        let context: [String : Any] = [
+            "firstCommandResult": commandResults.first!,
+            "commandInput": commandResults.first!.command.input,
+            "commandResults": commandResults,
+            "signature": "\n\(Template.PlainText.signature.rawValue)",
+            "likeBody": Template.PlainText.like.rawValue
         ]
         
         if let rendered = try? theme.render(type: CommandResultMessageDraft.self, context: context) {
@@ -51,16 +55,19 @@ struct CommandResultMessageDraft: AnyMessageDraft {
                 friendlyMailHeaders.append(HeaderKeyValue(key: HeaderKey.type.rawValue, value: FriendlyMailMessageType.commandResult.rawValue))
             }
             */
-                               
+               
+            /*
             let commandResultsJSON: [JSON] = commandResults.compactMap { commandResult in
                 if let commandResult = commandResult as? CommandResult {
                     return try! JSON(encodable: commandResult)
                 }
                 return nil
             }
+             */
                         
             let json: JSON = [
-                "commandResults": JSON.array(commandResultsJSON)
+                //"commandResults": JSON.array(commandResultsJSON)
+                "commandResults": try! JSON(encodable: commandResults)
             ]
 
             let base64JSONString = json.encodeAsBase64JSON()

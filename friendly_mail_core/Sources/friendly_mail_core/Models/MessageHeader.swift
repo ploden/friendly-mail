@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Stencil
 
 public typealias HeaderKeyValue = (key: String, value: String)
 
@@ -25,8 +26,8 @@ extension MailHeader {
     }
 }
 
-public struct MessageHeader {
-    public let sender: Address?
+public struct MessageHeader: DynamicMemberLookup {
+    public let host: Address // the mail account that sent or received this message 
     public let fromAddress: Address
     public let toAddress: [Address]
     public let replyTo: [Address]
@@ -42,20 +43,20 @@ public struct MessageHeader {
         return nil
     }
     
-    public init?(sender: Address?,
-                from: Address,
-                to: [Address],
-                replyTo: [Address],
-                subject: String?,
-                date: Date,
-                extraHeaders: [String : String],
-                messageID: String)
+    public init?(host: Address,
+                 from: Address,
+                 to: [Address],
+                 replyTo: [Address],
+                 subject: String?,
+                 date: Date,
+                 extraHeaders: [String : String],
+                 messageID: String)
     {
         guard to.count > 0 else {
             print("TO IS EMPTY")
             return nil
         }
-        self.sender = sender
+        self.host = host
         self.fromAddress = from
         self.toAddress = to
         self.replyTo = to
@@ -63,6 +64,13 @@ public struct MessageHeader {
         self.date = date
         self.extraHeaders = extraHeaders
         self.messageID = messageID
+    }
+    
+    public subscript(dynamicMember member: String) -> Any? {
+        if member == "messageID" {
+            return messageID
+        }
+        return nil
     }
     
     static func headerKeyValues(from headerString: String) -> [HeaderKeyValue] {

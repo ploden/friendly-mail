@@ -97,8 +97,11 @@ extension Address: Equatable {
         return lhs.address == rhs.address
     }
 }
+
 extension Address: Identifiable {
-    public var identifier: MessageID {
-        return address
+    public var id: String {
+        get {
+            return address
+        }
     }
 }

@@ -1,0 +1,10 @@
+{{ createCommentMessage.post.author.displayName }} commented on your post.
+
+{{ createPostMessage.posting.author.displayName }}
+"{{ createPostMessage.posting.articleBody }}"
+
+{{ createCommentMessage.post.author.displayName }}
+"{{ createCommentMessage.post.articleBody }}"
+
+Like: mailto:{{ createCommentMessage.post.author.email }}?subject=Fm%20Like:{{ createCommentMessage.header.messageID }}&body={{ likeBody }}
+Reply: mailto:{{ createCommentMessage.post.author.email }}?subject=Fm%20Comment:{{ createCommentMessage.header.messageID }}

@@ -10,11 +10,15 @@ import CocoaLumberjackSwift
 import friendly_mail_core
 
 struct AppleLogger: Logger {
-    func log(message: String) {
+    func log(message: String, level: friendly_mail_core.LogLevel) {
 #if targetEnvironment(simulator)
         print(message)
 #endif
         DDLogDebug(message)
+    }
+    
+    func log(message: String) {
+        log(message: message, level: .debug)
     }
     
     public init() {

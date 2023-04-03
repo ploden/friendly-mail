@@ -9,7 +9,7 @@ import Foundation
 import friendly_mail_core
 
 extension MessageHeader {
-    init?(header: MCOMessageHeader, mailbox: Mailbox) {
+    init?(host: Address, header: MCOMessageHeader, mailbox: Mailbox) {
         let to: [Address]? = header.to?.compactMap {
             if
                 let mcoAddress = $0 as? MCOAddress,
@@ -24,6 +24,13 @@ extension MessageHeader {
             return nil
         }
         
+        let from: Address? = Address(name: header.from.displayName, address: header.from.mailbox)
+
+        // Make sure we sent or received this message
+        guard host.id == from?.id || to.containsIdentifiable(host) else {
+            return nil
+        }
+                
         let replyTo: [Address] = header.replyTo?.compactMap {
             if
                 let mcoAddress = $0 as? MCOAddress,
@@ -34,7 +41,6 @@ extension MessageHeader {
             return nil
         } ?? [Address]()
         
-        let from: Address? = Address(name: header.from.displayName, address: header.from.mailbox)
         var sender: Address?
         
         if from != nil {
@@ -56,7 +62,7 @@ extension MessageHeader {
         }
         
         if let from = from {
-            self.init(sender: sender,
+            self.init(host: host,
                       from: from,
                       to: to,
                       replyTo: replyTo,

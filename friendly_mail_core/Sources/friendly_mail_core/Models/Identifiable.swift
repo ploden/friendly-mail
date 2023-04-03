@@ -42,6 +42,8 @@ public typealias MessageID = ID
 
 extension UIDWithMailbox: Codable {}
 
+/*
 public protocol Identifiable {
     var identifier: ID { get }
 }
+*/

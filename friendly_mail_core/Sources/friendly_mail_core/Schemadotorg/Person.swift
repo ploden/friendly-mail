@@ -6,8 +6,9 @@
 //
 
 import Foundation
+import Stencil
 
-final class Person: Thing {
+final class Person: Thing, DynamicMemberLookup {
     let email: String
     let familyName: String?
     let givenName: String?
@@ -36,6 +37,15 @@ final class Person: Thing {
         self.givenName = nil
         self.additionalName = nil
     }
+    
+    public subscript(dynamicMember member: String) -> Any? {
+        if member == "displayName" {
+            return displayName
+        } else if member == "email" {
+            return email
+        }
+        return nil
+    }
 }
 
 extension Person: Codable {}
@@ -49,5 +59,11 @@ extension Person: Hashable {
 extension Person: Equatable {
     public static func ==(lhs: Person, rhs: Person) -> Bool {
         return lhs.email == rhs.email
+    }
+}
+
+extension Person: Identifiable {
+    public var id: String {
+        return email
     }
 }

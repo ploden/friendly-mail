@@ -1,3 +1,3 @@
-{% for commandResult in commandResults %}
-friendly-mail: {{ commandResult.command.input }}: {{ commandResult.message }}
-{% endfor %}
+$ {{ commandResults.first.command.input }}
+friendly-mail: {{ commandResults.first.message }}
+{{ signature }}

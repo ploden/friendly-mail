@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Like {
+struct Like: Hashable {
     let parentItemMessageID: MessageID // messageID of create post message of parent
     let createLikeMessageID: MessageID // messageID of create like message
 }

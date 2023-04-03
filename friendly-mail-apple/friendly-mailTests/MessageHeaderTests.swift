@@ -27,12 +27,11 @@ class MessageHeaderTests: XCTestCase {
 
     func testEncodeDecodeFriendlyMailHeader() throws {
         let mID = "12345"
-        let command = Command(index: 0, commandType: .unknown, createCommandsMessageID: mID, input: "aoeu")
         let user = Address(name: nil, address: "ploden@gmail.com")!
+        let command = Command(index: 0, commandType: .unknown, createCommandsMessageID: mID, input: "aoeu", host: user, user: user)
         let result = CommandResult(createCommandMessageID: command.createCommandsMessageID,
                                    commandType: command.commandType,
                                    command: command,
-                                   user: user,
                                    message: "message",
                                    exitCode: .fail)
         

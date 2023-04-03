@@ -8,13 +8,14 @@
 import Foundation
 import SerializedSwift
 
-public class AddFollowersSucceededCommandResult: AnyCommandResult {
+public class AddFollowersSucceededCommandResult: CommandResult {
     /*
     enum CodingKeys: String, CodingKey {
         case follows
     }
      */
     
+    /*
     public var createCommandMessageID: MessageID
     //@Serialized
     public var commandType: CommandType
@@ -26,26 +27,27 @@ public class AddFollowersSucceededCommandResult: AnyCommandResult {
     public var message: String
     //@Serialized
     public var exitCode: CommandExitCode
+     */
     
-    //@Serialized
+    @Serialized
     var followee: Address
-    //@Serialized
+    @Serialized
     var follows: [Follow]
     
-    /*
     public required init() {
         super.init()
     }
-     */
     
     public required init(createCommandMessageID: MessageID, commandType: CommandType, command: Command, user: Address, message: String, exitCode: CommandExitCode, follows: [Follow]) {
-        //super.init(createCommandMessageID: createCommandMessageID, commandType: commandType, command: command, user: user, message: message, exitCode: exitCode)
+        super.init(createCommandMessageID: createCommandMessageID, commandType: commandType, command: command, message: message, exitCode: exitCode)
+        /*
         self.createCommandMessageID = createCommandMessageID
         self.commandType = commandType
         self.command = command
         self.user = user
         self.message = message
         self.exitCode = exitCode
+         */
         self.followee = user
         self.follows = follows
     }
@@ -72,6 +74,14 @@ public class AddFollowersSucceededCommandResult: AnyCommandResult {
         try container.encode(follows, forKey: .follows)
     }
      */
+    
+    override public func hash(into hasher: inout Hasher) {
+        hasher.combine(command)
+        //hasher.combine(commandType)
+        //hasher.combine(sender)
+        //hasher.combine(receiver)
+        hasher.combine(createCommandMessageID)
+    }
 }
 
 public extension AddFollowersSucceededCommandResult {
@@ -80,11 +90,4 @@ public extension AddFollowersSucceededCommandResult {
         lhs.command == rhs.command
     }
     
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(command)
-        //hasher.combine(commandType)
-        //hasher.combine(sender)
-        //hasher.combine(receiver)
-        hasher.combine(createCommandMessageID)
-    }
 }

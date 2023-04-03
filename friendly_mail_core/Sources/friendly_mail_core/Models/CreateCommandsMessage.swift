@@ -23,7 +23,7 @@ struct CreateCommandsMessage: AnyBaseMessage {
 }
 
 extension CreateCommandsMessage: Identifiable {
-    var identifier: MessageID {
+    public var id: String {
         return header.messageID
     }
 }

@@ -8,5 +8,5 @@
 import Foundation
 
 public protocol AnyCommandResultsMessage: AnyBaseMessage {
-    var commandResults: [any AnyCommandResult] { get }
+    var commandResults: [CommandResult] { get }
 }

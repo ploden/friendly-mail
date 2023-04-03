@@ -9,14 +9,14 @@ import Foundation
 
 class NewPostNotificationTemplate: Template {
     
-    func populatePartialHTML(with post: SocialMediaPosting, notification: NewPostNotification, follow: Follow) -> String? {
+    func populatePartialHTML(with post: SocialMediaPosting, notification: NewPostingNotification, follow: Follow) -> String? {
         if let url = partialHTMLTemplateURL() {
             return populate(url: url, with: [post, notification, follow])
         }
         return nil
     }
     
-    func populateHTML(with post: SocialMediaPosting, notification: NewPostNotification, follow: Follow) -> String? {
+    func populateHTML(with post: SocialMediaPosting, notification: NewPostingNotification, follow: Follow) -> String? {
         if
             let baseHTML = populateBaseHTML(),
             let partialHTML = populatePartialHTML(with: post, notification: notification, follow: follow)
@@ -28,14 +28,14 @@ class NewPostNotificationTemplate: Template {
         return nil
     }
 
-    func populatePlainText(with post: SocialMediaPosting, notification: NewPostNotification, follow: Follow) -> String? {
+    func populatePlainText(with post: SocialMediaPosting, notification: NewPostingNotification, follow: Follow) -> String? {
         if let url = plainTextTemplateURL() {
             return populate(url: url, with: [post, notification, follow])
         }
         return nil
     }
     
-    func populateSubject(with post: SocialMediaPosting, notification: NewPostNotification, follow: Follow) -> String? {
+    func populateSubject(with post: SocialMediaPosting, notification: NewPostingNotification, follow: Follow) -> String? {
         if let url = subjectTemplateURL() {
             return populate(url: url, with: [post, notification, follow])
         }
@@ -47,9 +47,9 @@ class NewPostNotificationTemplate: Template {
         
         if let withArray = with as? [Any] {
             for withFromArray in withArray {
-                if let notification = withFromArray as? NewPostNotification {
+                if let notification = withFromArray as? NewPostingNotification {
                     data["likeBody"] = "👍🏻"
-                    data["createPostMessageID"] = notification.createPostMessageID
+                    data["createPostMessageID"] = notification.createPostingMessageID
                 } else if let post = withFromArray as? SocialMediaPosting {
                     data["authorDisplayName"] = post.author.displayName
                     data["statusUpdate"] = post.articleBody

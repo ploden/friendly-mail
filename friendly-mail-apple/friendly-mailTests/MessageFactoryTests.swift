@@ -16,7 +16,6 @@ class MessageFactoryTests: XCTestCase {
         let subject = "Fm"
         let body = "This is a test post."
         let messageID = UIDWithMailbox(UID: UInt64.random(in: 1..<UInt64.max), mailbox: Mailbox(name: MailboxName.friendlyMail, UIDValidity: 1))
-        let header = MessageHeader(sender: user, from: user, to: [user], replyTo: [user], subject: subject, date: Date(), extraHeaders: [:], messageID: "")
 
         var uid: UInt64 = 1
         let theme = await (UIApplication.shared.delegate as! AppDelegate).appConfig.defaultTheme
@@ -26,6 +25,8 @@ class MessageFactoryTests: XCTestCase {
         senderReceiver.user = user
         senderReceiver.settings = settings
         
+        let header = MessageHeader(host: settings.user, from: user, to: [user], replyTo: [user], subject: subject, date: Date(), extraHeaders: [:], messageID: "")
+
         let config = await (UIApplication.shared.delegate as! AppDelegate).appConfig
         
         var messages = MessageStore()
@@ -47,7 +48,7 @@ class MessageFactoryTests: XCTestCase {
                                                    logger: nil) as? CreatePostingMessage ?? nil
         
         XCTAssertNotNil(message, "Message is not nil.")
-        XCTAssertNotNil(message?.post)
+        XCTAssertNotNil(message?.posting)
         XCTAssert(message?.plainTextBody == body, "post body is not correct")
     }
     
@@ -161,7 +162,7 @@ class MessageFactoryTests: XCTestCase {
         let path = Bundle(for: type(of: self )).path(forResource: "create_command_create_account", ofType: "txt")!
 
         let (provider, _, uid) = await TestHelpers.defaultSetup(testCase: self)
-        let correctMessage = TestHelpers.loadEmail(account: provider.messages.account, withPath: path, uid: uid)
+        let correctMessage = TestHelpers.loadEmail(host: provider.address, account: provider.messages.account, withPath: path, uid: uid)
         
         XCTAssert(correctMessage is CreateCommandsMessage)
         
@@ -174,7 +175,7 @@ class MessageFactoryTests: XCTestCase {
         let path = Bundle(for: type(of: self )).path(forResource: "create_command_not_found", ofType: "txt")!
 
         let (provider, _, uid) = await TestHelpers.defaultSetup(testCase: self)
-        let correctMessage = TestHelpers.loadEmail(account: provider.messages.account, withPath: path, uid: uid)
+        let correctMessage = TestHelpers.loadEmail(host: provider.address, account: provider.messages.account, withPath: path, uid: uid)
         
         XCTAssert(correctMessage is CreateCommandsMessage)
         let commandMessage = correctMessage as! CreateCommandsMessage
@@ -192,21 +193,24 @@ class MessageFactoryTests: XCTestCase {
     func testExtractCommandsSetProfilePic() throws {
         let plainTextBody = "Fm: set profile pic"
         let messageID = ""
-        let extracted = MessageFactory.extractCommands(messageID: messageID, htmlBody: nil, plainTextBody: plainTextBody)
+        let user = Address(name: "Phil Loden", address: "ploden@gmail.com")!
+        let extracted = MessageFactory.extractCommands(host: user, user: user, messageID: messageID, htmlBody: nil, plainTextBody: plainTextBody)
         XCTAssert(extracted!.first!.commandType == .setProfilePic)
     }
 
     func testExtractCommandsAddSingleFollower() throws {
         let plainTextBody = "Fm: add follower ploden.postcards@gmail.com"
         let messageID = ""
-        let extracted = MessageFactory.extractCommands(messageID: messageID, htmlBody: nil, plainTextBody: plainTextBody)
+        let user = Address(name: "Phil Loden", address: "ploden@gmail.com")!
+        let extracted = MessageFactory.extractCommands(host: user, user: user, messageID: messageID, htmlBody: nil, plainTextBody: plainTextBody)
         XCTAssert(extracted!.first!.commandType == .addFollowers)
     }
 
     func testExtractCommandsAddMultipleFollowers() throws {
         let plainTextBody = "Fm: add followers ploden.postcards@gmail.com second@second.com"
         let messageID = ""
-        let extracted = MessageFactory.extractCommands(messageID: messageID, htmlBody: nil, plainTextBody: plainTextBody)
+        let user = Address(name: "Phil Loden", address: "ploden@gmail.com")!
+        let extracted = MessageFactory.extractCommands(host: user, user: user, messageID: messageID, htmlBody: nil, plainTextBody: plainTextBody)
         XCTAssert(extracted!.first!.commandType == .addFollowers)
     }
     

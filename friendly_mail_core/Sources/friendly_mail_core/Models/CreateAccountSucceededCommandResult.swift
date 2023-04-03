@@ -7,14 +7,22 @@
 
 import Foundation
 import SerializedSwift
+import Stencil
 
-public class CreateAccountSucceededCommandResult: AnyCommandResult {
+public class CreateAccountSucceededCommandResult: CommandResult {
+    public override subscript(dynamicMember member: String) -> Any? {
+        if member == "account" {
+            return account
+        }
+        return super[dynamicMember: member]
+    }
     /*
     enum CodingKeys: String, CodingKey {
         case account
     }
      */
     
+    /*
     //@Serialized
     public var createCommandMessageID: MessageID
     //@Serialized
@@ -27,25 +35,25 @@ public class CreateAccountSucceededCommandResult: AnyCommandResult {
     public var message: String
     //@Serialized
     public var exitCode: CommandExitCode
-    
-    //@Serialized
+    */
+    @Serialized
     var account: FriendlyMailAccount
     
-    /*
     public required init() {
         super.init()
         account = FriendlyMailAccount(user: Address(address: ""))
     }
-     */
     
     public required init(createCommandMessageID: MessageID, commandType: CommandType, command: Command, user: Address, message: String, exitCode: CommandExitCode, account: FriendlyMailAccount) {
-        //super.init(createCommandMessageID: createCommandMessageID, commandType: commandType, command: command, user: user, message: message, exitCode: exitCode)
+        super.init(createCommandMessageID: createCommandMessageID, commandType: commandType, command: command, message: message, exitCode: exitCode)
+        /*
         self.createCommandMessageID = createCommandMessageID
         self.commandType = commandType
         self.command = command
         self.user = user
         self.message = message
         self.exitCode = exitCode
+         */
         self.account = account
     }
     
@@ -79,6 +87,7 @@ public extension CreateAccountSucceededCommandResult {
         lhs.command == rhs.command
     }
     
+    /*
     func hash(into hasher: inout Hasher) {
         hasher.combine(command)
         //hasher.combine(commandType)
@@ -86,4 +95,5 @@ public extension CreateAccountSucceededCommandResult {
         //hasher.combine(receiver)
         hasher.combine(createCommandMessageID)
     }
+     */
 }

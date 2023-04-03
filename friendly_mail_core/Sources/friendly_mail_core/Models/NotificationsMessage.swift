@@ -9,7 +9,7 @@ import Foundation
 
 /*
  This is the message that is sent to a follower
- that contains the content we've created.
+ that contains the content the followee has created.
  */
 
 struct NotificationsMessage: AnyBaseMessage {
@@ -22,7 +22,7 @@ struct NotificationsMessage: AnyBaseMessage {
 }
 
 extension NotificationsMessage: Identifiable {
-    var identifier: MessageID {
+    public var id: String {
         return header.messageID
     }
 }

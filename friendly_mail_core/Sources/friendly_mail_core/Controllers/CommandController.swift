@@ -48,7 +48,6 @@ public struct CommandController {
                 let result = CommandResult(createCommandMessageID: command.createCommandsMessageID,
                                            commandType: command.commandType,
                                            command: command,
-                                           user: fromUser,
                                            message: message,
                                            exitCode: .fail)
                 let commandResultDraft = CommandResultMessageDraft(to: [account.user], commandResults: [result], theme: theme)
@@ -63,7 +62,7 @@ public struct CommandController {
     static func handleSetProfilePic(createCommandsMessage: CreateCommandsMessage,
                                     command: Command,
                                     messages: MessageStore,
-                                    storageProvider: StorageProvider) async -> any AnyCommandResult
+                                    storageProvider: StorageProvider) async -> CommandResult
     {
         guard Self.hasPermission(createCommandsMessage: createCommandsMessage, command: command, messages: messages) else {
             return Self.createPermissionDeniedCommandResult(createCommandsMessage: createCommandsMessage, command: command)
@@ -97,7 +96,6 @@ public struct CommandController {
                             let result = CommandResult(createCommandMessageID: command.createCommandsMessageID,
                                                        commandType: command.commandType,
                                                        command: command,
-                                                       user: fromUser,
                                                        message: message,
                                                        exitCode: .fail)
                             continuation.resume(returning: result)
@@ -110,7 +108,6 @@ public struct CommandController {
                 let result = CommandResult(createCommandMessageID: command.createCommandsMessageID,
                                            commandType: command.commandType,
                                            command: command,
-                                           user: fromUser,
                                            message: message,
                                            exitCode: .fail)
                 return result
@@ -120,7 +117,7 @@ public struct CommandController {
         return Self.createUnknownErrorCommandResult(createCommandsMessage: createCommandsMessage, command: command)
     }
     
-    static func handleAddFollowers(createCommandsMessage: CreateCommandsMessage, command: Command, messages: MessageStore, host: Address) -> any AnyCommandResult {
+    static func handleAddFollowers(createCommandsMessage: CreateCommandsMessage, command: Command, messages: MessageStore, host: Address) -> CommandResult {
         guard Self.hasPermission(createCommandsMessage: createCommandsMessage, command: command, messages: messages) else {
             return Self.createPermissionDeniedCommandResult(createCommandsMessage: createCommandsMessage, command: command)
         }
@@ -146,25 +143,23 @@ public struct CommandController {
         return false
     }
     
-    static func createPermissionDeniedCommandResult(createCommandsMessage: CreateCommandsMessage, command: Command) -> any AnyCommandResult {
+    static func createPermissionDeniedCommandResult(createCommandsMessage: CreateCommandsMessage, command: Command) -> CommandResult {
         let message = "permission denied"
         
         let result = CommandResult(createCommandMessageID: command.createCommandsMessageID,
                                    commandType: command.commandType,
                                    command: command,
-                                   user: createCommandsMessage.header.fromAddress,
                                    message: message,
                                    exitCode: .fail)
         return result
     }
     
-    static func createUnknownErrorCommandResult(createCommandsMessage: CreateCommandsMessage, command: Command) -> any AnyCommandResult {
+    static func createUnknownErrorCommandResult(createCommandsMessage: CreateCommandsMessage, command: Command) -> CommandResult {
         let message = "an unknown error occurred"
         
         let result = CommandResult(createCommandMessageID: command.createCommandsMessageID,
                                    commandType: command.commandType,
                                    command: command,
-                                   user: createCommandsMessage.header.fromAddress,
                                    message: message,
                                    exitCode: .fail)
         return result

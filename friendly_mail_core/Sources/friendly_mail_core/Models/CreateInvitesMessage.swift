@@ -34,7 +34,7 @@ extension CreateInvitesMessage: Equatable {}
 extension CreateInvitesMessage: Codable {}
 
 extension CreateInvitesMessage: Identifiable {
-    var identifier: MessageID {
+    public var id: String {
         return header.messageID
     }
 }

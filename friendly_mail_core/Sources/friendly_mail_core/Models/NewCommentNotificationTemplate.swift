@@ -33,8 +33,8 @@ public class NewCommentNotificationTemplate: Template {
                 let createPostMessage = withArray.first(where: { $0 is CreatePostingMessage }) as? CreatePostingMessage
             {
                 data["commentAuthorDisplayName"] = createCommentMessage.post.author.displayName
-                data["parentPostAuthorDisplayName"] = createPostMessage.post.author.displayName
-                data["parentPost"] = createPostMessage.post.articleBody
+                data["parentPostAuthorDisplayName"] = createPostMessage.posting.author.displayName
+                data["parentPost"] = createPostMessage.posting.articleBody
                 data["commentPost"] = createCommentMessage.post.articleBody
                 data["createCommentMessageID"] = createCommentMessage.header.messageID
                 data["replyTo"] = createCommentMessage.post.author.email

@@ -16,16 +16,6 @@ public enum CommandType: String, Codable {
 }
 
 public class Command: Codable, Hashable, Equatable {
-    
-    /*
-    public static func == (lhs: Command, rhs: Command) -> Bool {
-        return lhs.createCommandsMessageID == rhs.createCommandsMessageID &&
-        lhs.index == rhs.index
-    }
-     */
-    
-    //let sender: Address
-    //let receiver: Address
     /*
      A message can have multiple commands. This is the index
      of this command in the array of commands from the message.
@@ -35,12 +25,16 @@ public class Command: Codable, Hashable, Equatable {
     let commandType: CommandType
     let createCommandsMessageID: MessageID
     let input: String
-                
-    public init(index: Int, commandType: CommandType, createCommandsMessageID: MessageID, input: String) {
+    let user: Address
+    let host: Address
+    
+    public init(index: Int, commandType: CommandType, createCommandsMessageID: MessageID, input: String, host: Address, user: Address) {
         self.index = index
         self.commandType = commandType
         self.createCommandsMessageID = createCommandsMessageID
         self.input = input
+        self.host = host
+        self.user = user
     }
     
     static func isAddFollowerInput(input: String) -> Bool {
@@ -59,86 +53,19 @@ public class Command: Codable, Hashable, Equatable {
 public extension Command {
     static func == (lhs: Command, rhs: Command) -> Bool {
         return lhs.createCommandsMessageID == rhs.createCommandsMessageID &&
-        lhs.index == rhs.index
+        lhs.index == rhs.index &&
+        lhs.input == rhs.input &&
+        lhs.commandType == rhs.commandType &&
+        lhs.host == rhs.host &&
+        lhs.user == rhs.user
     }
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(index)
-        //hasher.combine(commandType)
-        //hasher.combine(sender)
-        //hasher.combine(receiver)
+        hasher.combine(commandType)
+        hasher.combine(input)
+        hasher.combine(host)
         hasher.combine(createCommandsMessageID)
+        hasher.combine(user)
     }
 }
-
-//typealias Command = (SomeCommand & Codable & Hashable)
-
-/*
-public class CreateAccountCommand: Command {
-    static var commandType: CommandType = .createAccount
-    let index: Int
-    let createCommandsMessageID: MessageID
-    let input: String
-    var commandType: CommandType {
-        get {
-            return Self.commandType
-        }
-    }
-}
- */
-
-/*
-class ChangeProfilePicCommand: Command {
-    static var commandType: CommandType = .setProfilePic
-    let index: Int
-    let createCommandsMessageID: MessageID
-    let input: String
-    var commandType: CommandType {
-        get {
-            return Self.commandType
-        }
-    }
-}
- */
-
-/*
-class UnknownCommand: Command {
-    static var commandType: CommandType = .unknown
-    let index: Int
-    let createCommandsMessageID: MessageID
-    let input: String
-    var commandType: CommandType {
-        get {
-            return Self.commandType
-        }
-    }
-}
- */
-
-/*
-class CreateInvitesCommand: Command {
-    static var commandType: CommandType = .createInvites
-    let index: Int
-    let createCommandsMessageID: MessageID
-    let input: String
-    var commandType: CommandType {
-        get {
-            return Self.commandType
-        }
-    }
-}
- */
-
-/*
-extension CreateAccountCommand: Hashable {
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(index)
-        //hasher.combine(commandType)
-        //hasher.combine(sender)
-        //hasher.combine(receiver)
-        hasher.combine(createCommandsMessageID)
-    }
-}
- */
-
-//extension Command: Codable {}

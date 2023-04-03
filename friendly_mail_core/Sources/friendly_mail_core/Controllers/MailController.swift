@@ -23,7 +23,7 @@ enum HeaderKey: String {
 }
 
 public typealias NewLikeNotificationWithMessages = (notification: NewLikeNotification, createLikeMessage: CreateLikeMessage, createPostMessage: CreatePostingMessage)
-public typealias NewPostNotificationWithMessage = (notification: NewPostNotification, createPostMessage: CreatePostingMessage)
+public typealias NewPostNotificationWithMessage = (notification: NewPostingNotification, createPostMessage: CreatePostingMessage)
 public typealias NewCommentNotificationWithMessages = (notification: NewCommentNotification, createCommentMessage: CreateCommentMessage, createPostMessage: CreatePostingMessage)
 
 public class MailController {
@@ -86,7 +86,7 @@ public class MailController {
                             if
                                 let account = updatedMessages.account,
                                 let sentMessageID = try? sendMessageResult.get(),
-                                draft.to.contains(account.user)
+                                draft.to.containsIdentifiable(account.user)
                             {
                                 toMoveToInbox.append(sentMessageID)
                             }
@@ -194,72 +194,19 @@ public class MailController {
     /*
      Process mail should only be used on a complete message store. Create account, etc. 
      */
-    static func processMail(config: AppConfig, sender: MessageSender, receiver: MessageReceiver, messages: MessageStore, storageProvider: StorageProvider) async -> (error: Error?, messageStore: MessageStore, drafts: [AnyMessageDraft]) {
+    static func processMail(config: AppConfig, sender: MessageSender, receiver: MessageReceiver, messages: MessageStore, storageProvider: StorageProvider, logger: Logger? = nil) async -> (error: Error?, messageStore: MessageStore, drafts: [AnyMessageDraft]) {
         var drafts = [AnyMessageDraft]()
         
         let account = messages.account
         let prefs = messages.preferences!
-        let theme = config.themes.first { $0.identifier == prefs.selectedThemeID } ?? config.defaultTheme
+        let theme = config.themes.first { $0.id == prefs.selectedThemeID } ?? config.defaultTheme
         
         // handle commands
         let host = account?.user ?? receiver.address
         let unhandledCommands = MailController.unhandledCommands(messages: messages, host: host)
         
-        /*
-         let unhandledCommandsGrouped = Dictionary(grouping: unhandledCommands) { (command) -> MessageID in
-         return command.createCommandsMessageID
-         }
-         */
-        
-        do {
-            let results = await MailController.handle(commands: unhandledCommands, messages: messages, host: host, storageProvider: storageProvider, theme: theme)
-            
-            drafts += results
-            
-            /*
-             if let draft = CommandResultMessageDraft(to: [commandsMessage.header.fromAddress], commandResults: results, theme: theme) {
-             //let draft = MessageDraft(to: [commandsMessage.header.fromAddress], subject: subject, htmlBody: html, plainTextBody: plainTextBody, friendlyMailHeaders: friendlyMailHeaders)
-             drafts.append(draft)
-             }
-             */
-            
-            results.forEach { result in
-                /*
-                 let plainText = resultTemplate.populatePlainText(with: result)!
-                 let plainTextBody = "\(plainText)\n\(SignatureTemplate(theme: theme).populatePlainText()!)"
-                 let subject = resultTemplate.populateSubject(with: result)!
-                 let html = resultTemplate.populateHTML(with: result)
-                 */
-                
-                /*
-                 var friendlyMailHeaders = [
-                 HeaderKeyValue(key: HeaderKey.createCommandsMessageID.rawValue, unhandledCommand.createCommandsMessageID),
-                 ]
-                 
-                 if result is CreateAccountSucceededCommandResult {
-                 friendlyMailHeaders.append(HeaderKeyValue(key: HeaderKey.type.rawValue, value: FriendlyMailMessageType.createAccountSucceededCommandResult.rawValue))
-                 } else if result is SetProfilePicSucceededCommandResult {
-                 friendlyMailHeaders.append(HeaderKeyValue(key: HeaderKey.type.rawValue, value: FriendlyMailMessageType.setProfilePicSucceededCommandResult.rawValue))
-                 } else if result is AddFollowersSucceededCommandResult {
-                 friendlyMailHeaders.append(HeaderKeyValue(key: HeaderKey.type.rawValue, value: FriendlyMailMessageType.addFollowersSucceededCommandResult.rawValue))
-                 } else {
-                 friendlyMailHeaders.append(HeaderKeyValue(key: HeaderKey.type.rawValue, value: FriendlyMailMessageType.commandResult.rawValue))
-                 }
-                 
-                 let base64JSONString = result.encodeAsBase64JSON()
-                 friendlyMailHeaders.append(HeaderKeyValue(key: HeaderKey.base64JSON.rawValue, base64JSONString))
-                 */
-                
-                /*
-                 if let draft = CommandResultMessageDraft(to: [commandsMessage.header.fromAddress], commandResult: result, theme: theme) {
-                 //let draft = MessageDraft(to: [commandsMessage.header.fromAddress], subject: subject, htmlBody: html, plainTextBody: plainTextBody, friendlyMailHeaders: friendlyMailHeaders)
-                 drafts.append(draft)
-                 }
-                 */
-            }
-        } catch {
-            // suppress error
-        }
+        let commandResultMessageDrafts = await MailController.handle(commands: unhandledCommands, messages: messages, host: host, storageProvider: storageProvider, theme: theme)
+        drafts += commandResultMessageDrafts
         
         // can only proceed if we have an account
         guard let account = account else {
@@ -288,43 +235,67 @@ public class MailController {
         // send notifications to followers
         let follows = MailController.follows(forAddress: account.user, messages: messages)
         
+        var unsentNewPostNotificationsCount = 0
+        var notificationsMessageDraftsCount = 0
+        
         for follow in follows {
             let unsentNewPostNotifications = MailController.unsentNewPostNotifications(messages: messages, for: follow )
+            unsentNewPostNotificationsCount += unsentNewPostNotifications.count
             
-            if unsentNewPostNotifications.count > 0 {
-                let template = NewPostNotificationTemplate(theme: theme)
-                
-                let textForUnsentNewPostNotifications: [String] = unsentNewPostNotifications.compactMap { unsentNewPostNotification in
-                    return template.populatePlainText(with: unsentNewPostNotification.createPostMessage.post, notification: unsentNewPostNotification.notification, follow: follow)
-                }
-                
-                var joined = textForUnsentNewPostNotifications.joined(separator: "\n\n")
-                
-                joined += "\n\(SignatureTemplate(theme: theme).populatePlainText()!)"
-                
-                var headers = [HeaderKeyValue]()
-                
-                unsentNewPostNotifications.forEach {
-                    return headers.append(HeaderKeyValue(key: HeaderKey.notificationCreatePostMessageID.rawValue, value: $0.createPostMessage.header.messageID))
-                }
-                
-                headers.append(HeaderKeyValue(key: HeaderKey.type.rawValue, value: FriendlyMailMessageType.notifications.rawValue))
-                
-                if
-                    let first = unsentNewPostNotifications.first,
-                    let subject = template.populateSubject(with: first.createPostMessage.post, notification: first.notification, follow: follow)
-                {
-                    let html = template.populateHTML(with: first.createPostMessage.post, notification: first.notification, follow: follow)
-                    let draft = MessageDraft(to: [follow.follower], subject: subject, htmlBody: html, plainTextBody: joined, friendlyMailHeaders: headers)
-                    drafts.append(draft)
-                }
+            drafts += unsentNewPostNotifications.compactMap {
+                notificationsMessageDraftsCount += 1
+                return NotificationsMessageDraft(to: [follow.follower],
+                                          notifications: [$0],
+                                          theme: theme,
+                                          messages: messages)
             }
+            
+            /*
+             if unsentNewPostNotifications.count > 0 {
+             let template = NewPostNotificationTemplate(theme: theme)
+             
+             let textForUnsentNewPostNotifications: [String] = unsentNewPostNotifications.compactMap { unsentNewPostNotification in
+             return template.populatePlainText(with: unsentNewPostNotification.createPostMessage.post, notification: unsentNewPostNotification.notification, follow: follow)
+             }
+             
+             var joined = textForUnsentNewPostNotifications.joined(separator: "\n\n")
+             
+             joined += "\n\(SignatureTemplate(theme: theme).populatePlainText()!)"
+             
+             var headers = [HeaderKeyValue]()
+             
+             unsentNewPostNotifications.forEach {
+             return headers.append(HeaderKeyValue(key: HeaderKey.notificationCreatePostMessageID.rawValue, value: $0.createPostMessage.header.messageID))
+             }
+             
+             headers.append(HeaderKeyValue(key: HeaderKey.type.rawValue, value: FriendlyMailMessageType.notifications.rawValue))
+             
+             if
+             let first = unsentNewPostNotifications.first,
+             let subject = template.populateSubject(with: first.createPostMessage.post, notification: first.notification, follow: follow)
+             {
+             let html = template.populateHTML(with: first.createPostMessage.post, notification: first.notification, follow: follow)
+             let draft = MessageDraft(to: [follow.follower], subject: subject, htmlBody: html, plainTextBody: joined, friendlyMailHeaders: headers)
+             drafts.append(draft)
+             }
+             */
         }
         
+        let followersString = follows.map { $0.follower.address }.joined(separator: " ")
+        logger?.log(message: "MailController: processMail: followers: \(follows.count) [\(followersString)] unsentNewPostNotifications: \(unsentNewPostNotificationsCount) notificationsMessageDraftsCount: \(notificationsMessageDraftsCount)", level: .debug)
+
         // send new comment notifications to me
         let unsentNewCommentNotifications = MailController.unsentNewCommentNotifications(messages: messages)
         let unsentNewCommentNotificationsWithMessages = MailController.newCommentNotificationWithMessages(for: Array(unsentNewCommentNotifications), messages: messages)
         
+        drafts += unsentNewCommentNotificationsWithMessages.compactMap {
+            NotificationsMessageDraft(to: [account.user],
+                                      notifications: [$0.notification],
+                                      theme: theme,
+                                      messages: messages)
+        }
+        
+        /*
         for unsent in unsentNewCommentNotificationsWithMessages {
             let template = NewCommentNotificationTemplate(theme: theme)
             
@@ -345,11 +316,20 @@ public class MailController {
                 drafts.append(draft)
             }
         }
+         */
         
         // send new like notifications to me
         let unsentNewLikeNotifications = MailController.unsentNewLikeNotifications(messages: messages)
         let unsentNewLikeNotificationsWithMessages = MailController.newLikeNotificationWithMessages(for: Array(unsentNewLikeNotifications), messages: messages)
+
+        drafts += unsentNewLikeNotificationsWithMessages.compactMap {
+            NotificationsMessageDraft(to: [account.user],
+                                      notifications: [$0.notification],
+                                      theme: theme,
+                                      messages: messages)
+        }
         
+        /*
         for unsent in unsentNewLikeNotificationsWithMessages {
             let template = NewLikeNotificationTemplate(theme: theme)
             
@@ -370,6 +350,7 @@ public class MailController {
                 drafts.append(draft)
             }
         }
+         */
         
         return (error: nil, messageStore: messages, drafts: drafts)
     }
@@ -407,7 +388,7 @@ public class MailController {
         let createCommentMessages: [CreateCommentMessage] = messages.allMessages.compactMap {
             if
                 let fm = $0 as? CreateCommentMessage,
-                fm.header.sender != account.user,
+                fm.header.fromAddress != account.user,
                 let parentItemMessage = messages.getMessage(for: fm.comment.parentItemMessageID) as? CreatePostingMessage,
                 parentItemMessage.header.fromAddress == account.user
             {
@@ -501,7 +482,7 @@ public class MailController {
         let createLikeMessages: [CreateLikeMessage] = messages.allMessages.compactMap {
             if
                 let fm = $0 as? CreateLikeMessage,
-                fm.header.sender != account.user,
+                fm.header.fromAddress != account.user,
                 let parentItemMessage = messages.getMessage(for: fm.like.parentItemMessageID) as? CreatePostingMessage,
                 parentItemMessage.header.fromAddress == account.user
             {
@@ -525,10 +506,8 @@ public class MailController {
      Return new post notifications that should be sent
      to a given follower.
      */
-    static func unsentNewPostNotifications(messages: MessageStore, for subscription: Follow) -> [NewPostNotificationWithMessage] {
-        let account = messages.account!
-        
-        switch subscription.frequency {
+    static func unsentNewPostNotifications(messages: MessageStore, for follow: Follow) -> [NewPostingNotification] {
+        switch follow.frequency {
             /*
              If realtime, send any unsent for between now and last sent.
              */
@@ -540,10 +519,10 @@ public class MailController {
             let notificationsMessagesWithNewPostNotificationsForFollow: [NotificationsMessage] = messages.allMessages.compactMap {
                 if
                     let fm = $0 as? NotificationsMessage,
-                    fm.header.toAddress.first == subscription.follower
+                    fm.header.toAddress.first?.id == follow.follower.id
                 {
                     let firstNewPostNotification = fm.notifications.first { notification in
-                        notification is NewPostNotification
+                        notification is NewPostingNotification
                     }
                     if let _ = firstNewPostNotification {
                         return fm
@@ -561,41 +540,55 @@ public class MailController {
             let startDate: Date = {
                 if
                     let mostRecentSent = sortedSent.first,
-                    let plusASec = Calendar.current.date(byAdding: .second, value: 1, to: mostRecentSent.header.date)
+                    let plusANanosec = Calendar.current.date(byAdding: .nanosecond, value: 1, to: mostRecentSent.header.date)
                 {
-                    return plusASec
+                    return plusANanosec
                 } else {
-                    return now - Date.timeIntervalSinceReferenceDate
+                    //return now - Date.timeIntervalSinceReferenceDate
+                    return Date.distantPast
                 }
             }()
             
-            let newPostNotificationsToSend = MailController.newPostNotifications(messages: messages, for: subscription, start: startDate, end: now)
-                        
+            let postings = messages.postings(author: messages.account!.user, from: startDate)
+            
+            let notificationsToSend: [NewPostingNotification] = postings.compactMap {
+                if let message = messages.getCreatePostingMessage(for: $0) {
+                    let notification = NewPostingNotification(createPostingMessageID: message.header.messageID)
+                    return notification
+                }
+                return nil
+            }
+            
+            return notificationsToSend
+            //let newPostNotificationsToSend = MailController.newPostNotifications(messages: messages, for: follow, start: startDate, end: now)
+               
+            /*
             let notificationsWithPosts: [NewPostNotificationWithMessage] = newPostNotificationsToSend.compactMap {
                 if let message = messages.getMessage(for: $0.createPostMessageID) as? CreatePostingMessage {
                     return (notification: $0, createPostMessage: message)
                 }
                 return nil
             }
+             */
             
-            return notificationsWithPosts
+            return [NewPostingNotification]()
         case .daily, .weekly, .monthly:
             break            
         }
         
-        return [NewPostNotificationWithMessage]()
+        return [NewPostingNotification]()
     }
     
     /*
      Return new post notifications that have been sent to a given
      follower.
      */
-    static func sentNewPostNotifications(settings: Settings, messages: MessageStore, for subscription: Follow) -> [NewPostNotification] {
+    static func sentNewPostNotifications(settings: Settings, messages: MessageStore, for follow: Follow) -> [NewPostingNotification] {
         let notificationsMessagesForFollow: [NotificationsMessage] = messages.allMessages.compactMap {
             if
                 let fm = $0 as? NotificationsMessage,
                 let recipient = fm.header.toAddress.first,
-                recipient == subscription.follower
+                recipient.id == follow.follower.id
             {
                 return fm
             }
@@ -603,11 +596,12 @@ public class MailController {
         }
         
         let sentNotifications = notificationsMessagesForFollow.compactMap { $0.notifications }.reduce([], +)
-        let sentNewPostNotifications = sentNotifications.compactMap { $0 as? NewPostNotification }
+        let sentNewPostNotifications = sentNotifications.compactMap { $0 as? NewPostingNotification }
         
         return sentNewPostNotifications
     }
     
+    /*
     /*
      Return all new post notifications for a subscription for posts created
      for a given time period.
@@ -630,13 +624,16 @@ public class MailController {
         
         return notifications
     }
+    */
     
+    /*
     /*
      Return all sent notifications. A sent notification will have a corresponding message.
      */
     static func sentNotifications(for subscription: Follow) {
         
     }
+     */
     
     /*
      Return all invites.
@@ -677,8 +674,8 @@ public class MailController {
      Return all follows for address.
      */
     static func follows(forAddress address: Address, messages: MessageStore) -> [Follow] {
-        let follows: [Follow] = messages.addFollowersSucceededCommandResults.compactMap { result in
-            if result.followee == address {
+        let follows: [Follow] = messages.commandResults(ofType: AddFollowersSucceededCommandResult.self).compactMap { result in
+            if result.followee.id == address.id {
                 return result.follows
             }
             return nil
@@ -695,15 +692,15 @@ public class MailController {
 
         messages.allMessages.forEach {
             if let fm = $0 as? CreateFollowMessage {
-                if fm.subscription.followee == address {
+                if fm.subscription.followee.id == address.id {
                     followers.append(fm.subscription.follower)
-                } else if fm.subscription.follower == address {
+                } else if fm.subscription.follower.id == address.id {
                     following.append(fm.subscription.followee)
                 }
             }
             else if
                 let fm = $0 as? CreateAddFollowersMessage,
-                fm.followee == address
+                fm.followee.id == address.id
             {
                 fm.follows.forEach { followers.append($0.follower) }
             }
@@ -719,7 +716,7 @@ public class MailController {
         let createCommandsMessages = messages.allMessages.compactMap {
             return $0 as? CreateCommandsMessage
         }
-        let createCommandsMessagesToHost = createCommandsMessages.filter { $0.header.toAddress.contains(host) }
+        let createCommandsMessagesToHost = createCommandsMessages.filter { $0.header.toAddress.containsIdentifiable(host) }
         let commands = createCommandsMessagesToHost.compactMap { $0.commands }.reduce([], +)
         return commands
     }
@@ -729,29 +726,18 @@ public class MailController {
      */
     static func unhandledCommands(messages: MessageStore, host: Address) -> [Command] {
         let commands = Set<Command>(MailController.commands(messages: messages, host: host))
-        let handledCommands = MailController.handledCommands(messages: messages, host: host)
-
-        let unhandledCommands = commands.filter { command in
-            handledCommands.contains(command) == false
-        }
-        
+        let handledCommands = Set<Command>(MailController.handledCommands(messages: messages, host: host))
+        let unhandledCommands = commands.subtracting(handledCommands)
         return Array(unhandledCommands)
     }
     
     /*
-     Return all handled commands. A handled command will have a corresponding CommandResultMessage.
+     Return all commands that this host has handled. A handled command will have a corresponding CommandResultMessage.
      */
     static func handledCommands(messages: MessageStore, host: Address) -> [Command] {
-        let handledCommandResults = messages.commandResultsMessages.compactMap { $0.commandResults }.reduce([], +)
-        let handledCommandResultsForUser = handledCommandResults.filter { $0.user == host }
-        let handledCommands = handledCommandResultsForUser.compactMap { $0.command }
+        let handledCommandResults = messages.commandResults(ofType: CommandResult.self, host: host)
+        let handledCommands = handledCommandResults.compactMap { $0.command }
         return handledCommands
-        
-        // FIXME: Incomplete
-
-        // TODO: -
-        // TODO: Need to handle case where another user sends a command that we need to handle
-        // TODO: -
     }
     
     static func handle(commands: [Command], messages: MessageStore, host: Address, storageProvider: StorageProvider, theme: Theme) async -> [AnyMessageDraft] {
@@ -776,12 +762,11 @@ public class MailController {
                         let commandResultDraft = CommandResultMessageDraft(to: [to], commandResults: [result], theme: theme)
                         drafts += [commandResultDraft!]
                     case .createInvites, .unknown:
-                        let message = "command not found"
+                        let message = "\(command.input): command not found"
                         
                         let result = CommandResult(createCommandMessageID: command.createCommandsMessageID,
                                                    commandType: command.commandType,
                                                    command: command,
-                                                   user: createCommandsMessage.header.fromAddress,
                                                    message: message,
                                                    exitCode: .fail)
                         let commandResultDraft = CommandResultMessageDraft(to: [to], commandResults: [result], theme: theme)

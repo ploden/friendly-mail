@@ -17,14 +17,6 @@ public protocol AnyBaseMessage: Identifiable {
     func merging(message: any AnyBaseMessage) -> any AnyBaseMessage
 }
 
-/*
-extension AnyBaseMessage {
-    public func compare(_ lhs: any AnyBaseMessage, _ rhs: any AnyBaseMessage) -> ComparisonResult {
-        return lhs.header.date.compare(rhs.header.date)
-    }
-}
-*/
-
 extension AnyBaseMessage {
     public var shouldFetch: Bool {
         return plainTextBody == nil /* || htmlBody == nil */
@@ -46,5 +38,28 @@ extension AnyBaseMessage {
 extension AnyBaseMessage {
     public func isFriendlyMailMessage() -> Bool {
         return MessageFactory.isFriendlyMailMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody)
+    }
+}
+
+extension AnyBaseMessage {
+    public var id: MessageID {
+        get {
+            return header.messageID
+        }
+    }
+}
+
+extension AnyBaseMessage {
+    var shortDescription: String {
+        let shortBody = self.plainTextBody!.replacingOccurrences(of: "\n", with: " ").prefix(100)
+        
+        let desc =
+        """
+From: \(self.header.fromAddress.address)
+To: \(self.header.toAddress.first!.address)
+Subject: \(self.header.subject ?? "")
+\(shortBody)
+"""
+        return desc
     }
 }

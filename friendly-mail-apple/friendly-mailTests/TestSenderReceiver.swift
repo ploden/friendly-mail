@@ -20,11 +20,11 @@ class TestSenderReceiver: MessageSender, MessageReceiver {
         
     }
     
-    func moveMessageToInbox(message: AnyBaseMessage, completion: @escaping (Error?) -> ()) {
+    func moveMessageToInbox(message: any AnyBaseMessage, completion: @escaping (Error?) -> ()) {
         completion(nil)
     }
     
-    func fetchFriendlyMailMessage(messageID: MessageID, completion: @escaping (Error?, AnyBaseMessage?) -> ()) {
+    func fetchFriendlyMailMessage(messageID: MessageID, completion: @escaping (Error?, (any AnyBaseMessage)?) -> ()) {
         completion(nil, nil)
     }
     
@@ -42,7 +42,7 @@ class TestSenderReceiver: MessageSender, MessageReceiver {
     var account: FriendlyMailAccount?
     var settings: Settings!
     
-    func fetchMessage(uidWithMailbox: UIDWithMailbox, completion: @escaping (Error?, AnyBaseMessage?) -> ()) {
+    func fetchMessage(uidWithMailbox: UIDWithMailbox, completion: @escaping (Error?, (any AnyBaseMessage)?) -> ()) {
         completion(nil, nil)
     }
     
@@ -96,7 +96,7 @@ class TestSenderReceiver: MessageSender, MessageReceiver {
             return [:]
         }()
         
-        let header = MessageHeader(sender: user, from: user!, to: to, replyTo: [user!], subject: subject, date: Date.now, extraHeaders: extraHeaders, messageID: NSUUID().uuidString.lowercased())
+        let header = MessageHeader(host: user, from: user!, to: to, replyTo: [user!], subject: subject, date: Date.now, extraHeaders: extraHeaders, messageID: NSUUID().uuidString.lowercased())
         
         let uidWithMailbox = UIDWithMailbox(UID: 1, mailbox: Mailbox(name: .friendlyMail, UIDValidity: 0))
         let message = MessageFactory.createMessage(account: account,

@@ -183,5 +183,6 @@ public class Template {
 extension Template {
     enum PlainText: String {
         case signature = "friendly-mail, an open-source, email-based, alternative social network"
+        case like = "👍🏻"
     }
 }

@@ -14,11 +14,11 @@ public struct CommandResultsMessage: AnyCommandResultsMessage, AnyBaseMessage {
     public let plainTextBody: String?
     public let attachments: [Attachment]?
     
-    public let commandResults: [any AnyCommandResult]
+    public let commandResults: [CommandResult]
 }
 
 extension CommandResultsMessage: Identifiable {
-    public var identifier: MessageID {
+    public var id: String {
         return header.messageID
     }
 }

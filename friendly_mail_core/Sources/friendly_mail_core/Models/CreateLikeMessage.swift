@@ -6,8 +6,9 @@
 //
 
 import Foundation
+import Stencil
 
-public class CreateLikeMessage: AnyBaseMessage {
+public class CreateLikeMessage: AnyBaseMessage, DynamicMemberLookup {
     public let uidWithMailbox: UIDWithMailbox
     public let header: MessageHeader
     public let htmlBody: String?
@@ -32,6 +33,27 @@ public class CreateLikeMessage: AnyBaseMessage {
         } else {
             return nil
         }
+    }
+    
+    public subscript(dynamicMember member: String) -> Any? {
+        if member == "like" {
+            return like
+        } else if member == "post" {
+            return post
+        }
+        return nil
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(post)
+        hasher.combine(like)
+    }
+}
+
+public extension CreateLikeMessage {
+    static func == (lhs: CreateLikeMessage, rhs: CreateLikeMessage) -> Bool {
+        return lhs.post == rhs.post &&
+        lhs.like == rhs.like
     }
 }
 

@@ -185,7 +185,7 @@ extension MailProvider: MessageSender {
         })
     }
     
-    public func moveMessageToInbox(message: AnyBaseMessage, completion: @escaping (Error?) -> ()) {
+    public func moveMessageToInbox(message: any AnyBaseMessage, completion: @escaping (Error?) -> ()) {
         let requestKind: MCOIMAPStoreFlagsRequestKind = .add
         let labels = ["\\Inbox", MailboxName.friendlyMail]
         
@@ -250,8 +250,8 @@ extension MailProvider: MessageReceiver {
                         //DDLogDebug("MailController: getMail: error: \(String(describing: fetchMessagesError))")
                         outerError = fetchMessagesError
                     } else {
-                        let messages: [AnyBaseMessage]? = fetchedMessages?.compactMap {
-                            if let header = MessageHeader(header: $0.header, mailbox: mailbox) {
+                        let messages: [any AnyBaseMessage]? = fetchedMessages?.compactMap {
+                            if let header = MessageHeader(host: settings.user, header: $0.header, mailbox: mailbox) {
                                 let messageID = UIDWithMailbox(UID: UInt64($0.uid), mailbox: mailbox)
                                 
                                 return MessageFactory.createMessage(account: self.messages.account, uidWithMailbox: messageID, header: header, htmlBody: nil, friendlyMailData: nil, plainTextBody: nil, attachments: MailProvider.attachments(forAny: $0), logger: nil)
@@ -260,7 +260,7 @@ extension MailProvider: MessageReceiver {
                         }
                         outerMessageStore = {
                             if let messages = messages {
-                                let messagesDict = Dictionary(uniqueKeysWithValues: messages.map { ($0.identifier, $0) })
+                                let messagesDict = Dictionary(uniqueKeysWithValues: messages.map { ($0.id, $0) })
                                 return MessageStore(messages: messagesDict)
                             } else {
                                 return MessageStore()
@@ -320,12 +320,10 @@ extension MailProvider: MessageReceiver {
                                 //DDLogDebug("MailController: getMail: error: \(String(describing: fetchMessagesError))")
                                 outerError = fetchMessagesError
                             } else {
-                                let messages: [AnyBaseMessage]? = fetchedMessages?.compactMap {
-                                    if let header = MessageHeader(header: $0.header, mailbox: mailbox) {
+                                let messages: [any AnyBaseMessage]? = fetchedMessages?.compactMap {
+                                    if let header = MessageHeader(host: settings.user, header: $0.header, mailbox: mailbox) {
                                         let messageID = UIDWithMailbox(UID: UInt64($0.uid), mailbox: mailbox)
-                                        
-                                        //let address = Address(name: nil, address: imapSession.username)!
-                                        
+                                                                                
                                         return MessageFactory.createMessage(account: self.messages.account,
                                                                             uidWithMailbox: messageID,
                                                                             header: header,
@@ -339,7 +337,7 @@ extension MailProvider: MessageReceiver {
                                 }
                                 outerMessageStore = {
                                     if let messages = messages {
-                                        let messagesDict = Dictionary(uniqueKeysWithValues: messages.map { ($0.identifier, $0) })
+                                        let messagesDict = Dictionary(uniqueKeysWithValues: messages.map { ($0.id, $0) })
                                         return MessageStore(messages: messagesDict)
                                     } else {
                                         return MessageStore()
@@ -360,7 +358,7 @@ extension MailProvider: MessageReceiver {
         })
     }
     
-    public func fetchFriendlyMailMessage(messageID: MessageID, completion: @escaping (Error?, AnyBaseMessage?) -> ()) {
+    public func fetchFriendlyMailMessage(messageID: MessageID, completion: @escaping (Error?, (any AnyBaseMessage)?) -> ()) {
         let hourAgo = Calendar.current.date(
           byAdding: .hour,
           value: -1,
@@ -392,16 +390,18 @@ extension MailProvider: MessageReceiver {
         }
     }
     
-    public func fetchMessage(uidWithMailbox: UIDWithMailbox, completion: @escaping (Error?, AnyBaseMessage?) -> ()) {
+    public func fetchMessage(uidWithMailbox: UIDWithMailbox, completion: @escaping (Error?, (any AnyBaseMessage)?) -> ()) {
         let operation = imapSession.fetchMessageOperation(withFolder: uidWithMailbox.mailbox.name, uid: UInt32(uidWithMailbox.UID))
+        
+        let host = settings.user
         
         operation?.start({ error, data in
             if
                 let data = data,
                 let messageParser = MCOMessageParser(data: data),
-                let header = MessageHeader(header: messageParser.header, mailbox: uidWithMailbox.mailbox)
+                let header = MessageHeader(host: host, header: messageParser.header, mailbox: uidWithMailbox.mailbox)
             {                
-                let message: AnyBaseMessage = {
+                let message: any AnyBaseMessage = {
                     let htmlBody = messageParser.htmlBodyRendering()
                     
                     let accountUsername = imapSession.username

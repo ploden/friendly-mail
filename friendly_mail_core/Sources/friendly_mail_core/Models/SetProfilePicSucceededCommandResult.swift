@@ -8,13 +8,14 @@
 import Foundation
 import SerializedSwift
 
-public class SetProfilePicSucceededCommandResult: AnyCommandResult {
+public class SetProfilePicSucceededCommandResult: CommandResult {
     /*
     enum CodingKeys: String, CodingKey {
         case profilePicURL
     }
      */
     
+    /*
     //@Serialized
     public var createCommandMessageID: MessageID
     //@Serialized
@@ -27,24 +28,25 @@ public class SetProfilePicSucceededCommandResult: AnyCommandResult {
     public var message: String
     //@Serialized
     public var exitCode: CommandExitCode
-    //@Serialized
+     */
+    @Serialized
     var profilePicURL: URL
     
-    /*
     public required init() {
         super.init()
-        profilePicURL = URL(string: "")!
+        profilePicURL = URL(string: "http://google.com")!
     }
-     */
     
     public required init(createCommandMessageID: MessageID, commandType: CommandType, command: Command, user: Address, message: String, exitCode: CommandExitCode, profilePicURL: URL) {
-        //super.init(createCommandMessageID: createCommandMessageID, commandType: commandType, command: command, user: user, message: message, exitCode: exitCode)
+        super.init(createCommandMessageID: createCommandMessageID, commandType: commandType, command: command, message: message, exitCode: exitCode)
+        /*
         self.createCommandMessageID = createCommandMessageID
         self.commandType = commandType
         self.command = command
         self.user = user
         self.message = message
         self.exitCode = exitCode
+         */
         self.profilePicURL = profilePicURL
     }
     
@@ -70,6 +72,14 @@ public class SetProfilePicSucceededCommandResult: AnyCommandResult {
         try container.encode(profilePicURL, forKey: .profilePicURL)
     }
      */
+    
+    public override func hash(into hasher: inout Hasher) {
+        hasher.combine(command)
+        //hasher.combine(commandType)
+        //hasher.combine(sender)
+        //hasher.combine(receiver)
+        hasher.combine(createCommandMessageID)
+    }
 }
 
 public extension SetProfilePicSucceededCommandResult {
@@ -78,11 +88,4 @@ public extension SetProfilePicSucceededCommandResult {
         lhs.command == rhs.command
     }
     
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(command)
-        //hasher.combine(commandType)
-        //hasher.combine(sender)
-        //hasher.combine(receiver)
-        hasher.combine(createCommandMessageID)
-    }
 }

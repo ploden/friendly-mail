@@ -7,59 +7,74 @@
 
 import Foundation
 import SerializedSwift
+import Stencil
 
 public enum CommandExitCode: Int, Codable {
     case success = 0
     case fail = 1
 }
 
-public protocol AnyCommandResult: Hashable, Equatable, Codable, Base64JSONCodable {
-    var createCommandMessageID: MessageID { get }
-    var commandType: CommandType { get }
-    var command: Command { get }
-    var user: Address { get }
-    var message: String { get }
-    var exitCode: CommandExitCode { get }
-}
-
-public class CommandResult: AnyCommandResult {
-    /*
+public class CommandResult: Equatable, Hashable, Serializable, DynamicMemberLookup {
+    public subscript(dynamicMember member: String) -> Any? {
+        if member == "message" {
+            return message
+        } else if member == "createCommandMessageID" {
+            return createCommandMessageID
+        }
+        else if member == "commandType" {
+            return commandType
+        }
+        else if member == "command" {
+            return command
+        }
+        else if member == "user" {
+            return user
+        }
+        else if member == "message" {
+            return message
+        }
+        else if member == "exitCode" {
+            return exitCode
+        }
+        return nil
+    }
+    
     public required init() {
         createCommandMessageID = MessageID()
         commandType = .unknown
-        command = Command(index: 0, commandType: .unknown, createCommandsMessageID: createCommandMessageID, input: "")
+        command = Command(index: 0,
+                          commandType: .unknown,
+                          createCommandsMessageID: createCommandMessageID,
+                          input: "",
+                          host: Address(address: ""),
+                          user: Address(address: ""))
     }
-     */
     
-    //@Serialized
+    @Serialized
     public var createCommandMessageID: MessageID
-    //@Serialized
+    @Serialized
     public var commandType: CommandType
-    //@Serialized
+    @Serialized
     public var command: Command
-    //@Serialized
-    public var user: Address
-    //@Serialized
+    public var user: Address {
+        get {
+            return command.user
+        }
+    }
+    public var host: Address {
+        get {
+            return command.host
+        }
+    }
+    @Serialized
     public var message: String
-    //@Serialized
+    @Serialized
     public var exitCode: CommandExitCode
     
-    /*
-    enum CodingKeys: String, CodingKey {
-        case user
-        case command
-        case message
-        case createCommandMessageID
-        case commandType
-        case exitCode
-    }
-     */
-    
-    public init(createCommandMessageID: MessageID, commandType: CommandType, command: Command, user: Address, message: String, exitCode: CommandExitCode) {
+    public init(createCommandMessageID: MessageID, commandType: CommandType, command: Command, message: String, exitCode: CommandExitCode) {
         self.createCommandMessageID = createCommandMessageID
         self.commandType = commandType
         self.command = command
-        self.user = user
         self.message = message
         self.exitCode = exitCode
     }
@@ -112,6 +127,12 @@ public class CommandResult: AnyCommandResult {
         }
     }
      */
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(command)
+        hasher.combine(createCommandMessageID)
+        hasher.combine(command)
+    }
 }
 
 public extension CommandResult {
@@ -119,14 +140,6 @@ public extension CommandResult {
         return lhs.createCommandMessageID == rhs.createCommandMessageID &&
         lhs.command == rhs.command
     }
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(command)
-        //hasher.combine(commandType)
-        //hasher.combine(sender)
-        //hasher.combine(receiver)
-        hasher.combine(createCommandMessageID)
-    }
 }
 
-//extension CommandResult: Base64JSONCodable {}
+extension CommandResult: Base64JSONCodable {}

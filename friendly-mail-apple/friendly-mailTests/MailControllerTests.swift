@@ -19,7 +19,7 @@ class MailControllerTests: XCTestCase {
         
         var messages = MessageStore()
         
-        MessageReceiverTests.loadCreateAccountEmail(testCase: self, uid: &uid, messages: &messages)
+        let _ = MessageReceiverTests.loadCreateAccountEmail(testCase: self, uid: &uid, messages: &messages, host: settings.user)
         
         let senderReceiver = TestSenderReceiver()
         senderReceiver.user = user
@@ -34,21 +34,25 @@ class MailControllerTests: XCTestCase {
         
         await TestHelpers.processMailAndSend(config: config, sender: senderReceiver, receiver: senderReceiver, testCase: self, provider: &provider)
 
-        //XCTAssert(senderReceiver.sentMessages.allMessages.count == 2)
-        //XCTAssert(provider.messages.allMessages.count == 3)
+        XCTAssert(senderReceiver.sentMessages.allMessages.count == 3)
+        XCTAssert(provider.messages.allMessages.count == 4)
 
         let expectedPlainTextBody =
             """
-    friendly-mail: create account: account created for ploden@gmail.com
+    $ create account
+    friendly-mail: account created for ploden@gmail.com
     
     \(Template.PlainText.signature.rawValue)
     
     """
         
-        let sentMessage = senderReceiver.sentMessages.allMessages.first!
+        let commandResult = senderReceiver.sentMessages.commandResults(ofType: CreateAccountSucceededCommandResult.self).first!
+        let sentMessage = senderReceiver.sentMessages.getCommandResultsMessage(for: commandResult)!
         
         XCTAssert(sentMessage.plainTextBody == expectedPlainTextBody)
-        XCTAssertNil(sentMessage.htmlBody)
+        
+        let isUnchanged = await TestHelpers.sendCountIsUnchanged(testCase: self, senderReceiver: senderReceiver, provider: &provider, config: config)
+        XCTAssert(isUnchanged)
     }
     
     func testCreateAccountAndSendResponse() async throws {
@@ -74,13 +78,16 @@ class MailControllerTests: XCTestCase {
         var inoutMessages: MessageStore! = provider.messages
         
         await MessageReceiverTests.loadCreateAccountEmailAndSendResponse(config: config,
-                                                                   sender: senderReceiver,
-                                                                   receiver: senderReceiver,
-                                                                   testCase: self,
-                                                                   uid: &uid,
-                                                                   messages: &inoutMessages)
+                                                                         sender: senderReceiver,
+                                                                         receiver: senderReceiver,
+                                                                         testCase: self,
+                                                                         uid: &uid,
+                                                                         messages: &inoutMessages)
 
-        let account = inoutMessages.account
+        provider = provider.new(mergingMessageStores: inoutMessages, postNotification: false)
+        inoutMessages = nil
+        
+        let account = provider.messages.account
         XCTAssertNotNil(account)
 
         let messageOrNil = senderReceiver.sentMessages.allMessages.first(where: { message in
@@ -88,6 +95,8 @@ class MailControllerTests: XCTestCase {
         })
         XCTAssertNotNil(messageOrNil)
         
+        let isUnchanged = await TestHelpers.sendCountIsUnchanged(testCase: self, senderReceiver: senderReceiver, provider: &provider, config: config)
+        XCTAssert(isUnchanged)
     }
     
     func testAccountAlreadyExists() async throws {
@@ -100,35 +109,32 @@ class MailControllerTests: XCTestCase {
         XCTAssertNotNil(account)
         
         let path = Bundle(for: type(of: self )).path(forResource: "create_command_create_account_2", ofType: "txt")!
-        let _ = TestHelpers.loadEmail(account: account, withPath: path, uid: &uid, provider: &provider)
+        let loadedEmail = TestHelpers.loadEmail(account: account, withPath: path, uid: &uid, provider: &provider)
         inoutMessages = provider.messages
         senderReceiver.account = account
         await TestHelpers.processMailAndSend(config: config, sender: senderReceiver, receiver: senderReceiver, testCase: self, messages: &inoutMessages)
         provider = provider.new(mergingMessageStores: inoutMessages, postNotification: false)
         inoutMessages = nil
-        
-        let sent = senderReceiver.sentMessages
-        
+                
         XCTAssertNotNil(account)
         
-        let message = sent.allMessages.first(where: { $0 is CommandResultsMessage })
+        let result = senderReceiver.sentMessages.commandResults(ofType: CommandResult.self).filter { $0.createCommandMessageID == loadedEmail?.header.messageID }.first!
+        XCTAssert(result.exitCode == CommandExitCode.fail)
         
-        XCTAssertNotNil(message)
-        XCTAssert(message is CommandResultsMessage)
-        
-        if let result = message as? CommandResultsMessage {
-            XCTAssert(result.commandResults.first!.exitCode != .success)
-            
-            let expectedPlainTextBody =
+        let expectedPlainTextBody =
             """
-    friendly-mail: create account: account already exists for ploden@gmail.com
+    $ create account
+    friendly-mail: account already exists for ploden@gmail.com
     
     \(Template.PlainText.signature.rawValue)
     
     """
-            
-            XCTAssert(result.plainTextBody! == expectedPlainTextBody)
-        }
+        
+        let resultMessage = senderReceiver.sentMessages.getCommandResultsMessage(for: result)!
+        XCTAssert(resultMessage.plainTextBody! == expectedPlainTextBody)
+        
+        let isUnchanged = await TestHelpers.sendCountIsUnchanged(testCase: self, senderReceiver: senderReceiver, provider: &provider, config: config)
+        XCTAssert(isUnchanged)
     }
     
     func testCreateAccountPermissionDenied() async throws {
@@ -136,7 +142,7 @@ class MailControllerTests: XCTestCase {
         var (provider, senderReceiver, uid) = await TestHelpers.defaultSetup(testCase: self)
 
         let path = Bundle(for: type(of: self )).path(forResource: "create_command_permission_denied", ofType: "txt")!
-        let _ = TestHelpers.loadEmail(account: provider.messages.account, withPath: path, uid: &uid, provider: &provider)
+        let createEmail = TestHelpers.loadEmail(account: provider.messages.account, withPath: path, uid: &uid, provider: &provider)
         
         var inoutMessages: MessageStore! = provider.messages
 
@@ -144,19 +150,23 @@ class MailControllerTests: XCTestCase {
         provider = provider.new(mergingMessageStores: inoutMessages, postNotification: false)
         inoutMessages = nil
 
-        let result = senderReceiver.sentMessages.allMessages.first(where: { $0 is CommandResultsMessage }) as! CommandResultsMessage
-        
-        XCTAssert(result.commandResults.first!.exitCode != .success)
+        let resultsForUser = senderReceiver.sentMessages.commandResults(ofType: CommandResult.self, user: createEmail!.header.fromAddress)
+        XCTAssert(resultsForUser.last!.exitCode == CommandExitCode.fail)
         
         let expectedPlainTextBody =
             """
-    friendly-mail: create account: permission denied
+    $ create account
+    friendly-mail: permission denied
     
     \(Template.PlainText.signature.rawValue)
     
     """
         
-        XCTAssert(result.plainTextBody! == expectedPlainTextBody)
+        let resultMessage = senderReceiver.sentMessages.getCommandResultsMessage(for: resultsForUser.last!)!
+        XCTAssert(resultMessage.plainTextBody! == expectedPlainTextBody)
+        
+        let isUnchanged = await TestHelpers.sendCountIsUnchanged(testCase: self, senderReceiver: senderReceiver, provider: &provider, config: config)
+        XCTAssert(isUnchanged)
     }
     
     func testSetProfilePic() async throws {
@@ -172,12 +182,13 @@ class MailControllerTests: XCTestCase {
         provider = provider.new(mergingMessageStores: inoutMessages, postNotification: false)
         inoutMessages = nil
 
-        let commandResult = senderReceiver.sentMessages.setProfilePicSucceededCommandResults.last
+        let commandResult = senderReceiver.sentMessages.commandResults(ofType: SetProfilePicSucceededCommandResult.self).last
         XCTAssert(commandResult!.exitCode == .success)
         
         let expectedPlainTextBody =
             """
-    friendly-mail: set profile pic: successfully updated profile pic for \(provider.messages.account!.user.address)
+    $ set profile pic
+    friendly-mail: successfully updated profile pic for \(provider.messages.account!.user.address)
     
     \(Template.PlainText.signature.rawValue)
     
@@ -189,6 +200,9 @@ class MailControllerTests: XCTestCase {
         
         let accountProfilePicURL = provider.messages.account!.getProfilePicURL(messageStore: provider.messages)!
         XCTAssert(accountProfilePicURL == commandResult!.profilePicURL)
+        
+        let isUnchanged = await TestHelpers.sendCountIsUnchanged(testCase: self, senderReceiver: senderReceiver, provider: &provider, config: config)
+        XCTAssert(isUnchanged)
     }
     
     /*
@@ -202,7 +216,6 @@ class MailControllerTests: XCTestCase {
         let loadedEmail = TestHelpers.loadEmail(account: provider.messages.account, withPath: path, uid: &uid, provider: &provider)
         
         XCTAssert(loadedEmail is CreateCommandsMessage)
-        let createCommandsMessage = loadedEmail as! CreateCommandsMessage
         
         var inoutMessages: MessageStore! = provider.messages
 
@@ -210,34 +223,29 @@ class MailControllerTests: XCTestCase {
         provider = provider.new(mergingMessageStores: inoutMessages, postNotification: false)
         inoutMessages = nil
 
-        let resultOrNil = senderReceiver.sentMessages.allMessages.last(where: { message in
-            return (message as? CommandResultsMessage)?.commandResults.contains(where: { $0 is AddFollowersSucceededCommandResult } ) ?? false
-        })
-        
-        XCTAssertNotNil(resultOrNil)
-        let result = resultOrNil as! CommandResultsMessage
-        let commandResult = result.commandResults.first(where: { $0 is AddFollowersSucceededCommandResult })!
-        XCTAssert(commandResult is AddFollowersSucceededCommandResult)
-        XCTAssert(commandResult.exitCode == .success)
-        
         let expectedPlainTextBody =
             """
-    friendly-mail: add follower ploden.postcards@gmail.com: added follower ploden.postcards@gmail.com
+    $ add follower ploden.postcards@gmail.com
+    friendly-mail: added follower ploden.postcards@gmail.com
     
     \(Template.PlainText.signature.rawValue)
     
     """
        
-        let addFollowersSucceededCommandResult = commandResult as! AddFollowersSucceededCommandResult
-        
+        let addFollowersSucceededCommandResults = senderReceiver.sentMessages.commandResults(ofType: AddFollowersSucceededCommandResult.self, user: senderReceiver.account?.user)
+        //XCTAssert(addFollowersSucceededCommandResults.count == 2)
+        let addFollowersSucceededCommandResult = addFollowersSucceededCommandResults.first(where: { $0.createCommandMessageID == loadedEmail!.header.messageID })!
         XCTAssertNotNil(addFollowersSucceededCommandResult.follows)
-        print(result.plainTextBody!)
-        print(expectedPlainTextBody)
-        XCTAssert(result.plainTextBody! == expectedPlainTextBody)
-                     
-        // Test for subscriptions
+        
+        let resultMessage = senderReceiver.sentMessages.getCommandResultsMessage(for: addFollowersSucceededCommandResult)!
+        XCTAssert(resultMessage.plainTextBody == expectedPlainTextBody, "\nExpected:\n\(expectedPlainTextBody)\nActual:\n\(resultMessage.plainTextBody!)")
+
+        // Test for follows
         let follows = MailController.follows(forAddress: provider.messages.account!.user, messages: provider.messages)
-        XCTAssert(follows.count == 1)
+        XCTAssert(follows.count == 2)
+        
+        let isUnchanged = await TestHelpers.sendCountIsUnchanged(testCase: self, senderReceiver: senderReceiver, provider: &provider, config: config)
+        XCTAssert(isUnchanged)
     }
     
     ///  Scenario: an unsupported command is received, and replied to
@@ -257,21 +265,50 @@ class MailControllerTests: XCTestCase {
         provider = provider.new(mergingMessageStores: inoutMessages, postNotification: false)
         inoutMessages = nil
 
-        let resultOrNil = senderReceiver.sentMessages.allMessages.last(where: { $0 is CommandResultsMessage }) as? CommandResultsMessage
+        let resultOrNil = senderReceiver.sentMessages.commandResults(ofType: CommandResult.self, user: senderReceiver.account?.user).filter { $0.createCommandMessageID == loadedEmail?.header.messageID}.first
         XCTAssertNotNil(resultOrNil)
         let result = resultOrNil!
-        XCTAssert(result.commandResults.first!.commandType == .unknown)
-        XCTAssert(result.commandResults.first!.exitCode == .fail)
+        XCTAssert(result.commandType == .unknown)
+        XCTAssert(result.exitCode == .fail)
         
         let expectedPlainTextBody =
         """
-friendly-mail: aoeu: command not found
+    $ aoeu
+    friendly-mail: aoeu: command not found
 
-\(Template.PlainText.signature.rawValue)
+    \(Template.PlainText.signature.rawValue)
 
-"""
+    """
+   
+        let resultMessage = senderReceiver.sentMessages.getCommandResultsMessage(for: result)!
+
+        XCTAssert(resultMessage.plainTextBody == expectedPlainTextBody)
         
-        XCTAssert(result.plainTextBody == expectedPlainTextBody)
+        let isUnchanged = await TestHelpers.sendCountIsUnchanged(testCase: self, senderReceiver: senderReceiver, provider: &provider, config: config)
+        XCTAssert(isUnchanged)
+    }
+    
+    ///  Scenario: an unsupported command is received, and replied to only once
+    func testCreateCommandsAndCommandResultNoDuplicates() async throws {
+        let config = await (UIApplication.shared.delegate as! AppDelegate).appConfig
+        var (provider, senderReceiver, uid) = await TestHelpers.defaultSetup(testCase: self)
+
+        let path = Bundle(for: type(of: self )).path(forResource: "create_command_not_found", ofType: "txt")!
+        let _ = TestHelpers.loadEmail(account: provider.messages.account, withPath: path, uid: &uid, provider: &provider)
+        
+        var inoutMessages: MessageStore! = provider.messages
+
+        await TestHelpers.processMailAndSend(config: config, sender: senderReceiver, receiver: senderReceiver, testCase: self, messages: &inoutMessages)
+        provider = provider.new(mergingMessageStores: inoutMessages, postNotification: false)
+        inoutMessages = nil
+        
+        inoutMessages = provider.messages
+        await TestHelpers.processMailAndSend(config: config, sender: senderReceiver, receiver: senderReceiver, testCase: self, messages: &inoutMessages)
+        provider = provider.new(mergingMessageStores: inoutMessages, postNotification: false)
+        inoutMessages = nil
+        
+        let isUnchanged = await TestHelpers.sendCountIsUnchanged(testCase: self, senderReceiver: senderReceiver, provider: &provider, config: config)
+        XCTAssert(isUnchanged)
     }
     
     /*
@@ -282,33 +319,40 @@ friendly-mail: aoeu: command not found
         var (provider, senderReceiver, uid) = await TestHelpers.defaultSetup(testCase: self)
         
         var inoutMessages: MessageStore! = provider.messages
-        let _ = MessageReceiverTests.loadCreateAddFollowersEmail(testCase: self, uid: &uid, account: provider.messages.account!, messages: &inoutMessages)
-        provider = provider.new(mergingMessageStores: inoutMessages, postNotification: false)
-        inoutMessages = nil
+        let _ = MessageReceiverTests.loadCreateAddFollowersEmail(testCase: self, uid: &uid, provider: &provider)
         
         inoutMessages = provider.messages
         await TestHelpers.processMailAndSend(config: config, sender: senderReceiver, receiver: senderReceiver, testCase: self, messages: &inoutMessages)
         provider = provider.new(mergingMessageStores: inoutMessages, postNotification: false)
         inoutMessages = nil
         
-        let follow = MailController.follows(forAddress: provider.messages.account!.user, messages: provider.messages).first
-        XCTAssertNotNil(follow)
+        var follows = MailController.follows(forAddress: provider.messages.account!.user, messages: provider.messages)
+        XCTAssert(follows.count == 2)
         
-        inoutMessages = provider.messages
-        let _ = MessageReceiverTests.loadCreatePostEmail(testCase: self, uid: &uid, account: provider.messages.account!, messages: &inoutMessages)
-        provider = provider.new(mergingMessageStores: inoutMessages, postNotification: false)
-        inoutMessages = nil
+        let _ = MessageReceiverTests.loadCreatePostEmail(testCase: self, uid: &uid, provider: &provider)
+        
+        // implement test mail provider
+        
+        var postNotificationsCount = 0
+        for follow in follows {
+            let unsent = MailController.unsentNewPostNotifications(messages: provider.messages, for: follow)
+            postNotificationsCount += unsent.count
+        }
+        XCTAssert(postNotificationsCount == 2)
         
         inoutMessages = provider.messages
         await TestHelpers.processMailAndSend(config: config, sender: senderReceiver, receiver: senderReceiver, testCase: self, messages: &inoutMessages)
         provider = provider.new(mergingMessageStores: inoutMessages, postNotification: false)
         inoutMessages = nil
         
+        follows = MailController.follows(forAddress: provider.messages.account!.user, messages: provider.messages)
+        XCTAssertNotNil(follows.count == 2)
+                        
         let resultOrNil = senderReceiver.sentMessages.allMessages.last(where: { $0 is NotificationsMessage }) as? NotificationsMessage
         XCTAssertNotNil(resultOrNil)
-        let result = resultOrNil!
         
-        let expectedPlainTextBody =
+        if let result = resultOrNil {
+            let expectedPlainTextBody =
         """
 ploden@gmail.com posted:
 
@@ -320,97 +364,80 @@ Comment: mailto:ploden@gmail.com?subject=Fm%20Comment:61FD0524-97BD-4C61-A011-D6
 \(Template.PlainText.signature.rawValue)
 
 """
+            XCTAssert(result.plainTextBody! == expectedPlainTextBody)
+        }
         
-        XCTAssert(result.plainTextBody == expectedPlainTextBody)
+        let isUnchanged = await TestHelpers.sendCountIsUnchanged(testCase: self, senderReceiver: senderReceiver, provider: &provider, config: config)
+        XCTAssert(isUnchanged)
     }
     
-    /*
-    func testNewPostFollowerNotifications() throws {
-        var uid: UInt64 = 1
-        let user = Address(name: "Phil Loden", address: "ploden@gmail.com")!
-        let theme = (UIApplication.shared.delegate as! AppDelegate).appConfig.defaultTheme
-        let settings = AppleSettings(user: user, selectedTheme: theme)
-
-        var messages = MessageStore()
-
-        // Load create subscription email from file
-        MessageReceiverTests.loadCreateSubscriptionEmail(testCase: self, uid: &uid, accountAddress: user, messages: &messages)
-                
-        // Load create post email from file
-        MessageReceiverTests.loadCreatePostEmail(testCase: self, uid: &uid, accountAddress: user, messages: &messages)
-   
-        let senderReceiver = TestSenderReceiver()
-        senderReceiver.user = user
-        senderReceiver.settings = settings
+    func testNewLikeSelfNotification() async throws {
+        let config = await (UIApplication.shared.delegate as! AppDelegate).appConfig
+        var (provider, senderReceiver, uid) = await TestHelpers.defaultSetup(testCase: self)
         
-        let provider = MailProvider(settings: settings, messages: messages)
+        var inoutMessages: MessageStore! = provider.messages
+        let _ = MessageReceiverTests.loadCreateAddFollowersEmail(testCase: self, uid: &uid, provider: &provider)
         
-        let config = (UIApplication.shared.delegate as! AppDelegate).appConfig
-
-        let expectation = XCTestExpectation(description: "Wait for process mail.")
-        MailController.getAndProcessAndSendMail(config: config, sender: senderReceiver, receiver: senderReceiver, messages: messages) { error, updatedMessages in
-            // Load create like email from file
-            messages = updatedMessages
-            MessageReceiverTests.loadCreateLikeEmail(testCase: self, uid: &uid, accountAddress: user, messages: &messages)
-                    
-            // Test that the message fields are populated correctly
-            
-            let expectedPlainTextBody =
+        inoutMessages = provider.messages
+        await TestHelpers.processMailAndSend(config: config, sender: senderReceiver, receiver: senderReceiver, testCase: self, messages: &inoutMessages)
+        provider = provider.new(mergingMessageStores: inoutMessages, postNotification: false)
+        inoutMessages = nil
+        
+        let _ = MessageReceiverTests.loadCreatePostEmail(testCase: self, uid: &uid, provider: &provider)
+        
+        let _ = MessageReceiverTests.loadCreateLikeEmail(testCase: self, uid: &uid, provider: &provider)
+        
+        inoutMessages = provider.messages
+        let newsFeed = MailController.newsFeedNotifications(messages: inoutMessages)
+        XCTAssert(newsFeed.count > 0)
+        
+        await TestHelpers.processMailAndSend(config: config, sender: senderReceiver, receiver: senderReceiver, testCase: self, messages: &inoutMessages)
+        provider = provider.new(mergingMessageStores: inoutMessages, postNotification: false)
+        inoutMessages = nil
+        
+        let resultOrNil = senderReceiver.sentMessages.messages(ofType: NotificationsMessage.self).first(where: { notificationsMessage in
+            notificationsMessage.notifications.contains(where: { $0 is NewLikeNotification })
+        })
+        
+        let expectedPlainTextBody =
             """
-    Phil Loden liked your post.
-
-    Phil Loden:
-    \"Hello World.\"
-
-    Phil Loden:
+    ploden.postcards@gmail.com liked your post.
+    
+    ploden@gmail.com:
+    \"hello, world\"
+    
+    ploden.postcards@gmail.com:
     \"👍🏻\"
-
+    
     \(Template.PlainText.signature.rawValue)
-
+    
     """
-            
-            let newsFeed = MailController.newsFeedNotifications(messages: messages)
-            XCTAssert(newsFeed.count > 0)
-            
-            let results = MailController.processMail(config: config, sender: provider, receiver: provider, messages: messages)
-            let match = results.drafts.first { $0.plainTextBody == expectedPlainTextBody }
-            XCTAssertNotNil(match)
-            XCTAssertNotNil(match!.subject)
-            expectation.fulfill()
-        }
-        let _ = XCTWaiter.wait(for: [expectation], timeout: 2.0)
+        
+        XCTAssertNotNil(resultOrNil)
+        let result = resultOrNil!
+        XCTAssert(result.plainTextBody == expectedPlainTextBody)
+        
+        let isUnchanged = await TestHelpers.sendCountIsUnchanged(testCase: self, senderReceiver: senderReceiver, provider: &provider, config: config)
+        XCTAssert(isUnchanged)
     }
     
     /*
      Load a create subscription email and a create post email and a create comment email. Is a notification email sent?
      */
-    func testCreateSubscriptionAndCreatePostAndUpdateFollowerAndCreateComment() throws {
-        var uid: UInt64 = 1
-        let user = Address(name: "Phil Loden", address: "ploden@gmail.com")!
-        let theme = (UIApplication.shared.delegate as! AppDelegate).appConfig.defaultTheme
-        let settings = AppleSettings(user: user, selectedTheme: theme)
+    func testCreateSubscriptionAndCreatePostAndUpdateFollowerAndCreateComment() async throws {
+        let config = await (UIApplication.shared.delegate as! AppDelegate).appConfig
+        var (provider, senderReceiver, uid) = await TestHelpers.defaultSetup(testCase: self)
 
-        var messages = MessageStore()
+        let _ = MessageReceiverTests.loadCreateAddFollowersEmail(testCase: self, uid: &uid, provider: &provider)
 
-        // Load create subscription email from file
-        MessageReceiverTests.loadCreateSubscriptionEmail(testCase: self, uid: &uid, accountAddress: user, messages: &messages)
-                
-        // Load create post email from file
-        MessageReceiverTests.loadCreatePostEmail(testCase: self, uid: &uid, accountAddress: user, messages: &messages)
+        let _ = MessageReceiverTests.loadCreatePostEmail(testCase: self, uid: &uid, provider: &provider)
+
+        let _ = MessageReceiverTests.loadCreateCommentEmail(testCase: self, uid: &uid, provider: &provider)
         
-        // Load create comment email from file
-        MessageReceiverTests.loadCreateCommentEmail(testCase: self, uid: &uid, accountAddress: user, messages: &messages)
-        
-        let comments = messages.allMessages.compactMap { $0 as? CreateCommentMessage }
+        let comments = provider.messages.allMessages.compactMap { $0 as? CreateCommentMessage }
         
         XCTAssert(comments.count > 0)
-        
-        // Test that the message fields are populated correctly
-        
-        let senderReceiver = TestSenderReceiver()
-        senderReceiver.user = user
-        senderReceiver.settings = settings
-        
+                
         let expectedPlainTextBody =
         """
 ploden.postcards@gmail.com commented on your post.
@@ -421,21 +448,55 @@ ploden@gmail.com
 ploden.postcards@gmail.com
 \"Hello back.\"
 
-Like: mailto:ploden.postcards@gmail.com?subject=Fm%20Like:43ED17AA-EEF0-4A8C-B791-EB8C675B116E@gmail.com&body=👍🏻
+Like: mailto:ploden.postcards@gmail.com?subject=Fm%20Like:43ED17AA-EEF0-4A8C-B791-EB8C675B116E@gmail.com&body=\(Template.PlainText.like.rawValue)
 Reply: mailto:ploden.postcards@gmail.com?subject=Fm%20Comment:43ED17AA-EEF0-4A8C-B791-EB8C675B116E@gmail.com
 
 \(Template.PlainText.signature.rawValue)
 
 """
    
-        let provider = MailProvider(settings: settings, messages: messages)
-        let config = (UIApplication.shared.delegate as! AppDelegate).appConfig
-        let results = MailController.processMail(config: config, sender: provider, receiver: provider, messages: messages)
-        let match = results.drafts.first { $0.plainTextBody == expectedPlainTextBody }
-        XCTAssertNotNil(match)
-        XCTAssertNotNil(match!.subject)
+        var inoutMessages: MessageStore! = provider.messages
+
+        await TestHelpers.processMailAndSend(config: config, sender: senderReceiver, receiver: senderReceiver, testCase: self, messages: &inoutMessages)
+        provider = provider.new(mergingMessageStores: inoutMessages, postNotification: false)
+        inoutMessages = nil
+        
+        let resultOrNil = senderReceiver.sentMessages.messages(ofType: NotificationsMessage.self).first(where: { notificationsMessage in
+            notificationsMessage.notifications.contains(where: { $0 is NewCommentNotification })
+        })
+        
+        XCTAssertNotNil(resultOrNil)
+        let result = resultOrNil!
+        XCTAssert(result.plainTextBody == expectedPlainTextBody)
     }
     
+    /*
+     Load a create follow email and a create post email. Is a notification message sent?
+     */
+    func testUnsentNewPostNotifications() async throws {
+        let config = await (UIApplication.shared.delegate as! AppDelegate).appConfig
+        var (provider, senderReceiver, uid) = await TestHelpers.defaultSetup(testCase: self)
+        
+        var inoutMessages: MessageStore! = provider.messages
+        let _ = MessageReceiverTests.loadCreateAddFollowersEmail(testCase: self, uid: &uid, provider: &provider)
+        
+        inoutMessages = provider.messages
+        await TestHelpers.processMailAndSend(config: config, sender: senderReceiver, receiver: senderReceiver, testCase: self, messages: &inoutMessages)
+        provider = provider.new(mergingMessageStores: inoutMessages, postNotification: false)
+        inoutMessages = nil
+        
+        let follows = MailController.follows(forAddress: provider.messages.account!.user, messages: provider.messages)
+        XCTAssert(follows.count == 2)
+        
+        let _ = MessageReceiverTests.loadCreatePostEmail(testCase: self, uid: &uid, provider: &provider)
+        
+        for follow in follows {
+            let unsent = MailController.unsentNewPostNotifications(messages: provider.messages, for: follow)
+            XCTAssert(unsent.count == 1)
+        }
+    }
+    
+      /*
     /*
      A create invites email exists. Was a corresponding CreateInvitesMessage object created?
      */
@@ -593,35 +654,6 @@ ploden.postcards@gmail.com:
         //XCTAssertNotNil(match)
         XCTAssertNotNil(match.subject)
         XCTAssertNotNil(match.friendlyMailHeaders)
-    }
-    
-    ///  Scenario: an unsupported command is received, and replied to only once 
-    func testCreateCommandsAndCommandResultNoDuplicates() throws {
-        var uid: UInt64 = 1
-        let user = Address(name: "Phil Loden", address: "ploden@gmail.com")!
-        let theme = (UIApplication.shared.delegate as! AppDelegate).appConfig.defaultTheme
-        let settings = AppleSettings(user: user, selectedTheme: theme)
-
-        var messages = MessageStore()
-
-        // Load create invites email from file
-        let path = Bundle(for: type(of: self )).path(forResource: "command_not_found", ofType: "txt")!
-        let email = TestHelpers.loadEmail(accountAddress: user, withPath: path, uid: uid)!
-        uid = uid + 1
-        
-        messages = messages.addingMessage(message: email, messageID: email.header.messageID)
-        
-        let commandResultPath = Bundle(for: type(of: self )).path(forResource: "command_not_found_command_result_decoded", ofType: "txt")!
-        let commandResultEmail = TestHelpers.loadEmail(accountAddress: user, withPath: commandResultPath, uid: uid)!
-        
-        messages = messages.addingMessage(message: commandResultEmail, messageID: commandResultEmail.header.messageID)
-        
-        let provider = MailProvider(settings: settings, messages: messages)
-
-        let config = (UIApplication.shared.delegate as! AppDelegate).appConfig
-        let results = MailController.processMail(config: config, sender: provider, receiver: provider, messages: messages)
-        
-        XCTAssert(results.drafts.count == 0)
     }
     */
 }

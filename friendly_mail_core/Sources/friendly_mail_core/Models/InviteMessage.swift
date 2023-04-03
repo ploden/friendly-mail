@@ -20,7 +20,7 @@ struct InviteMessage: AnyBaseMessage {
 }
 
 extension InviteMessage: Identifiable {
-    var identifier: MessageID {
+    public var id: String {
         return header.messageID
     }
 }
