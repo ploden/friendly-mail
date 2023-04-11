@@ -1,3 +1,0 @@
-{% for commandResult in commandResults %}
-friendly-mail: {% commandResult.input %}: {% commandResult.message %}
-{% endfor %}

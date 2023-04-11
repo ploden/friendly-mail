@@ -1,0 +1,12 @@
+From: Phil Loden <ploden@gmail.com>
+Content-Type: text/plain;
+    charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.120.41.1.1\))
+Subject: Fm
+X-Universally-Unique-Identifier: 84813044-4614-47FB-AAE7-F2D82AACD7AA
+Message-Id: <2D4F056B-3F48-4CA4-B156-623E557635FA@gmail.com>
+Date: Thu, 3 Nov 2022 19:49:53 -0500
+To: Phil Loden <ploden@gmail.com>
+
+$ aoeu

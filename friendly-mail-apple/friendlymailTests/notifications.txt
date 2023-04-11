@@ -1,0 +1,91 @@
+Delivered-To: ploden.postcards@gmail.com
+Received: by 2002:a05:612c:70a:b0:246:7edf:f7ba with SMTP id ft10csp598114vqb;
+        Thu, 9 Dec 2021 02:24:58 -0800 (PST)
+X-Received: by 2002:adf:f0c5:: with SMTP id x5mr5164598wro.484.1639045498196;
+        Thu, 09 Dec 2021 02:24:58 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1639045498; cv=none;
+        d=google.com; s=arc-20160816;
+        b=Hsp9mfufNoNWsG282o5Xes3GIQw/HwHaOwceP1BsVMg9zEoSUA2eZjTEbxsZPaKszg
+         kMDM+KjnTAsXyROVhGsxgGBqEN/9cvAapDnIEd8NooholPmlLqVO/Uus1wbBm7+ED2oq
+         VWEmjp+5eBtPDuq9a5QVICUhHpoByWYE5F/b3CaFOLKn1DLzBhXiEOKUzuhSCgrBt68R
+         WVmUJLXY9FTKCvDg5M+pROLz2wjXsQigfE1wN5jgsjfkQecFFnLl83X16IIoJkHx2F2L
+         z1WgCb/dSefDTJHlSv1gVI1V82FPngz7fu3qVdTIBlTV//lzoLy9v2pt4XrdOZSpiRSE
+         ah6A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20160816;
+        h=content-disposition:content-transfer-encoding:mime-version
+         :message-id:to:from:date:dkim-signature;
+        bh=/fpHnUqzdbP+PVybPbyws6Ix37OE0ITMm1azdc7VUv0=;
+        b=yE/Ya1/ckmXBgKlWkly1cu07XDt6VPOT+/bOSCGoubpp1kbmsyjteEpaPD2wKeLRlR
+         +REGII91xVwtRkrk6u5CyvhFDKETiOtAn8Ld524G2+nj3uy23nKR0ztvrVT829pRaYNt
+         Jy1LbfcZHQGcfxfUfTnbwOI2hJqGLXfW1lvdbyqW7YVqDzthka0hhL1+M4WuIAif2vc/
+         DwTHXFyGzKlJ74N2ohNdM1jURaKgrAAEZjEymZDh/TCIc576ThtfU24gx7DYiww8iHKu
+         3cXhR6HbpJr83O401sviBUmWG5COLePCzvLsXZv3FqNfp46lq16OiM5f7DjHPqleknk2
+         Wxzg==
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@gmail.com header.s=20210112 header.b=YGSFIaqc;
+       spf=pass (google.com: domain of ploden@gmail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=ploden@gmail.com;
+       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com
+Return-Path: <ploden@gmail.com>
+Received: from mail-sor-f41.google.com (mail-sor-f41.google.com. [209.85.220.41])
+        by mx.google.com with SMTPS id k17sor3863699wrw.31.2021.12.09.02.24.58
+        for <ploden.postcards@gmail.com>
+        (Google Transport Security);
+        Thu, 09 Dec 2021 02:24:58 -0800 (PST)
+Received-SPF: pass (google.com: domain of ploden@gmail.com designates 209.85.220.41 as permitted sender) client-ip=209.85.220.41;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@gmail.com header.s=20210112 header.b=YGSFIaqc;
+       spf=pass (google.com: domain of ploden@gmail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=ploden@gmail.com;
+       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:message-id:mime-version:content-transfer-encoding
+         :content-disposition;
+        bh=/fpHnUqzdbP+PVybPbyws6Ix37OE0ITMm1azdc7VUv0=;
+        b=YGSFIaqc6E+p8Q8dyG2Z2HICsW9bm2pSiAqrKEuIIJvYSNilqyBJDRq+p8fA2x8LKQ
+         Becq4Dg0ggMGtJscwLk0KySfvWB8TO0L8F3UZ+94S9IfospOHCFSDi9jp4XnySvp8bLn
+         kWJT5Q5udY+zll1mxHooa1XHerwiSJR8Kxiw3g+/8LDBKl03r/1qdl9F+hW1aN+ryk9v
+         Oaiz7/QTIfhh4ddo5lY+ls3AFsI1ZTb/RPbKMbneZj1ecHWmsH+V+TtTgrDhX7coGPwC
+         YmnK82bMFZ7k/NkdqoXASzTkeI7lHPR3U1q1Uy+h0cpGaE67dlldQHaRmRay/XGy8s72
+         9A8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:message-id:mime-version
+         :content-transfer-encoding:content-disposition;
+        bh=/fpHnUqzdbP+PVybPbyws6Ix37OE0ITMm1azdc7VUv0=;
+        b=h612KH2dMwKHy/J32KiXK+NrnQpwBn6FYrOzyHL76ymBDsW4Rho53yZOCLrL+to5xi
+         lbm3fOtRvGqdzV//6P2d8zfEOLYODgecf/DjfNiu1IpQFHN3buSGilIZV0iriFGttXiy
+         BJWuHo7B2YJcftFfp1VYroo/nFBDRMDbrKCV7O/9mg6qeL411oXxpz6sfzVAUmVr4iZp
+         n4wlc/tec5watvFEuUMQalmQZXJzuUJj+yYOyF9IJMcr8umcNuwAXuuGMmN4AlFVpRRX
+         o7iKFTal73bn78u/Noapr2ti6hYNmvTx+PmIoWOhxpKBoho58tM8OfGRFVhSqF4lUyi3
+         e6HQ==
+X-Gm-Message-State: AOAM530Wf6nlj4SMXmAEs1lIiV+cgXRIxBOCB0+MmNsn1+2nu6ZpBpCy
+    8j3q5jdH66ZsMey4+AQA2CSKOxIfVvx59A==
+X-Google-Smtp-Source: ABdhPJwtX3RR96i6/N5ZehFj/9K7dtDWdpDiERXui2rnw8/NzX8UGE6yUwZd3tWZrYZisw0PHltBNA==
+X-Received: by 2002:a5d:53cb:: with SMTP id a11mr5598399wrw.357.1639045497870;
+        Thu, 09 Dec 2021 02:24:57 -0800 (PST)
+Return-Path: <ploden@gmail.com>
+Received: from Glamdring.local ([94.31.97.54])
+        by smtp.gmail.com with ESMTPSA id u23sm5167987wmc.7.2021.12.09.02.24.57
+        for <ploden.postcards@gmail.com>
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 09 Dec 2021 02:24:57 -0800 (PST)
+Date: Thu, 9 Dec 2021 11:24:56 +0100
+From: "=?utf-8?Q?ploden=40gmail.com?=" <ploden@gmail.com>
+To: Phil Loden <ploden.postcards@gmail.com>
+Message-ID: <6df54737-e2e9-4489-853c-f71221284a8e@Glamdring.local>
+X-friendlymail: t=notifications; n_cp_mid=61FD0524-97BD-4C61-A011-D613F3E63E05@gmail.com
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+Phil Loden posted:
+
+=22Hello world. Phil=22
+
+Like: mailto:ploden=40gmail.com=3Fsubject=3D=46m&body=3D=F0=9F=91=8D=F0=9F=
+=8F=BB
+Comment: mailto:ploden=40gmail.com=3Fsubject=3D=46m
+
+friendlymail, an open-source, email-based, alternative to social networki=
+ng

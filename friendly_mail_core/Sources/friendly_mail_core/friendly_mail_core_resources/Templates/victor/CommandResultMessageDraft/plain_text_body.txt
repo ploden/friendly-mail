@@ -1,3 +1,0 @@
-$ {{ commandResults.first.command.input }}
-friendly-mail: {{ commandResults.first.message }}
-{{ signature }}

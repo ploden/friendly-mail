@@ -23,8 +23,8 @@ platform :ios do
   desc "Push a new beta build to TestFlight"
   lane :beta do
     build_app(
-      project: "friendly-mail-apple.xcodeproj",
-      scheme: "friendly-mail-ios"
+      project: "friendlymail-apple.xcodeproj",
+      scheme: "friendlymail-ios"
     )
     upload_to_testflight
   end

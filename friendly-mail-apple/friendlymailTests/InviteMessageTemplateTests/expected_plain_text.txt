@@ -1,0 +1,8 @@
+Phil Loden has invited you to their friendlymail. Follow to receive their updates and photos:
+
+Follow Daily: mailto:ploden@gmail.com?subject=Fm&body=Follow%20daily
+Follow Weekly: mailto:ploden@gmail.com?subject=Fm&body=Follow%20weekly
+Follow Monthly: mailto:ploden@gmail.com?subject=Fm&body=Follow%20monthly
+Follow Realtime: mailto:ploden@gmail.com?subject=Fm&body=Follow%20realtime
+
+friendlymail, an open-source, email-based, alternative social network

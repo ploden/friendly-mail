@@ -1,6 +1,0 @@
-Hi,
-
-${authorDisplayName} liked your post:
-"${statusUpdate}"
-
-friendly-mail, an open-source, email-based, alternative social network

@@ -1,7 +1,0 @@
-{% if firstNotification.type == "new_like" %}
-friendly-mail: {{ firstNotification.createPostMessage.posting.author.displayName }} liked
-{% elif firstNotification.type == "new_comment" %}
-friendly-mail: {{ firstNotification.createPostMessage.posting.author.displayName }} commented
-{% elif firstNotification.type == "new_post" %}
-friendly-mail: {{ firstNotification.createPostMessage.posting.author.displayName }} posted
-{% endif %}

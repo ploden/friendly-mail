@@ -1,7 +1,0 @@
-{{ createLikeMessage.post.author.displayName }} liked your post.
-
-{{ createPostMessage.posting.author.displayName }}:
-"{{ createPostMessage.posting.articleBody }}"
-
-{{ createLikeMessage.post.author.displayName }}:
-"{{ createLikeMessage.post.articleBody }}"
