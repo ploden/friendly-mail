@@ -18,7 +18,7 @@ class CreatePostMessageTests: XCTestCase {
     func testCreatePostMessage() throws {
         let uid: UInt64 = 1
                         
-        let user = Address(name: "Phil Loden", address: "ploden@gmail.com", isHost: true)!
+        let user = Address(name: "Phil Loden", address: "ploden@gmail.com")!
         let theme = (UIApplication.shared.delegate as! AppDelegate).appConfig.defaultTheme
         let settings = TestSettings(user: user, password: "", selectedTheme: theme)
          

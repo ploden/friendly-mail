@@ -21,16 +21,6 @@ public extension Foundation.Notification.Name {
 public struct MailProvider {
     public let settings: AppleSettings
     public private(set) var messages: MessageStore
-    /*
-    public var account: FriendlyMailAccount? {
-        let message = messages.allMessages.first { $0 is CreateAccountMessage }
-        
-        if let message = message as? CreateAccountSucceededCommandResultMessage {
-            return message.account
-        }
-        return nil
-    }
-     */
     public var preferences: Preferences? {
         return Preferences(selectedThemeID: "")
     }
@@ -44,19 +34,7 @@ public struct MailProvider {
         return newWith
     }
     
-    /*
-    public func new(mergingMessages messages: [MessageID : BaseMessage], postNotification: Bool) -> MailProvider {
-        var newWith = self
-        let newMessages = self.messages.merging(messages: messages)
-        newWith.messages = newMessages
-        if postNotification {
-            NotificationCenter.default.post(name: Foundation.Notification.Name.mailProviderDidChange, object: newWith)
-        }
-        return newWith
-    }
-     */
-    
-    public func new(mergingMessageStores messageStore: MessageStore, postNotification: Bool) -> MailProvider {
+    public func new(mergingMessageStore messageStore: MessageStore, postNotification: Bool) -> MailProvider {
         var newWith = self
         let newMessages = self.messages.merging(messageStore: messageStore)
         newWith.messages = newMessages
@@ -85,20 +63,6 @@ public struct MailProvider {
 
 extension MailProvider: MessageSender {
     
-    /*
-    public func sendDraft(draft: MessageDraft, completion: @escaping (Result<MessageID, Error>) -> Void) {
-        sendMessage(to: draft.to, subject: draft.subject, htmlBody: draft.htmlBody, plainTextBody: draft.plainTextBody, friendlyMailHeaders: draft.friendlyMailHeaders, completion: completion)
-    }
-    
-    public func sendDraft(draft: MessageDraft) async throws -> MessageID {
-        return await withCheckedContinuation { continuation in
-            sendDraft(draft: draft) { result in
-                continuation.resume(returning: result)
-            }
-        }
-    }
-     */
-    
     public func sendDraft(draft: AnyMessageDraft) async throws -> MessageID {
         return try await withCheckedThrowingContinuation { continuation in
             sendMessage(to: draft.to,
@@ -116,19 +80,15 @@ extension MailProvider: MessageSender {
             }
         }
     }
-
-    public func sendDraft(draft: MessageDraft, completion: @escaping (Result<MessageID, Error>) -> Void) {
-        Task {
-            do {
-                let result = try await sendDraft(draft: draft)
-                completion(.success(result))
-            } catch {
-                completion(.failure(error))
-            }
-        }
-    }
     
-    public func sendMessage(to: [Address], subject: String?, htmlBody: String?, plainTextBody: String, friendlyMailHeaders: [HeaderKeyValue]?, completion: @escaping (Result<MessageID, Error>) -> Void) {
+    public func sendMessage(to: [EmailAddress],
+                            subject: String?,
+                            htmlBody: String?,
+                            plainTextBody: String,
+                            friendlyMailHeaders: [HeaderKeyValue]?,
+                            logger: Logger? = nil,
+                            completion: @escaping (Result<MessageID, Error>) -> Void)
+    {
         guard settings.isValid else {
             completion(.failure(NSError(domain: "fm", code: 1, userInfo: [:])))
             return
@@ -136,7 +96,6 @@ extension MailProvider: MessageSender {
         
         settings.authState?.performAction(freshTokens: { accessToken, idToken, freshTokensError in
             guard let accessToken = accessToken else {
-                //completion(.failure(freshTokensError))
                 completion(.failure(NSError(domain: "fm", code: 1, userInfo: [:])))
                 return
             }
@@ -153,7 +112,7 @@ extension MailProvider: MessageSender {
             //session.connectionType = MCOConnectionType.TLS
             
             let builder = MCOMessageBuilder()
-            builder.header.to = to.compactMap { MCOAddress(displayName: $0.name, mailbox: $0.address) }
+            builder.header.to = to.compactMap { MCOAddress(displayName: $0.displayName, mailbox: $0.address) }
             builder.header.from = MCOAddress(displayName: settings.user.address, mailbox: settings.user.address)
             builder.header.subject = subject
             
@@ -181,7 +140,6 @@ extension MailProvider: MessageSender {
                 } else {
                     completion(.success(builder.header.messageID))
                 }
-                //completion(error, error == nil ? builder.header.messageID : nil)
             }
         })
     }
@@ -207,9 +165,9 @@ extension MailProvider: MessageSender {
 
 extension MailProvider: MessageReceiver {
 
-    public var address: Address {
+    public var address: EmailAddress {
         get {
-            return Address(address: imapSession.username, isHost: true)!
+            return EmailAddress(address: imapSession.username)!
         }
     }
     
@@ -255,7 +213,7 @@ extension MailProvider: MessageReceiver {
                             if let header = MessageHeader(host: settings.user, header: $0.header, mailbox: mailbox) {
                                 let messageID = UIDWithMailbox(UID: UInt64($0.uid), mailbox: mailbox)
                                 
-                                return MessageFactory.createMessage(account: self.messages.account, uidWithMailbox: messageID, header: header, htmlBody: nil, friendlyMailData: nil, plainTextBody: nil, attachments: MailProvider.attachments(forAny: $0), logger: nil)
+                                return MessageFactory.createMessage(account: self.messages.hostUser, uidWithMailbox: messageID, header: header, htmlBody: nil, friendlyMailData: nil, plainTextBody: nil, attachments: MailProvider.attachments(forAny: $0), logger: nil)
                             }
                             return nil
                         }
@@ -284,7 +242,7 @@ extension MailProvider: MessageReceiver {
             return
         }
         
-        let logger = (UIApplication.shared.delegate as! AppDelegate).logger
+        let _ = (UIApplication.shared.delegate as! AppDelegate).logger
         
         let requestKind: MCOIMAPMessagesRequestKind = .fullHeaders
         
@@ -325,7 +283,7 @@ extension MailProvider: MessageReceiver {
                                     if let header = MessageHeader(host: settings.user, header: $0.header, mailbox: mailbox) {
                                         let messageID = UIDWithMailbox(UID: UInt64($0.uid), mailbox: mailbox)
                                                                                 
-                                        return MessageFactory.createMessage(account: self.messages.account,
+                                        return MessageFactory.createMessage(account: self.messages.hostUser,
                                                                             uidWithMailbox: messageID,
                                                                             header: header,
                                                                             htmlBody: nil,
@@ -404,12 +362,8 @@ extension MailProvider: MessageReceiver {
             {                
                 let message: any AnyBaseMessage = {
                     let htmlBody = messageParser.htmlBodyRendering()
-                    
-                    let accountUsername = imapSession.username
-                    
-                    let address = Address(name: nil, address: accountUsername, isHost: true)!
-                    
-                    if let fm = MessageFactory.createMessage(account: self.messages.account,
+                                                            
+                    if let fm = MessageFactory.createMessage(account: self.messages.hostUser,
                                                              uidWithMailbox: uidWithMailbox,
                                                              header: header,
                                                              htmlBody: htmlBody,
@@ -428,7 +382,6 @@ extension MailProvider: MessageReceiver {
                 }()
                 completion(nil, message)
             } else {
-                //DDLogDebug("MailController: fetchMessage: fetch failed")
                 completion(error, nil)
             }
         })

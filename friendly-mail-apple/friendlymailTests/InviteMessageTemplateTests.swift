@@ -20,7 +20,7 @@ class InviteMessageTemplateTests: XCTestCase {
         // Load email from file
         let createInviteEmailPath = Bundle(for: type(of: self )).path(forResource: "create_invite", ofType: "txt")!
 
-        let user = Address(name: "Phil Loden", address: "ploden@gmail.com", isHost: true)!
+        let user = Address(name: "Phil Loden", address: "ploden@gmail.com")!
         let settings = AppleSettings(user: user, selectedTheme: theme)
         let createInviteMessage = TestHelpers.loadEmail(withPath: createInviteEmailPath, uid: uid, settings: settings)!
 

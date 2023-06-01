@@ -25,7 +25,7 @@ class ViewTemplateTests: XCTestCase {
     /*
     func testViewNewLikeNotificationEmail() throws {
         var uid: UInt64 = 1
-        let user = Address(name: "Phil Loden", address: "ploden@gmail.com", isHost: true)!
+        let user = Address(name: "Phil Loden", address: "ploden@gmail.com")!
         let theme = (UIApplication.shared.delegate as! AppDelegate).appConfig.themes.first(where: { $0.name == "Victor" })!
         let settings = TestSettings(user: user, password: "", selectedTheme: theme)
 
@@ -59,7 +59,7 @@ class ViewTemplateTests: XCTestCase {
     /*
     func testViewNewPostNotificationEmail() throws {
         var uid: UInt64 = 1
-        let user = Address(name: "Phil Loden", address: "ploden@gmail.com", isHost: true)!
+        let user = Address(name: "Phil Loden", address: "ploden@gmail.com")!
         let theme = (UIApplication.shared.delegate as! AppDelegate).appConfig.themes.first(where: { $0.name == "Victor" })!
         let settings = TestSettings(user: user, password: "", selectedTheme: theme)
 

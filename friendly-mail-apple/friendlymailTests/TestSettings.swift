@@ -9,7 +9,7 @@ import Foundation
 import friendlymail_core
 
 struct TestSettings: Settings {
-    var user: Address
+    var user: EmailAddress
     //var authState: OIDAuthState?
     var password: String?
     var selectedTheme: Theme

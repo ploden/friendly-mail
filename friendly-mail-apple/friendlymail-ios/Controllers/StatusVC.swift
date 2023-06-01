@@ -50,7 +50,7 @@ class StatusVC: FMViewController, HasMailProvider {
     func loadData() {
         guard
             let mailProvider = mailProvider,
-            let settings = (UIApplication.shared.delegate as? AppDelegate)?.settings,
+            let _ = (UIApplication.shared.delegate as? AppDelegate)?.settings,
             isLoadingData == false
         else {
             return
@@ -64,7 +64,7 @@ class StatusVC: FMViewController, HasMailProvider {
 
         MailController.getAndProcessAndSendMail(config: config, sender: mailProvider, receiver: mailProvider, messages: mailProvider.messages, storageProvider: storageProvider, logger: logger) { error, updatedMessages in
             OperationQueue.main.addOperation {
-                self.mailProvider = mailProvider.new(mergingMessageStores: updatedMessages, postNotification: true)
+                self.mailProvider = mailProvider.new(mergingMessageStore: updatedMessages, postNotification: true)
                 NotificationCenter.default.post(name: Foundation.Notification.Name.mailProviderDidChange, object: self.mailProvider)
                 self.tableView?.refreshControl?.endRefreshing()
                 
@@ -89,6 +89,10 @@ class StatusVC: FMViewController, HasMailProvider {
                 }
                 
                 self.isLoadingData = false
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + Double(UInt.random(in: 1..<4))) { [weak self] in
+                    self?.loadData()
+                }
             }
         }
     }

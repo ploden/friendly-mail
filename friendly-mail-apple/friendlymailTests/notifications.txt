@@ -71,7 +71,7 @@ Received: from Glamdring.local ([94.31.97.54])
         Thu, 09 Dec 2021 02:24:57 -0800 (PST)
 Date: Thu, 9 Dec 2021 11:24:56 +0100
 From: "=?utf-8?Q?ploden=40gmail.com?=" <ploden@gmail.com>
-To: Phil Loden <ploden.postcards@gmail.com>
+To: Phil Postcards <ploden.postcards@gmail.com>
 Message-ID: <6df54737-e2e9-4489-853c-f71221284a8e@Glamdring.local>
 X-friendlymail: t=notifications; n_cp_mid=61FD0524-97BD-4C61-A011-D613F3E63E05@gmail.com
 MIME-Version: 1.0

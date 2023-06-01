@@ -10,7 +10,7 @@ import friendlymail_core
 import AppAuth
 
 public struct AppleSettings: Settings {
-    public var user: Address
+    public var user: EmailAddress
     public var authState: OIDAuthState?
     public var password: String?
     public var isValid: Bool {
@@ -29,25 +29,25 @@ public struct AppleSettings: Settings {
         case selectedTheme
     }
     
-    public init(user: Address, selectedTheme: Theme) {
+    public init(user: EmailAddress, selectedTheme: Theme) {
         self.user = user
         //self.selectedTheme = selectedTheme
     }
     
-    public func new(withUser user: Address) -> AppleSettings {
+    public func new(withUser user: EmailAddress) -> AppleSettings {
         var newWith = self
         newWith.user = user
         return newWith
     }
 
-    public func new(withUser user: Address, authState: OIDAuthState) -> AppleSettings {
+    public func new(withUser user: EmailAddress, authState: OIDAuthState) -> AppleSettings {
         var newWith = self
         newWith.user = user
         newWith.authState = authState
         return newWith
     }
     
-    public func new(withUser user: Address, password: String) -> AppleSettings {
+    public func new(withUser user: EmailAddress, password: String) -> AppleSettings {
         var newWith = self
         newWith.user = user
         newWith.password = password
@@ -78,7 +78,7 @@ public struct AppleSettings: Settings {
 extension AppleSettings: Codable {
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        user = try values.decode(Address.self, forKey: .user)
+        user = try values.decode(EmailAddress.self, forKey: .user)
         //selectedTheme = try values.decode(Theme.self, forKey: .selectedTheme)
         password = try? values.decode(String.self, forKey: .password)
 

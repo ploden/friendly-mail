@@ -14,7 +14,7 @@ Content-Transfer-Encoding: 7bit
 Content-Type: text/plain;
     charset=us-ascii
 
-$ set profile pic
+$ usermod
 
 
 --Apple-Mail=_8F34E5B0-EDA0-49E6-B823-FFF2ED0468F4
@@ -28,7 +28,7 @@ Content-Transfer-Encoding: 7bit
 Content-Type: text/html;
     charset=us-ascii
 
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=us-ascii"></head><body style="word-wrap: break-word; -webkit-nbsp-mode: space; line-break: after-white-space;" class="">$ set profile pic<div class=""><br class=""></div><div class=""><img apple-inline="yes" id="3D14194E-C30B-4632-855F-7B3DEEFB0577" src="cid:19CC8A22-5FE1-4DC1-91EE-91C16F8BE861" class=""></div></body></html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=us-ascii"></head><body style="word-wrap: break-word; -webkit-nbsp-mode: space; line-break: after-white-space;" class="">$ usermod<div class=""><br class=""></div><div class=""><img apple-inline="yes" id="3D14194E-C30B-4632-855F-7B3DEEFB0577" src="cid:19CC8A22-5FE1-4DC1-91EE-91C16F8BE861" class=""></div></body></html>
 --Apple-Mail=_AF82B69D-DC49-4060-BB4A-0CE8C9B2DA51
 Content-Transfer-Encoding: base64
 Content-Disposition: inline;

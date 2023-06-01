@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -12,13 +11,13 @@
         <!--NewsFeedVC-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController storyboardIdentifier="NewsFeedVC" id="BYZ-38-t0r" userLabel="NewsFeedVC" customClass="NewsFeedVC" customModule="friendly_mail_ios" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="NewsFeedVC" id="BYZ-38-t0r" userLabel="NewsFeedVC" customClass="NewsFeedVC" customModule="friendlymail_ios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="U4P-fg-c58">
-                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                                <rect key="frame" x="0.0" y="48" width="414" height="814"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <connections>
                                     <outlet property="dataSource" destination="BYZ-38-t0r" id="Mla-NY-url"/>
@@ -54,13 +53,13 @@
         <!--LogVC-->
         <scene sceneID="5nr-Mf-nQK">
             <objects>
-                <viewController storyboardIdentifier="LogVC" id="4wi-6a-K1P" customClass="LogVC" customModule="friendly_mail_ios" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="LogVC" id="4wi-6a-K1P" customClass="LogVC" customModule="friendlymail_ios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="UZO-A4-Bez">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="yAK-Iz-hgH">
-                                <rect key="frame" x="20" y="44" width="374" height="818"/>
+                                <rect key="frame" x="20" y="48" width="374" height="814"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
                                 <color key="textColor" systemColor="labelColor"/>
@@ -88,13 +87,13 @@
         <!--FollowersFollowingVC-->
         <scene sceneID="mds-gb-TAZ">
             <objects>
-                <viewController storyboardIdentifier="FollowersFollowingVC" id="zm2-HU-sD8" userLabel="FollowersFollowingVC" customClass="FollowersFollowingVC" customModule="friendly_mail_ios" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="FollowersFollowingVC" id="zm2-HU-sD8" userLabel="FollowersFollowingVC" customClass="FollowersFollowingVC" customModule="friendlymail_ios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Kbr-54-bq0">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="N5h-4L-Ow0">
-                                <rect key="frame" x="0.0" y="88" width="414" height="725"/>
+                                <rect key="frame" x="0.0" y="92" width="414" height="721"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <connections>
                                     <outlet property="dataSource" destination="zm2-HU-sD8" id="Gvu-uw-YMv"/>
@@ -103,7 +102,7 @@
                             </tableView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="9vj-zx-Ru3"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="9vj-zx-Ru3" firstAttribute="bottom" secondItem="N5h-4L-Ow0" secondAttribute="bottom" id="Hf4-X0-vWF"/>
                             <constraint firstItem="N5h-4L-Ow0" firstAttribute="top" secondItem="9vj-zx-Ru3" secondAttribute="top" id="OU5-s4-7Jv"/>
@@ -142,7 +141,7 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBar>
                     <connections>
-                        <segue destination="keH-uX-iWP" kind="relationship" relationship="viewControllers" id="jeH-uS-9nt"/>
+                        <segue destination="bjS-Im-jvA" kind="relationship" relationship="viewControllers" id="37H-Sk-GPa"/>
                         <segue destination="a0H-yR-Xeb" kind="relationship" relationship="viewControllers" id="vOU-Sv-cBG"/>
                         <segue destination="3jb-69-6vA" kind="relationship" relationship="viewControllers" id="D4X-g3-238"/>
                     </connections>
@@ -154,14 +153,14 @@
         <!--StatusVC-->
         <scene sceneID="zg0-rq-KEU">
             <objects>
-                <viewController storyboardIdentifier="StatusVC" id="bjS-Im-jvA" userLabel="StatusVC" customClass="StatusVC" customModule="friendly_mail_ios" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="StatusVC" id="bjS-Im-jvA" userLabel="StatusVC" customClass="StatusVC" customModule="friendlymail_ios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="eJG-em-C95">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="bPt-8U-bjG">
-                                <rect key="frame" x="0.0" y="88" width="414" height="725"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <rect key="frame" x="0.0" y="48" width="414" height="765"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
                                     <outlet property="dataSource" destination="bjS-Im-jvA" id="FxX-9Z-xiF"/>
                                     <outlet property="delegate" destination="bjS-Im-jvA" id="8xs-T5-94t"/>
@@ -170,7 +169,7 @@
                             </tableView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="0ww-1n-u96"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="bPt-8U-bjG" firstAttribute="top" secondItem="0ww-1n-u96" secondAttribute="top" id="6OX-ME-DQu"/>
                             <constraint firstItem="0ww-1n-u96" firstAttribute="trailing" secondItem="bPt-8U-bjG" secondAttribute="trailing" id="8FD-5M-Djv"/>
@@ -178,6 +177,7 @@
                             <constraint firstItem="0ww-1n-u96" firstAttribute="bottom" secondItem="bPt-8U-bjG" secondAttribute="bottom" id="gvg-ZF-ZB4"/>
                         </constraints>
                     </view>
+                    <tabBarItem key="tabBarItem" title="" image="antenna.radiowaves.left.and.right" catalog="system" id="fs4-lh-oEu"/>
                     <navigationItem key="navigationItem" id="G7y-tU-SNM"/>
                     <connections>
                         <outlet property="tableView" destination="bPt-8U-bjG" id="Owx-e5-D9N"/>
@@ -185,19 +185,19 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6Wk-q4-gYC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-252.17391304347828" y="-1323.2142857142856"/>
+            <point key="canvasLocation" x="-1323" y="-1308"/>
         </scene>
         <!--Settings-->
         <scene sceneID="Mpm-YN-bJD">
             <objects>
-                <viewController storyboardIdentifier="SettingsVC" title="Settings" id="OxK-pq-OYa" customClass="SettingsVC" customModule="friendly_mail_ios" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SettingsVC" title="Settings" id="OxK-pq-OYa" customClass="SettingsVC" customModule="friendlymail_ios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="3PU-tz-qO1">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="insetGrouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="fSy-tk-E1e">
-                                <rect key="frame" x="0.0" y="88" width="414" height="725"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <rect key="frame" x="0.0" y="92" width="414" height="721"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
                                     <outlet property="dataSource" destination="OxK-pq-OYa" id="cfE-DC-cIO"/>
                                     <outlet property="delegate" destination="OxK-pq-OYa" id="HDb-pl-Izo"/>
@@ -205,7 +205,7 @@
                             </tableView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="O9P-Yv-w9L"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="O9P-Yv-w9L" firstAttribute="trailing" secondItem="fSy-tk-E1e" secondAttribute="trailing" id="4hk-DQ-Z4k"/>
                             <constraint firstItem="fSy-tk-E1e" firstAttribute="top" secondItem="O9P-Yv-w9L" secondAttribute="top" id="DH1-aI-WvB"/>
@@ -225,13 +225,13 @@
         <!--Add Account-->
         <scene sceneID="22V-Oo-KTH">
             <objects>
-                <viewController storyboardIdentifier="AddAccountVC" id="Pfm-lU-9bc" customClass="AddAccountVC" customModule="friendly_mail_ios" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="AddAccountVC" id="Pfm-lU-9bc" customClass="AddAccountVC" customModule="friendlymail_ios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="eE2-Eq-h7c">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" layoutMarginsFollowReadableWidth="YES" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WQH-0L-dP8">
-                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                                <rect key="frame" x="0.0" y="48" width="414" height="814"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="6aX-a2-fNW">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="120"/>
@@ -352,7 +352,7 @@
                             </scrollView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="rZO-IK-GNL"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="rZO-IK-GNL" firstAttribute="bottom" secondItem="WQH-0L-dP8" secondAttribute="bottom" id="2Kd-Bj-Isl"/>
                             <constraint firstItem="WQH-0L-dP8" firstAttribute="top" secondItem="rZO-IK-GNL" secondAttribute="top" id="NKd-rC-uAW"/>
@@ -379,11 +379,12 @@
         <!--Navigation Controller-->
         <scene sceneID="Peg-Zh-7Tc">
             <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="CJX-DR-RjJ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="3jb-69-6vA" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="gearshape" catalog="system" id="g2E-lc-mXQ"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="RH9-7b-XpU">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <rect key="frame" x="0.0" y="48" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -391,7 +392,6 @@
                         <segue destination="OxK-pq-OYa" kind="relationship" relationship="rootViewController" id="j16-Fz-JdF"/>
                     </connections>
                 </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="CJX-DR-RjJ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-2233.3333333333335" y="34.821428571428569"/>
         </scene>
@@ -402,7 +402,7 @@
                     <tabBarItem key="tabBarItem" title="" image="person.2.fill" catalog="system" id="cTd-6g-9Hk"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="nNW-M9-rRf">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <rect key="frame" x="0.0" y="48" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -414,37 +414,18 @@
             </objects>
             <point key="canvasLocation" x="1273.913043478261" y="-557.14285714285711"/>
         </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="Cgg-7a-m19">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="keH-uX-iWP" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="" image="antenna.radiowaves.left.and.right" catalog="system" selectedImage="antenna.radiowaves.left.and.right" id="7x4-ys-lqJ"/>
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="UGh-dJ-3Ti">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="bjS-Im-jvA" kind="relationship" relationship="rootViewController" id="mco-PX-4MW"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="uTV-Mw-Rdw" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-1162.3188405797102" y="-1323.2142857142856"/>
-        </scene>
     </scenes>
     <resources>
-        <image name="antenna.radiowaves.left.and.right" catalog="system" width="128" height="109"/>
-        <image name="gear" catalog="system" width="128" height="119"/>
-        <image name="gearshape" catalog="system" width="128" height="121"/>
+        <image name="antenna.radiowaves.left.and.right" catalog="system" width="128" height="111"/>
+        <image name="gear" catalog="system" width="128" height="122"/>
+        <image name="gearshape" catalog="system" width="128" height="123"/>
         <image name="newspaper" catalog="system" width="128" height="111"/>
-        <image name="person.2.fill" catalog="system" width="128" height="80"/>
+        <image name="person.2.fill" catalog="system" width="128" height="81"/>
         <namedColor name="AccentColor">
             <color red="0.0" green="0.46000000000000002" blue="0.89000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <systemColor name="labelColor">
-            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

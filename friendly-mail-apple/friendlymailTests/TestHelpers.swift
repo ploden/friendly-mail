@@ -9,7 +9,6 @@ import XCTest
 import Foundation
 @testable import friendlymail_ios
 @testable import friendlymail_core
-//import MailCore
 
 extension String {
     static func random(length: Int) -> String {
@@ -20,10 +19,10 @@ extension String {
 
 class TestHelpers {
     
-    static func testAddress(isHost: Bool) -> Address {
+    static func testAddress(isHost: Bool) -> EmailAddress {
         let name = String.random(length: 5)
         let address = "\(String(Int.random(in: 0..<Int.max)))@gmail.com"
-        return Address(name: name, address: address, isHost: isHost)!
+        return EmailAddress(displayName: name, address: address)!
     }
     
     /*
@@ -45,7 +44,7 @@ class TestHelpers {
     {
         var messages = provider.messages
         await TestHelpers.processMailAndSend(config: config, sender: sender, receiver: receiver, testCase: testCase, messages: &messages)
-        provider = provider.new(mergingMessageStores: messages, postNotification: false)
+        provider = provider.new(mergingMessageStore: messages, postNotification: false)
     }
     
     static func processMailAndSend(config: AppConfig,
@@ -115,22 +114,22 @@ class TestHelpers {
          */
     }
     
-    static func loadEmail(host: Address, account: FriendlyMailAccount?, withPath path: String, uid: inout UInt64, messages: inout MessageStore) -> (any AnyBaseMessage)? {
+    static func loadEmail(host: EmailAddress, account: FriendlyMailUser?, withPath path: String, uid: inout UInt64, messages: inout MessageStore) -> (any AnyBaseMessage)? {
         let message = TestHelpers.loadEmail(host: host, account: account, withPath: path, uid: uid)
         uid += 1
         messages = messages.addingMessage(message: message!, messageID: message!.header.messageID)
         return message
     }
     
-    static func loadEmail(account: FriendlyMailAccount?, withPath path: String, uid: inout UInt64, provider: inout MailProvider) -> (any AnyBaseMessage)? {
+    static func loadEmail(account: FriendlyMailUser?, withPath path: String, uid: inout UInt64, provider: inout MailProvider) -> (any AnyBaseMessage)? {
         var inoutMessages: MessageStore! = provider.messages
-        let message = TestHelpers.loadEmail(host: provider.settings.user, account: inoutMessages.account, withPath: path, uid: &uid, messages: &inoutMessages)
-        provider = provider.new(mergingMessageStores: inoutMessages, postNotification: false)
+        let message = TestHelpers.loadEmail(host: provider.settings.user, account: inoutMessages.hostUser, withPath: path, uid: &uid, messages: &inoutMessages)
+        provider = provider.new(mergingMessageStore: inoutMessages, postNotification: false)
         inoutMessages = nil
         return message
     }
     
-    static func loadEmail(host: Address, account: FriendlyMailAccount?, withPath path: String, uid: UInt64) -> (any AnyBaseMessage)? {
+    static func loadEmail(host: EmailAddress, account: FriendlyMailUser?, withPath path: String, uid: UInt64) -> (any AnyBaseMessage)? {
         let fileURL = URL(fileURLWithPath: path)
         let emailString = try! String(contentsOf: fileURL, encoding: .ascii)
         
@@ -220,7 +219,7 @@ class TestHelpers {
     
     static func defaultSetup(testCase: XCTestCase) async -> (MailProvider, TestSenderReceiver, UInt64) {
         var uid: UInt64 = 1
-        let user = Address(name: "Phil Loden", address: "ploden@gmail.com", isHost: true)!
+        let user = EmailAddress(displayName: "Phil Loden", address: "ploden@gmail.com")!
         let theme = await (UIApplication.shared.delegate as! AppDelegate).appConfig.defaultTheme
         let settings = AppleSettings(user: user, selectedTheme: theme)
         
@@ -241,7 +240,7 @@ class TestHelpers {
                                                                          uid: &uid,
                                                                          messages: &inoutMessages)
         
-        provider = provider.new(mergingMessageStores: inoutMessages, postNotification: false)
+        provider = provider.new(mergingMessageStore: inoutMessages, postNotification: false)
         
         // do it twice for self add
         await MessageReceiverTests.loadCreateAccountEmailAndSendResponse(config: config,
@@ -251,26 +250,26 @@ class TestHelpers {
                                                                          uid: &uid,
                                                                          messages: &inoutMessages)
         
-        provider = provider.new(mergingMessageStores: inoutMessages, postNotification: false)
+        provider = provider.new(mergingMessageStore: inoutMessages, postNotification: false)
         
         return (provider, senderReceiver, uid)
     }
     
     static func messageCountIsUnchanged(testCase: XCTestCase, senderReceiver: TestSenderReceiver, provider: inout MailProvider, config: AppConfig) async -> Bool {
-        let sentCountBefore = senderReceiver.sentMessages.allMessages.count
+        let sentCountBefore = provider.messages.allMessages.count
         let countBefore = provider.messages.allMessages.count
-        let before = senderReceiver.sentMessages.allMessages
+        let before = provider.messages.allMessages
         var inoutMessages = provider.messages
-        let messageIDsBefore = Set(senderReceiver.sentMessages.allMessages.compactMap { $0.header.messageID } )
+        let messageIDsBefore = Set(provider.messages.allMessages.compactMap { $0.header.messageID } )
         await TestHelpers.processMailAndSend(config: config, sender: senderReceiver, receiver: senderReceiver, testCase: testCase, messages: &inoutMessages)
-        provider = provider.new(mergingMessageStores: inoutMessages, postNotification: false)
-        let sentCountAfter = senderReceiver.sentMessages.allMessages.count
+        provider = provider.new(mergingMessageStore: inoutMessages, postNotification: false)
+        let sentCountAfter = provider.messages.allMessages.count
         let countAfter = provider.messages.allMessages.count
-        let after = senderReceiver.sentMessages.allMessages
-        let messageIDsAfter = Set(senderReceiver.sentMessages.allMessages.compactMap { $0.header.messageID } )
+        let after = provider.messages.allMessages
+        let messageIDsAfter = Set(provider.messages.allMessages.compactMap { $0.header.messageID } )
         let diff = messageIDsAfter.subtracting(messageIDsBefore)
         if diff.count > 0 {
-            let diffMessages = diff.compactMap { senderReceiver.sentMessages.getMessage(for: $0) }
+            let diffMessages = diff.compactMap { provider.messages.getMessage(for: $0) }
             print("Diff:\n")
             diffMessages.forEach { print($0.shortDescription) }
             print("Before:\n")

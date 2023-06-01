@@ -9,6 +9,6 @@ Message-Id: <38072F6D-47C1-4225-A64A-DB8E360CFBCF@gmail.com>
 Date: Wed, 2 Nov 2022 11:18:18 -0500
 To: Phil Loden <ploden@gmail.com>
 
-$ create account
+$ useradd
 
 Phil

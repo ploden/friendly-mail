@@ -48,7 +48,7 @@ class AddAccountVC: UIViewController {
             } else {
                 logger?.log(message: "AddAccountVC: doneButtonTapped: authentication succeeded")
                 if let settings = (UIApplication.shared.delegate as? AppDelegate)?.settings {
-                    let user = friendlymail_core.Address(name: self.nameTextField!.text!, address: session.username, isHost: true)!
+                    let user = friendlymail_core.EmailAddress(displayName: self.nameTextField!.text!, address: session.username)!
                     _ = settings.new(withUser: user, password: session.password).save(toUserDefaults: .standard)
                 }
             }
@@ -187,7 +187,7 @@ class AddAccountVC: UIViewController {
                         let given = json["given_name"] as? String ?? nil
                         let family = json["family_name"] as? String ?? nil
                         
-                        if let address = Address(name: name, givenName: given, familyName: family, address: email, isHost: true) {
+                        if let address = EmailAddress(displayName: name, address: email) {
                             OperationQueue.main.addOperation {
                                 if let settings = (UIApplication.shared.delegate as? AppDelegate)?.settings {
                                     _ = settings.new(withUser: address, authState: authState).save(toUserDefaults: .standard)

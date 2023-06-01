@@ -17,7 +17,7 @@ class MailProviderTests: XCTestCase {
         let path = Bundle(for: type(of: self )).path(forResource: "create_posting_with_image", ofType: "txt")!
 
         let uid: UInt64 = 1
-        let user = Address(name: "Phil Loden", address: "ploden@gmail.com", isHost: true)!
+        let user = Address(name: "Phil Loden", address: "ploden@gmail.com")!
         let theme = (UIApplication.shared.delegate as! AppDelegate).appConfig.defaultTheme
         let correctSettings = TestSettings(user: user, password: "", selectedTheme: theme)
         let correctMessage = TestHelpers.loadEmail(accountAddress: user, withPath: path, uid: uid)

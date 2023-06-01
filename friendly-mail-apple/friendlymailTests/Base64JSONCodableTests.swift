@@ -12,7 +12,7 @@ import XCTest
 final class Base64JSONCodableTests: XCTestCase {
 
     func test() throws {
-        let user = Address(name: "Phil Loden", address: "ploden@gmail.com", isHost: true)!
+        let user = EmailAddress(displayName: "Phil Loden", address: "ploden@gmail.com")!
         let command = Command(index: 0, commandType: .unknown, createCommandsMessageID: "12345", input: "aoeu", host: user, user: user)
         let result = CommandResult(createCommandMessageID: "12345", commandType: .unknown, command: command, message: "fail", exitCode: .fail)
         let encodedResult = result.encodeAsBase64JSON()

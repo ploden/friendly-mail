@@ -31,8 +31,8 @@ class FollowersFollowingVC: UIViewController, HasMailProvider {
         }
     }
 
-    var followers: [Address] = []
-    var following: [Address] = []
+    var followers: [EmailAddress] = []
+    var following: [EmailAddress] = []
     
     enum Segment: Int {
         case followers = 0
@@ -103,7 +103,7 @@ class FollowersFollowingVC: UIViewController, HasMailProvider {
         present(ac, animated: true, completion: nil)
     }
     
-    private func usersToShow() -> [Address] {
+    private func usersToShow() -> [EmailAddress] {
         if let segment = Segment(optionalValue: segmentedControl?.selectedSegmentIndex) {
             switch segment {
             case .followers:

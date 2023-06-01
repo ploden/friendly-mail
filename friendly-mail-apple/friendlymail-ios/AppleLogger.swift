@@ -12,7 +12,14 @@ import friendlymail_core
 struct AppleLogger: Logger {
     func log(message: String, level: friendlymail_core.LogLevel) {
 #if targetEnvironment(simulator)
-        print(message)
+        let filter: String? = "getAndProcessAndSendMail"
+        
+        if
+            let filter = filter,
+            message.contains(filter)
+        {
+            print(message)
+        }
 #endif
         DDLogDebug(message)
     }

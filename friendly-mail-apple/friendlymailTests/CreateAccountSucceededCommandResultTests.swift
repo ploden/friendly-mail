@@ -12,10 +12,10 @@ import XCTest
 final class CreateAccountSucceededCommandResultTests: XCTestCase {
 
     func testEncodeDecode() throws {
-        let user = Address(name: nil, address: "ploden@gmail.com", isHost: true)!
-        let command = Command(index: 0, commandType: .createAccount, createCommandsMessageID: "anID", input: "create account", host: user, user: user)
-        let account = FriendlyMailAccount(user: user)
-        let inCommandResult = CreateAccountSucceededCommandResult(createCommandMessageID: "anID", commandType: .createAccount, command: command, user: user, message: "success", exitCode: .success, account: account)
+        let user = EmailAddress(displayName: nil, address: "ploden@gmail.com")!
+        let command = Command(index: 0, commandType: .createAccount, createCommandsMessageID: "anID", input: "useradd", host: user, user: user)
+        let account = FriendlyMailUser(email: user)
+        let inCommandResult = CreateAccountSucceededCommandResult(createCommandMessageID: "anID", commandType: .createAccount, command: command, message: "success", exitCode: .success, account: account)
         
         let inDict: [String:CommandResult] = ["commandResult": inCommandResult]
         

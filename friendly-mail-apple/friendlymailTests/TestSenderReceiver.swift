@@ -10,7 +10,7 @@ import XCTest
 @testable import friendlymail_core
 
 class TestSenderReceiver: MessageSender, MessageReceiver {
-    var address: Address {
+    var address: EmailAddress {
         get {
             return user
         }
@@ -38,8 +38,8 @@ class TestSenderReceiver: MessageSender, MessageReceiver {
     }
     
     var sentMessages = MessageStore()
-    var user: Address!
-    var account: FriendlyMailAccount?
+    var user: EmailAddress!
+    var account: FriendlyMailUser?
     var settings: Settings!
     
     func fetchMessage(uidWithMailbox: UIDWithMailbox, completion: @escaping (Error?, (any AnyBaseMessage)?) -> ()) {
@@ -63,7 +63,7 @@ class TestSenderReceiver: MessageSender, MessageReceiver {
                         subject: draft.subject,
                         htmlBody: draft.htmlBody,
                         plainTextBody: draft.plainTextBody,
-                        friendlyMailHeaders: draft.friendlyMailHeaders)
+                        friendlyMailHeaders: draft.friendlyMailHeaders, logger: nil)
             { result in
                 switch result {
                 case .success(let value):
@@ -86,7 +86,7 @@ class TestSenderReceiver: MessageSender, MessageReceiver {
         }
     }
     
-    func sendMessage(to: [Address], subject: String?, htmlBody: String?, plainTextBody: String, friendlyMailHeaders: [HeaderKeyValue]?, completion: @escaping (Result<MessageID, Error>) -> Void) {
+    func sendMessage(to: [EmailAddress], subject: String?, htmlBody: String?, plainTextBody: String, friendlyMailHeaders: [HeaderKeyValue]?, logger: Logger?, completion: @escaping (Result<MessageID, Error>) -> Void) {
         let extraHeaders: [String : String] = {
             if let friendlyMailHeaders = friendlyMailHeaders {
                 let pairs = friendlyMailHeaders.compactMap { "\($0.key)=\($0.value)" }

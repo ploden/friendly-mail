@@ -9,13 +9,13 @@ import Foundation
 import friendlymail_core
 
 extension MessageHeader {
-    init?(host: Address, header: MCOMessageHeader, mailbox: Mailbox) {
-        let to: [Address]? = header.to?.compactMap {
+    init?(host: EmailAddress, header: MCOMessageHeader, mailbox: Mailbox) {
+        let to: [EmailAddress]? = header.to?.compactMap {
             if
                 let mcoAddress = $0 as? MCOAddress,
                 let addr = mcoAddress.mailbox
             {
-                return Address(name: mcoAddress.displayName, address: addr, isHost: addr == host.id)
+                return EmailAddress(displayName: mcoAddress.displayName, address: addr)
             }
             return nil
         }
@@ -24,28 +24,28 @@ extension MessageHeader {
             return nil
         }
         
-        let from: Address? = Address(name: header.from.displayName, address: header.from.mailbox, isHost: header.from.mailbox == host.id)
+        let from: EmailAddress? = EmailAddress(displayName: header.from.displayName, address: header.from.mailbox)
 
         // Make sure we sent or received this message
         guard host.id == from?.id || to.containsIdentifiable(host) else {
             return nil
         }
                 
-        let replyTo: [Address] = header.replyTo?.compactMap {
+        let replyTo: [EmailAddress] = header.replyTo?.compactMap {
             if
                 let mcoAddress = $0 as? MCOAddress,
                 let addr = mcoAddress.mailbox
             {
-                return Address(name: mcoAddress.displayName, address: addr, isHost: addr == host.id)
+                return EmailAddress(displayName: mcoAddress.displayName, address: addr)
             }
             return nil
-        } ?? [Address]()
+        } ?? [EmailAddress]()
         
-        var sender: Address?
+        var sender: EmailAddress?
         
         if from != nil {
             if let headerSender = header.sender {
-                sender = Address(name: headerSender.displayName, address: headerSender.mailbox, isHost: headerSender.mailbox == host.id)
+                sender = EmailAddress(displayName: headerSender.displayName, address: headerSender.mailbox)
             }
         } else {
             return nil

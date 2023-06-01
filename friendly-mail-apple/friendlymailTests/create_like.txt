@@ -69,7 +69,7 @@ Received: from smtpclient.apple ([94.31.96.54])
         for <ploden@gmail.com>
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
         Sun, 09 Jan 2022 23:50:00 -0800 (PST)
-From: Phil Loden <ploden.postcards@gmail.com>
+From: Phil Postcards <ploden.postcards@gmail.com>
 Content-Type: text/plain;
     charset=utf-8
 Content-Transfer-Encoding: base64
