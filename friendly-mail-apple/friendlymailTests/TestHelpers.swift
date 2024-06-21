@@ -114,14 +114,14 @@ class TestHelpers {
          */
     }
     
-    static func loadEmail(host: EmailAddress, account: FriendlyMailUser?, withPath path: String, uid: inout UInt64, messages: inout MessageStore) -> (any AnyBaseMessage)? {
+    static func loadEmail(host: EmailAddress, account: FriendlyMailUser?, withPath path: String, uid: inout UInt64, messages: inout MessageStore) -> (any BaseMessageProtocol)? {
         let message = TestHelpers.loadEmail(host: host, account: account, withPath: path, uid: uid)
         uid += 1
         messages = messages.addingMessage(message: message!, messageID: message!.header.messageID)
         return message
     }
     
-    static func loadEmail(account: FriendlyMailUser?, withPath path: String, uid: inout UInt64, provider: inout MailProvider) -> (any AnyBaseMessage)? {
+    static func loadEmail(account: FriendlyMailUser?, withPath path: String, uid: inout UInt64, provider: inout MailProvider) -> (any BaseMessageProtocol)? {
         var inoutMessages: MessageStore! = provider.messages
         let message = TestHelpers.loadEmail(host: provider.settings.user, account: inoutMessages.hostUser, withPath: path, uid: &uid, messages: &inoutMessages)
         provider = provider.new(mergingMessageStore: inoutMessages, postNotification: false)
@@ -129,7 +129,7 @@ class TestHelpers {
         return message
     }
     
-    static func loadEmail(host: EmailAddress, account: FriendlyMailUser?, withPath path: String, uid: UInt64) -> (any AnyBaseMessage)? {
+    static func loadEmail(host: EmailAddress, account: FriendlyMailUser?, withPath path: String, uid: UInt64) -> (any BaseMessageProtocol)? {
         let fileURL = URL(fileURLWithPath: path)
         let emailString = try! String(contentsOf: fileURL, encoding: .ascii)
         

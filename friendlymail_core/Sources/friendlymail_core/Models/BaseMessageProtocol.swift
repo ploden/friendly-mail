@@ -7,24 +7,24 @@
 
 import Foundation
 
-public protocol AnyBaseMessage: Identifiable {
+public protocol BaseMessageProtocol: Identifiable {
     var uidWithMailbox: UIDWithMailbox { get }
     var header: MessageHeader { get }
     var htmlBody: String? { get }
     var plainTextBody: String? { get }
     var attachments: [Attachment]? { get }
     var shouldFetch: Bool { get }
-    func merging(message: any AnyBaseMessage) -> any AnyBaseMessage
+    func merging(message: any BaseMessageProtocol) -> any BaseMessageProtocol
 }
 
-extension AnyBaseMessage {
+extension BaseMessageProtocol {
     public var shouldFetch: Bool {
         return plainTextBody == nil
     }
 }
 
-extension AnyBaseMessage {
-    public func merging(message: any AnyBaseMessage) -> any AnyBaseMessage {
+extension BaseMessageProtocol {
+    public func merging(message: any BaseMessageProtocol) -> any BaseMessageProtocol {
         if self is Message && (message is Message) == false {
             return message
         } else if type(of: self) == type(of: message) {
@@ -35,13 +35,13 @@ extension AnyBaseMessage {
     }
 }
 
-extension AnyBaseMessage {
+extension BaseMessageProtocol {
     public func isFriendlyMailMessage() -> Bool {
         return MessageFactory.isFriendlyMailMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody)
     }
 }
 
-extension AnyBaseMessage {
+extension BaseMessageProtocol {
     public var id: MessageID {
         get {
             return header.messageID
@@ -49,7 +49,7 @@ extension AnyBaseMessage {
     }
 }
 
-extension AnyBaseMessage {
+extension BaseMessageProtocol {
     var shortDescription: String {
         let shortBody = self.plainTextBody!.replacingOccurrences(of: "\n", with: " ").prefix(100)
         

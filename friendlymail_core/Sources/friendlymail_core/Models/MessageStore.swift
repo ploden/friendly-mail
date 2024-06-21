@@ -8,13 +8,13 @@
 import Foundation
 
 public struct MessageStore {
-    private let messages: [MessageID : any AnyBaseMessage]
+    private let messages: [MessageID : any BaseMessageProtocol]
     var numMessages: Int {
         get {
             return messages.count
         }
     }
-    public var allMessages: [any AnyBaseMessage] {
+    public var allMessages: [any BaseMessageProtocol] {
         get {
             return Array(messages.values)
         }
@@ -41,7 +41,7 @@ public struct MessageStore {
         }
     }
 
-    public func messages<T: AnyBaseMessage>(ofType: T.Type) -> [T] {
+    public func messages<T: BaseMessageProtocol>(ofType: T.Type) -> [T] {
         return allMessages.compactMap { $0 is T ? $0 as? T : nil }
     }
     
@@ -191,15 +191,15 @@ public struct MessageStore {
     }
     
     public init() {
-        messages = [MessageID : any AnyBaseMessage]()
+        messages = [MessageID : any BaseMessageProtocol]()
     }
     
-    public init(messages: [MessageID : any AnyBaseMessage]) {
+    public init(messages: [MessageID : any BaseMessageProtocol]) {
         self.messages = messages
     }
     
-    func addingMessage(message: any AnyBaseMessage, messageID: MessageID) -> MessageStore {
-        let messageToAdd: [MessageID : any AnyBaseMessage] = [messageID: message]
+    func addingMessage(message: any BaseMessageProtocol, messageID: MessageID) -> MessageStore {
+        let messageToAdd: [MessageID : any BaseMessageProtocol] = [messageID: message]
         return merging(messages: messageToAdd)
     }
     
@@ -207,18 +207,18 @@ public struct MessageStore {
         return merging(messages: messageStore.messages)
     }
     
-    public func merging(messages: [MessageID : any AnyBaseMessage]) -> MessageStore {
+    public func merging(messages: [MessageID : any BaseMessageProtocol]) -> MessageStore {
         let mergedMessages = self.messages.merging(messages) { (old, new) in
             return old.merging(message: new)
         }
         return MessageStore(messages: mergedMessages)
     }
     
-    func getMessage(for messageID: MessageID) -> (any AnyBaseMessage)? {
+    func getMessage(for messageID: MessageID) -> (any BaseMessageProtocol)? {
         return messages[messageID]
     }
     
-    func getMessages(for messageIDs: [MessageID]) -> [any AnyBaseMessage] {
+    func getMessages(for messageIDs: [MessageID]) -> [any BaseMessageProtocol] {
         return messageIDs.compactMap { getMessage(for: $0) }
     }
     

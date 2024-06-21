@@ -12,7 +12,7 @@ import Foundation
  create a friendlymail account.
  */
 
-public struct CreateAccountMessage: AnyBaseMessage {
+public struct CreateAccountMessage: BaseMessageProtocol {
     public let uidWithMailbox: UIDWithMailbox
     public let header: MessageHeader
     public let htmlBody: String?

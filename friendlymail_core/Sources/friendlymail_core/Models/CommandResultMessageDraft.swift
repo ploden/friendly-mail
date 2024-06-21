@@ -8,7 +8,7 @@
 import Foundation
 import GenericJSON
 
-struct CommandResultMessageDraft: AnyMessageDraft {
+struct CommandResultMessageDraft: MessageDraftProtocol {
     var commandResults: [CommandResult]
     
     var to: [EmailAddress]

@@ -122,7 +122,7 @@ public class MailController {
         }
     }
     
-    static func getAndProcessMail(config: AppConfig, sender: MessageSender, receiver: MessageReceiver, messages: MessageStore, storageProvider: StorageProvider, logger: Logger?, completion: @escaping (Error?, MessageStore, [AnyMessageDraft]) -> ()) {
+    static func getAndProcessMail(config: AppConfig, sender: MessageSender, receiver: MessageReceiver, messages: MessageStore, storageProvider: StorageProvider, logger: Logger?, completion: @escaping (Error?, MessageStore, [MessageDraftProtocol]) -> ()) {
         // first get sent mail, or we might send duplicates. Or do we? Sent messages are tagged friendlymail.
         
         // fetch messages with nil bodies
@@ -180,7 +180,7 @@ public class MailController {
                             
                             if hostUserBefore != hostUserAfter {
                                 // re-instantiate messages with new account. need to do after process mail, and then re-process
-                                var keysMessages = [MessageID:any AnyBaseMessage]()
+                                var keysMessages = [MessageID:any BaseMessageProtocol]()
                                 errorMessagesDrafts.messageStore.allMessages.forEach { message in
                                     if let updated = MessageFactory.createMessage(account: errorMessagesDrafts.messageStore.hostUser,
                                                                                   uidWithMailbox: message.uidWithMailbox,
@@ -212,8 +212,8 @@ public class MailController {
     /*
      Process mail should only be used on a complete message store. Create account, etc. 
      */
-    static func processMail(config: AppConfig, sender: MessageSender, receiver: MessageReceiver, messages: MessageStore, storageProvider: StorageProvider, logger: Logger? = nil) async -> (error: Error?, messageStore: MessageStore, drafts: [AnyMessageDraft]) {
-        var drafts = [AnyMessageDraft]()
+    static func processMail(config: AppConfig, sender: MessageSender, receiver: MessageReceiver, messages: MessageStore, storageProvider: StorageProvider, logger: Logger? = nil) async -> (error: Error?, messageStore: MessageStore, drafts: [MessageDraftProtocol]) {
+        var drafts = [MessageDraftProtocol]()
         
         let hostUser = messages.hostUser
         let prefs = messages.preferences!

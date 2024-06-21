@@ -13,7 +13,7 @@ public struct Theme: Equatable {
     public let name: String
     let directory: String
     
-    func render(type: AnyMessageDraft.Type, context: [String:Any]) throws -> (subject: String, plainTextBody: String, htmlBody: String?) {
+    func render(type: MessageDraftProtocol.Type, context: [String:Any]) throws -> (subject: String, plainTextBody: String, htmlBody: String?) {
         let dir = String(describing: type)
         let inDirectory = "\(directory)/\(dir)"
                         

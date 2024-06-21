@@ -9,7 +9,7 @@ import Foundation
 
 public struct UseraddCommandController {
     
-    static func handleCreateAccount(command: Command, messages: MessageStore, host: EmailAddress, theme: Theme) -> [AnyMessageDraft] {
+    static func handleCreateAccount(command: Command, messages: MessageStore, host: EmailAddress, theme: Theme) -> [MessageDraftProtocol] {
         if
             messages.hostUser == nil,
             command.user.id == command.host.id

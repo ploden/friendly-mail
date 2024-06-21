@@ -9,8 +9,8 @@ import Foundation
 
 public struct CommandController {
     
-    static func handle(commands: [Command], messages: MessageStore, host: EmailAddress, storageProvider: StorageProvider, theme: Theme) async -> [AnyMessageDraft] {
-        var drafts = [AnyMessageDraft]()
+    static func handle(commands: [Command], messages: MessageStore, host: EmailAddress, storageProvider: StorageProvider, theme: Theme) async -> [MessageDraftProtocol] {
+        var drafts = [MessageDraftProtocol]()
         
         let to = messages.hostUser?.email ?? host
         

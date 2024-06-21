@@ -9,7 +9,7 @@ import Foundation
 
 public struct HelpCommandController {
     
-    static func handleHelp(command: Command, messages: MessageStore, host: EmailAddress, theme: Theme) -> [AnyMessageDraft] {
+    static func handleHelp(command: Command, messages: MessageStore, host: EmailAddress, theme: Theme) -> [MessageDraftProtocol] {
         let commands = CommandType.allCases.compactMap {
             return $0 == .unknown ? nil : $0.rawValue
         }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct MessageDraft: AnyMessageDraft {
+public struct MessageDraft: MessageDraftProtocol {
     public let to: [EmailAddress]
     public let subject: String
     public let htmlBody: String?

@@ -12,7 +12,7 @@ import Foundation
  in response to an invite, to follow to them.
  */
 
-struct CreateAddFollowersMessage: AnyBaseMessage {
+struct CreateAddFollowersMessage: BaseMessageProtocol {
     let uidWithMailbox: UIDWithMailbox
     let header: MessageHeader
     let htmlBody: String?

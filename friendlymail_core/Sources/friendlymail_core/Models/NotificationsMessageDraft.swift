@@ -8,7 +8,7 @@
 import Foundation
 import GenericJSON
 
-struct NotificationsMessageDraft: AnyMessageDraft {
+struct NotificationsMessageDraft: MessageDraftProtocol {
     var notifications: [Notification]
     
     var to: [EmailAddress]

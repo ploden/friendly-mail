@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct Message: AnyBaseMessage {
+public struct Message: BaseMessageProtocol {
     public let uidWithMailbox: UIDWithMailbox
     public let header: MessageHeader
     public let htmlBody: String?

@@ -8,7 +8,7 @@
 import Foundation
 import Stencil
 
-public struct CreatePostingMessage: AnyBaseMessage {
+public struct CreatePostingMessage: BaseMessageProtocol {
     public let uidWithMailbox: UIDWithMailbox
     public let header: MessageHeader
     public let htmlBody: String?

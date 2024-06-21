@@ -1,5 +1,5 @@
 //
-//  AnyCommandResultMessage.swift
+//  CommandResultsMessageProtocol.swift
 //  
 //
 //  Created by Philip Loden on 12/19/22.
@@ -7,6 +7,6 @@
 
 import Foundation
 
-public protocol AnyCommandResultsMessage: AnyBaseMessage {
+public protocol CommandResultsMessageProtocol: BaseMessageProtocol {
     var commandResults: [CommandResult] { get }
 }

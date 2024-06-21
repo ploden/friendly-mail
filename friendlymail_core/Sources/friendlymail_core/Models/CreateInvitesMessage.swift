@@ -12,7 +12,7 @@ import Foundation
  generate an invite to a recipient.
  */
 
-struct CreateInvitesMessage: AnyBaseMessage {
+struct CreateInvitesMessage: BaseMessageProtocol {
     let uidWithMailbox: UIDWithMailbox
     let header: MessageHeader
     let htmlBody: String?

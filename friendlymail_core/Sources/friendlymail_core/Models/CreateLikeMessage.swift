@@ -8,7 +8,7 @@
 import Foundation
 import Stencil
 
-public class CreateLikeMessage: AnyBaseMessage {
+public class CreateLikeMessage: BaseMessageProtocol {
     public let uidWithMailbox: UIDWithMailbox
     public let header: MessageHeader
     public let htmlBody: String?

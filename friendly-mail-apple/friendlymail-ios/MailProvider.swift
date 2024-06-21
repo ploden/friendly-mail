@@ -63,7 +63,7 @@ public struct MailProvider {
 
 extension MailProvider: MessageSender {
     
-    public func sendDraft(draft: AnyMessageDraft) async throws -> MessageID {
+    public func sendDraft(draft: MessageDraftProtocol) async throws -> MessageID {
         return try await withCheckedThrowingContinuation { continuation in
             sendMessage(to: draft.to,
                         subject: draft.subject,
@@ -144,7 +144,7 @@ extension MailProvider: MessageSender {
         })
     }
     
-    public func moveMessageToInbox(message: any AnyBaseMessage, completion: @escaping (Error?) -> ()) {
+    public func moveMessageToInbox(message: any BaseMessageProtocol, completion: @escaping (Error?) -> ()) {
         let requestKind: MCOIMAPStoreFlagsRequestKind = .add
         let labels = ["\\Inbox", MailboxName.friendlyMail]
         
@@ -209,7 +209,7 @@ extension MailProvider: MessageReceiver {
                         //DDLogDebug("MailController: getMail: error: \(String(describing: fetchMessagesError))")
                         outerError = fetchMessagesError
                     } else {
-                        let messages: [any AnyBaseMessage]? = fetchedMessages?.compactMap {
+                        let messages: [any BaseMessageProtocol]? = fetchedMessages?.compactMap {
                             if let header = MessageHeader(host: settings.user, header: $0.header, mailbox: mailbox) {
                                 let messageID = UIDWithMailbox(UID: UInt64($0.uid), mailbox: mailbox)
                                 
@@ -279,7 +279,7 @@ extension MailProvider: MessageReceiver {
                                 //DDLogDebug("MailController: getMail: error: \(String(describing: fetchMessagesError))")
                                 outerError = fetchMessagesError
                             } else {
-                                let messages: [any AnyBaseMessage]? = fetchedMessages?.compactMap {
+                                let messages: [any BaseMessageProtocol]? = fetchedMessages?.compactMap {
                                     if let header = MessageHeader(host: settings.user, header: $0.header, mailbox: mailbox) {
                                         let messageID = UIDWithMailbox(UID: UInt64($0.uid), mailbox: mailbox)
                                                                                 
@@ -317,7 +317,7 @@ extension MailProvider: MessageReceiver {
         })
     }
     
-    public func fetchFriendlyMailMessage(messageID: MessageID, completion: @escaping (Error?, (any AnyBaseMessage)?) -> ()) {
+    public func fetchFriendlyMailMessage(messageID: MessageID, completion: @escaping (Error?, (any BaseMessageProtocol)?) -> ()) {
         let hourAgo = Calendar.current.date(
           byAdding: .hour,
           value: -1,
@@ -349,7 +349,7 @@ extension MailProvider: MessageReceiver {
         }
     }
     
-    public func fetchMessage(uidWithMailbox: UIDWithMailbox, completion: @escaping (Error?, (any AnyBaseMessage)?) -> ()) {
+    public func fetchMessage(uidWithMailbox: UIDWithMailbox, completion: @escaping (Error?, (any BaseMessageProtocol)?) -> ()) {
         let operation = imapSession.fetchMessageOperation(withFolder: uidWithMailbox.mailbox.name, uid: UInt32(uidWithMailbox.UID))
         
         let host = settings.user
@@ -360,7 +360,7 @@ extension MailProvider: MessageReceiver {
                 let messageParser = MCOMessageParser(data: data),
                 let header = MessageHeader(host: host, header: messageParser.header, mailbox: uidWithMailbox.mailbox)
             {                
-                let message: any AnyBaseMessage = {
+                let message: any BaseMessageProtocol = {
                     let htmlBody = messageParser.htmlBodyRendering()
                                                             
                     if let fm = MessageFactory.createMessage(account: self.messages.hostUser,

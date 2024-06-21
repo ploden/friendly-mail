@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol AnyMessageDraft {
+public protocol MessageDraftProtocol {
     var to: [EmailAddress] { get }
     var subject: String { get }
     var htmlBody: String? { get }

@@ -40,7 +40,7 @@ public struct MessageFactory {
                                      friendlyMailData: String?,
                                      plainTextBody: String?,
                                      attachments: [Attachment]?,
-                                     logger: Logger?) -> (any AnyBaseMessage)?
+                                     logger: Logger?) -> (any BaseMessageProtocol)?
     {
         let friendlyMailMessage = {
             if MessageFactory.isFriendlyMailMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody) {
@@ -61,7 +61,7 @@ public struct MessageFactory {
                                           htmlBody: String?,
                                           friendlyMailData: String?,
                                           plainTextBody: String?,
-                                          attachments: [Attachment]?) -> (any AnyBaseMessage)?
+                                          attachments: [Attachment]?) -> (any BaseMessageProtocol)?
     {
         if Self.isCreateCommandMessage(uidWithMailbox: uidWithMailbox, header: header, htmlBody: htmlBody, plainTextBody: plainTextBody)
         {

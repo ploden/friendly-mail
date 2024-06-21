@@ -12,7 +12,7 @@ import Foundation
  that contains the content the followee has created.
  */
 
-struct NotificationsMessage: AnyBaseMessage {
+struct NotificationsMessage: BaseMessageProtocol {
     let uidWithMailbox: UIDWithMailbox
     let header: MessageHeader
     let htmlBody: String?

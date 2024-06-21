@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class CreateCommentMessage: AnyBaseMessage {
+public class CreateCommentMessage: BaseMessageProtocol {
     public let uidWithMailbox: UIDWithMailbox
     public let header: MessageHeader
     public let htmlBody: String?
