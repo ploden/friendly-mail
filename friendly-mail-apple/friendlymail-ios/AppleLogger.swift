@@ -9,7 +9,7 @@ import Foundation
 import CocoaLumberjackSwift
 import friendlymail_core
 
-struct AppleLogger: Logger {
+struct AppleLogger: friendlymail_core.Logger {
     func log(message: String, level: friendlymail_core.LogLevel) {
 #if targetEnvironment(simulator)
         let filter: String? = "getAndProcessAndSendMail"

@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/aws-amplify/amplify-swift",
         "state": {
           "branch": null,
-          "revision": "8c4065708ab2f2397a2dfb6a9048ea46b6cc4a21",
-          "version": "1.28.3"
+          "revision": "d54a8674450d2361eda0da0b3e8deb81a659d6b3",
+          "version": "1.31.0"
         }
       },
       {
@@ -15,7 +15,7 @@
         "repositoryURL": "https://github.com/openid/AppAuth-iOS.git",
         "state": {
           "branch": "master",
-          "revision": "8582608849acbd2a434307a19da3a4f8f7267564",
+          "revision": "c89ed571ae140f8eb1142735e6e23d7bb8c34cb2",
           "version": null
         }
       },
@@ -24,8 +24,8 @@
         "repositoryURL": "https://github.com/aws-amplify/aws-appsync-realtime-client-ios.git",
         "state": {
           "branch": null,
-          "revision": "da88cf1cab82e281e7277cd9feb9efc87a057041",
-          "version": "2.1.1"
+          "revision": "9fd77b043e06193848a68740dfde0836648b2b4e",
+          "version": "3.2.0"
         }
       },
       {
@@ -33,8 +33,8 @@
         "repositoryURL": "https://github.com/aws-amplify/aws-sdk-ios-spm.git",
         "state": {
           "branch": null,
-          "revision": "eae68dde708c17a3ed249f1926e96d5bda20d2d2",
-          "version": "2.28.5"
+          "revision": "f7e79d076556210b1aec4289cc0028d7ac785959",
+          "version": "2.36.3"
         }
       },
       {
@@ -42,8 +42,8 @@
         "repositoryURL": "https://github.com/CocoaLumberjack/CocoaLumberjack.git",
         "state": {
           "branch": null,
-          "revision": "80ada1f753b0d53d9b57c465936a7c4169375002",
-          "version": "3.7.4"
+          "revision": "4b8714a7fb84d42393314ce897127b3939885ec3",
+          "version": "3.8.5"
         }
       },
       {
@@ -96,8 +96,8 @@
         "repositoryURL": "https://github.com/daltoniam/Starscream",
         "state": {
           "branch": null,
-          "revision": "df8d82047f6654d8e4b655d1b1525c64e1059d21",
-          "version": "4.0.4"
+          "revision": "c6bfd1af48efcc9a9ad203665db12375ba6b145a",
+          "version": "4.0.8"
         }
       },
       {
@@ -111,11 +111,11 @@
       },
       {
         "package": "swift-log",
-        "repositoryURL": "https://github.com/apple/swift-log.git",
+        "repositoryURL": "https://github.com/apple/swift-log",
         "state": {
           "branch": null,
-          "revision": "5d66f7ba25daf4f94100e7022febf3c75e37a6c7",
-          "version": "1.4.2"
+          "revision": "e97a6fcb1ab07462881ac165fdbb37f067e205d5",
+          "version": "1.5.4"
         }
       },
       {
@@ -123,7 +123,7 @@
         "repositoryURL": "https://github.com/scinfu/SwiftSoup.git",
         "state": {
           "branch": "master",
-          "revision": "574006f80d7d0d919d0ca5b57f8e318f4c789334",
+          "revision": "028487d4a8a291b2fe1b4392b5425b6172056148",
           "version": null
         }
       }
