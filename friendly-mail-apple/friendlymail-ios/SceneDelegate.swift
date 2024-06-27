@@ -25,40 +25,34 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         AppleSettings.addObserver(forSettings: self)
         registerBackgroundTasks()
-
-        if
+        
+        guard
             let app = UIApplication.shared.delegate as? AppDelegate,
             let windowScene = scene as? UIWindowScene
-        {
-            let window = UIWindow(windowScene: windowScene)
-            
-            let rootVC: UIViewController = {
-                if let rootViewControllerOverride = rootViewControllerOverride {
-                    return rootViewControllerOverride
-                }
-                else if
-                    let settings = app.settings,
-                    settings.isValid == true,
-                    let tab = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "TabBarController") as? UITabBarController
-                {
-                    tab.delegate = self
-                    let status = tab.findStatusVC()!
-                    status.mailProvider = MailProvider(settings: settings, messages: MessageStore())
-                    let followersFollowing = tab.findFollowingFollowersVC()!
-                    followersFollowing.mailProvider = status.mailProvider
-                    return tab
-                } else {
-                    let addAccountVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: String(describing: AddAccountVC.self))
-                    return UINavigationController(rootViewController: addAccountVC)
-                }
-            }()
-                        
-            window.rootViewController = rootVC
-            self.window = window
-            window.makeKeyAndVisible()
-        }
+        else { return }
         
-        //guard let _ = (scene as? UIWindowScene) else { return }
+        let window = UIWindow(windowScene: windowScene)
+        
+        let rootVC: UIViewController = {
+            if let rootViewControllerOverride = rootViewControllerOverride {
+                return rootViewControllerOverride
+            }
+            else if
+                let settings = app.settings,
+                settings.isValid == true,
+                let terminal = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "TerminalVC") as? TerminalVC
+            {
+                terminal.mailProvider = MailProvider(settings: settings, messages: MessageStore())
+                return terminal
+            } else {
+                let addAccountVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: String(describing: AddAccountVC.self))
+                return UINavigationController(rootViewController: addAccountVC)
+            }
+        }()
+        
+        window.rootViewController = rootVC
+        self.window = window
+        window.makeKeyAndVisible()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -135,22 +129,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 extension SceneDelegate: SettingsObserver {
     func settingsDidChange(_ notification: Foundation.Notification) {
-        if
-            let loaded = AppleSettings(fromUserDefaults: .standard),
-            loaded.isValid,
-            let nc = window?.rootViewController as? UINavigationController,
-            nc.topViewController is AddAccountVC,
-            let tab = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "TabBarController") as? UITabBarController
-        {
-            tab.delegate = self
-            let status = tab.findStatusVC()!
-            status.mailProvider = MailProvider(settings: loaded, messages: MessageStore())
-            
-            if let followersFollowing = tab.viewControllers?.first(where: { $0 is FollowersFollowingVC }) as? FollowersFollowingVC {
-                followersFollowing.mailProvider = status.mailProvider
+        OperationQueue.main.addOperation {
+            if
+                let loaded = AppleSettings(fromUserDefaults: .standard),
+                loaded.isValid,
+                let nc = self.window?.rootViewController as? UINavigationController,
+                nc.topViewController is AddAccountVC,
+                let tab = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(identifier: "TabBarController") as? UITabBarController
+            {
+                tab.delegate = self
+                let status = tab.findStatusVC()!
+                status.mailProvider = MailProvider(settings: loaded, messages: MessageStore())
+                
+                if let followersFollowing = tab.viewControllers?.first(where: { $0 is FollowersFollowingVC }) as? FollowersFollowingVC {
+                    followersFollowing.mailProvider = status.mailProvider
+                }
+                
+                nc.viewControllers = [tab]
             }
-            
-            nc.viewControllers = [tab]
         }
     }
 }

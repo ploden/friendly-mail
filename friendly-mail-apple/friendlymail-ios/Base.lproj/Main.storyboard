@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -379,7 +379,6 @@
         <!--Navigation Controller-->
         <scene sceneID="Peg-Zh-7Tc">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="CJX-DR-RjJ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="3jb-69-6vA" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="gearshape" catalog="system" id="g2E-lc-mXQ"/>
                     <toolbarItems/>
@@ -392,8 +391,24 @@
                         <segue destination="OxK-pq-OYa" kind="relationship" relationship="rootViewController" id="j16-Fz-JdF"/>
                     </connections>
                 </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="CJX-DR-RjJ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-2233.3333333333335" y="34.821428571428569"/>
+        </scene>
+        <!--TerminalVC-->
+        <scene sceneID="vnJ-Sc-76F">
+            <objects>
+                <viewController storyboardIdentifier="TerminalVC" id="IWu-Od-yF4" customClass="TerminalVC" customModule="friendlymail_ios" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="m6R-CU-KBn">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="DhO-L8-PrL"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="rIE-pB-fhO" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2233" y="879"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="jXf-6U-6E1">
@@ -420,12 +435,12 @@
         <image name="gear" catalog="system" width="128" height="122"/>
         <image name="gearshape" catalog="system" width="128" height="123"/>
         <image name="newspaper" catalog="system" width="128" height="111"/>
-        <image name="person.2.fill" catalog="system" width="128" height="81"/>
+        <image name="person.2.fill" catalog="system" width="128" height="86"/>
         <namedColor name="AccentColor">
             <color red="0.0" green="0.46000000000000002" blue="0.89000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <systemColor name="labelColor">
-            <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
